@@ -1,0 +1,246 @@
+@use "variables" as *;
+
+.ignition {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 100svh;
+  padding-block: $space-2xl;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.stage {
+  z-index: -2;
+}
+
+/* The type is left-aligned, so the shade is heaviest on the left and opens out
+   toward the right, where the photograph is allowed to breathe. */
+.scrim {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      100deg,
+      rgba(16, 12, 15, 0.95) 0%,
+      rgba(16, 12, 15, 0.82) 34%,
+      rgba(16, 12, 15, 0.46) 72%,
+      rgba(16, 12, 15, 0.34) 100%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(16, 12, 15, 0.6) 0%,
+      transparent 28%,
+      rgba(16, 12, 15, 0.72) 100%
+    ),
+    radial-gradient(80% 70% at 30% 45%, rgba(125, 26, 45, 0.28), transparent 72%);
+}
+
+/* The poet's margin — a hairline that draws itself down the page. */
+.margin {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: $gutter;
+  width: 1px;
+  height: clamp(4rem, 14vh, 9rem);
+  background: linear-gradient(to bottom, transparent, $bordo-lit);
+  transform-origin: top;
+  animation: draw 1400ms $ease-out 200ms backwards;
+
+  @include mq-below(md) {
+    display: none;
+  }
+}
+
+.inner {
+  @include container(62rem);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: start;
+}
+
+/* ---------- Title --------------------------------------- */
+
+.title {
+  @include display($text-2xl);
+  line-height: 1;
+  max-width: 20ch;
+  margin-bottom: $space-md;
+  /* Type sits on a photograph now, so it carries its own shadow. */
+  text-shadow: 0 2px 34px rgba(10, 7, 9, 0.9);
+}
+
+/* Each line clips its own span, so the type rises out of the page. */
+.titleLine {
+  display: block;
+  overflow: hidden;
+  padding-block: 0.06em;
+
+  > * {
+    display: block;
+    animation: lift 1200ms $ease-out backwards;
+  }
+
+  &:nth-child(1) > * {
+    animation-delay: 240ms;
+  }
+
+  &:nth-child(2) > * {
+    animation-delay: 420ms;
+  }
+
+  em {
+    font-style: italic;
+    color: $bordo-bright;
+    text-shadow: 0 0 50px rgba(214, 81, 106, 0.35);
+  }
+}
+
+/* ---------- The three beats after the title -------------- */
+
+.lead {
+  max-width: 34ch;
+  margin-bottom: $space-md;
+  font-family: $font-display;
+  font-style: italic;
+  font-size: $text-md;
+  line-height: 1.4;
+  color: $bone;
+  animation: rise $duration-slow $ease-out 640ms backwards;
+}
+
+.mask {
+  @include body-copy;
+  max-width: 46ch;
+  font-size: $text-sm;
+  color: $ash;
+  animation: rise $duration-slow $ease-out 800ms backwards;
+
+  /* The turn in the paragraph. Lifted by brightness, not by another colour —
+     the title and the closing already carry the burgundy. */
+  em {
+    font-style: italic;
+    color: $bone;
+  }
+}
+
+/* ---------- Onward --------------------------------------
+   One object, not three loose pieces: a low burgundy pill
+   with the word set into it and the arrow riding at its end.
+   Deliberately short — it must not become a second headline.
+   -------------------------------------------------------- */
+
+.onward {
+  @include focus-ring;
+  display: inline-flex;
+  align-items: center;
+  gap: $space-md;
+  margin-top: $space-xl;
+  padding: 0.45rem 0.45rem 0.45rem 1.5rem;
+  font-family: $font-display;
+  letter-spacing: $tracking-tight;
+  background-color: rgba(125, 26, 45, 0.42);
+  border: 1px solid $line-bordo;
+  border-radius: $radius-pill;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  animation:
+    rise $duration-slow $ease-out 980ms backwards,
+    beacon 3.4s $ease-in-out 2s infinite;
+  transition:
+    background-color $duration-base $ease-out,
+    border-color $duration-base $ease-out,
+    transform $duration-base $ease-out;
+
+  @include hover {
+    background-color: rgba(168, 40, 63, 0.62);
+    border-color: rgba(247, 195, 119, 0.5);
+    transform: translateY(-2px);
+
+    .onwardIcon {
+      background-color: $flame;
+      color: $ink;
+      transform: translateY(2px);
+    }
+  }
+}
+
+.onwardWord {
+  font-size: $text-md;
+  font-style: italic;
+  line-height: 1;
+  color: $bone;
+}
+
+.onwardIcon {
+  display: grid;
+  place-items: center;
+  width: 2.15rem;
+  height: 2.15rem;
+  flex-shrink: 0;
+  color: $bone;
+  background-color: rgba(214, 81, 106, 0.85);
+  border-radius: $radius-pill;
+  animation: nudge 2.8s $ease-in-out 1.6s infinite;
+  transition:
+    color $duration-base $ease-out,
+    background-color $duration-base $ease-out,
+    transform $duration-base $ease-out;
+}
+
+/* ---------- Keyframes ----------------------------------- */
+
+@keyframes lift {
+  from {
+    transform: translateY(105%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(1.25rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes draw {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes nudge {
+  0%,
+  70%,
+  100% {
+    transform: translateY(0);
+  }
+  85% {
+    transform: translateY(5px);
+  }
+}
+
+/* A slow halo, so the pill reads as the one thing left to press. */
+@keyframes beacon {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(214, 81, 106, 0);
+  }
+  50% {
+    box-shadow: 0 0 34px 2px rgba(214, 81, 106, 0.4);
+  }
+}

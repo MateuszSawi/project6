@@ -1,0 +1,274 @@
+@use "variables" as *;
+
+.section {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 100svh;
+  padding-block: $space-2xl;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* ---------- Backdrop ------------------------------------ */
+
+/* The photographs and their grade live in <Backdrop>; this only positions it. */
+.stage {
+  z-index: -1;
+}
+
+/* Enough shade for the type to win, not enough to hide the photograph.
+   The heavy part is concentrated behind the words; the edges stay open. */
+.scrim {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(70% 50% at 50% 52%, rgba(16, 12, 15, 0.8), transparent 78%),
+    linear-gradient(
+      180deg,
+      rgba(23, 18, 22, 0.7) 0%,
+      rgba(23, 18, 22, 0.2) 26%,
+      rgba(23, 18, 22, 0.32) 62%,
+      rgba(23, 18, 22, 0.9) 100%
+    );
+}
+
+/* ---------- Content ------------------------------------- */
+
+.inner {
+  @include container(78rem);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* A dark plate under the words themselves. The scrim shapes the whole frame;
+   this is what actually makes the type readable over a bright photograph.
+   Feathered to nothing at the edges so it never reads as a box. */
+.inner::before {
+  content: "";
+  position: absolute;
+  inset: -3rem -1rem;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(58% 46% at 50% 42%, rgba(10, 7, 9, 0.9), transparent 72%),
+    linear-gradient(
+      180deg,
+      transparent 0%,
+      rgba(10, 7, 9, 0.78) 16%,
+      rgba(10, 7, 9, 0.82) 74%,
+      transparent 100%
+    );
+}
+
+.title {
+  @include display($text-3xl);
+  display: flex;
+  flex-direction: column;
+  line-height: 0.98;
+  margin-bottom: $space-lg;
+  /* Type sits on a photograph now, so it carries its own shadow. */
+  text-shadow: 0 2px 30px rgba(10, 7, 9, 0.85);
+}
+
+.titleTop {
+  display: block;
+}
+
+.titleBottom {
+  display: block;
+  margin-top: 0.12em;
+  font-style: italic;
+  color: $bordo-bright;
+  text-shadow: 0 0 60px rgba(214, 81, 106, 0.45);
+}
+
+.body {
+  @include body-copy;
+  /* Wide measure on purpose — a narrow column turns two sentences into six
+     lines and the section grows a metre taller for no reason. */
+  max-width: 72ch;
+  margin-bottom: $space-xl;
+  font-size: $text-md;
+  color: $bone;
+  text-shadow: 0 1px 18px rgba(10, 7, 9, 0.9);
+}
+
+.jobLead {
+  @include eyebrow;
+  margin-bottom: $space-md;
+  color: $ash;
+}
+
+/* Three duties, side by side — the list reads across, not down. */
+.job {
+  display: grid;
+  gap: $space-md;
+  width: 100%;
+  max-width: 64rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  @include mq(md) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0;
+  }
+}
+
+.duty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-2xs;
+  padding-block: $space-sm;
+  padding-inline: $space-md;
+  border-block-start: 1px solid $line;
+
+  @include mq(md) {
+    border-block-start: none;
+    border-inline-start: 1px solid $line-bordo;
+
+    &:first-child {
+      border-inline-start: none;
+    }
+  }
+}
+
+.dutyIndex {
+  font-family: $font-display;
+  font-size: $text-xs;
+  letter-spacing: 0.14em;
+  color: $bordo-bright;
+}
+
+.dutyText {
+  font-family: $font-display;
+  font-size: $text-md;
+  font-style: italic;
+  line-height: 1.25;
+  color: $bone;
+  text-wrap: balance;
+}
+
+/* ---------- Onward -------------------------------------- */
+
+/* The lit state is the resting state — this is the only way on, so it should
+   never need to be discovered by hovering. */
+.more {
+  @include focus-ring;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: $space-xs;
+  margin-top: clamp(2rem, 5vw, 3.25rem);
+  padding: 1.05rem 2.25rem;
+  color: $flame;
+  background-color: rgba(74, 18, 32, 0.82);
+  border: 1px solid rgba(247, 195, 119, 0.5);
+  border-radius: $radius-pill;
+  box-shadow: $glow-flame;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  transition:
+    background-color $duration-base $ease-out,
+    border-color $duration-base $ease-out,
+    box-shadow $duration-base $ease-out,
+    transform $duration-base $ease-out;
+
+  svg {
+    transition: transform $duration-base $ease-out;
+  }
+
+  @include hover {
+    background-color: rgba(125, 26, 45, 0.9);
+    border-color: rgba(247, 195, 119, 0.85);
+    box-shadow: 0 0 34px rgba(247, 195, 119, 0.5);
+    transform: translateY(-2px);
+
+    svg {
+      transform: translateY(3px);
+    }
+  }
+}
+
+.moreLabel {
+  font-size: $text-sm;
+  font-weight: $weight-medium;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* ---------- Embers -------------------------------------- */
+
+.sparks {
+  position: absolute;
+  inset: -0.75rem -1.25rem;
+  pointer-events: none;
+
+  span {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    border-radius: $radius-pill;
+    background-color: $flame;
+    box-shadow: 0 0 8px 1px rgba(247, 195, 119, 0.9);
+    opacity: 0;
+    animation: ember 3.2s $ease-out infinite;
+  }
+
+  span:nth-child(1) {
+    inset-block-end: 18%;
+    inset-inline-start: 8%;
+    animation-delay: 0s;
+  }
+
+  span:nth-child(2) {
+    inset-block-end: 12%;
+    inset-inline-start: 34%;
+    animation-delay: 0.7s;
+  }
+
+  span:nth-child(3) {
+    inset-block-end: 22%;
+    inset-inline-start: 58%;
+    animation-delay: 1.4s;
+  }
+
+  span:nth-child(4) {
+    inset-block-end: 10%;
+    inset-inline-start: 82%;
+    animation-delay: 2.1s;
+  }
+
+  span:nth-child(5) {
+    inset-block-end: 26%;
+    inset-inline-start: 94%;
+    animation-delay: 2.7s;
+  }
+}
+
+@keyframes ember {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0.6);
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-2.75rem) scale(1.1);
+  }
+}
+
+@include reduced-motion {
+  .sparks {
+    display: none;
+  }
+}

@@ -1,0 +1,231 @@
+@use "sass:map";
+
+/* ============================================================
+   DESIGN TOKENS — CANDLELIT / BORDEAUX
+   A dark room. Burgundy, black, and one warm light source.
+   Consumed everywhere via `@use "variables" as *;`
+   ============================================================ */
+
+/* ---------- Ground --------------------------------------
+   Dark, but readable on a phone in daylight — which is where
+   this will actually be opened.
+   -------------------------------------------------------- */
+
+$ink: #171216; // the page — warm near-black, never blue-black
+$ink-soft: #1f181d;
+$ink-raise: #291f25; // panels, cards
+$ink-deep: #100c0f;
+
+/* ---------- Bordeaux ------------------------------------ */
+
+$bordo-deep: #4a1220;
+$bordo: #7d1a2d;
+$bordo-lit: #a8283f; // hover / active
+$bordo-bright: #d6516a; // the loud one
+
+/* ---------- Candle -------------------------------------- */
+
+$flame: #f7c377;
+$flame-core: #fff1cd;
+$wax: #efe4d8;
+
+/* ---------- Text ---------------------------------------- */
+
+$bone: #f7f2ec; // primary
+$ash: #cbbdb6; // secondary
+$dust: #9e8c86; // captions, numerals
+
+$line: rgba(247, 242, 236, 0.15);
+$line-strong: rgba(247, 242, 236, 0.32);
+$line-bordo: rgba(168, 40, 63, 0.55);
+
+$glow-flame: 0 0 24px rgba(247, 195, 119, 0.35);
+$glow-bordo: 0 0 60px rgba(125, 26, 45, 0.45);
+$shadow-deep: 0 30px 80px rgba(0, 0, 0, 0.45);
+
+$accents: (
+  bordo: $bordo-lit,
+  flame: $flame,
+  bone: $bone,
+);
+
+@function accent($name) {
+  @return map.get($accents, $name);
+}
+
+/* ---------- Typography ---------------------------------- */
+
+$font-display: var(--font-display), "Playfair Display", Georgia, serif;
+$font-body: var(--font-body), "Inter", -apple-system, "Segoe UI", sans-serif;
+
+$text-2xs: clamp(0.688rem, calc(0.66rem + 0.14vw), 0.75rem);
+$text-xs: clamp(0.75rem, calc(0.72rem + 0.16vw), 0.813rem);
+$text-sm: clamp(0.875rem, calc(0.84rem + 0.18vw), 0.938rem);
+$text-base: clamp(1rem, calc(0.96rem + 0.2vw), 1.125rem);
+$text-md: clamp(1.125rem, calc(1.05rem + 0.36vw), 1.375rem);
+$text-lg: clamp(1.375rem, calc(1.2rem + 0.78vw), 1.875rem);
+$text-xl: clamp(1.75rem, calc(1.4rem + 1.6vw), 2.75rem);
+$text-2xl: clamp(2.25rem, calc(1.7rem + 2.6vw), 4.25rem);
+$text-3xl: clamp(2.75rem, calc(1.8rem + 4.6vw), 7rem);
+$text-4xl: clamp(3.5rem, calc(1.6rem + 8.4vw), 12rem); // single-word statements
+
+$leading-tight: 1.02;
+$leading-snug: 1.16;
+$leading-body: 1.66;
+
+$tracking-wide: 0.18em;
+$tracking-wider: 0.32em;
+$tracking-tight: -0.025em;
+
+$weight-light: 300;
+$weight-regular: 400;
+$weight-medium: 500;
+
+/* ---------- Space --------------------------------------- */
+
+$space-3xs: 0.25rem;
+$space-2xs: 0.5rem;
+$space-xs: 0.75rem;
+$space-sm: 1rem;
+$space-md: 1.5rem;
+$space-lg: 2.25rem;
+$space-xl: 3.5rem;
+$space-2xl: 5rem;
+$space-3xl: 7.5rem;
+
+$section-gap: clamp(3.25rem, calc(2rem + 5.5vw), 7rem);
+$gutter: clamp(1.25rem, calc(0.5rem + 3.2vw), 5rem);
+$measure: 34rem;
+$max-width: 80rem;
+
+/* ---------- Motion -------------------------------------- */
+
+$ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+$ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+$ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
+$duration-fast: 240ms;
+$duration-base: 480ms;
+$duration-slow: 1000ms;
+$duration-bloom: 1800ms;
+
+$radius-sm: 2px;
+$radius-md: 4px;
+$radius-lg: 12px;
+$radius-pill: 999px;
+
+/* Stacking — the atmosphere layers sit above content, below nothing. */
+$z-content: 1;
+$z-sticky: 20;
+$z-glow: 80;
+$z-dark: 81;
+$z-grain: 82;
+$z-top: 100;
+
+/* ---------- Breakpoints --------------------------------- */
+
+$breakpoints: (
+  xs: 30em,
+  sm: 40em,
+  md: 48em,
+  lg: 64em,
+  xl: 80em,
+  xxl: 96em,
+);
+
+@mixin mq($key) {
+  $size: map.get($breakpoints, $key);
+
+  @if $size == null {
+    @error "mq(): unknown breakpoint `#{$key}`. Available: #{map.keys($breakpoints)}.";
+  }
+
+  @media (min-width: $size) {
+    @content;
+  }
+}
+
+@mixin mq-below($key) {
+  $size: map.get($breakpoints, $key);
+
+  @if $size == null {
+    @error "mq-below(): unknown breakpoint `#{$key}`.";
+  }
+
+  @media (max-width: #{$size - 0.0625em}) {
+    @content;
+  }
+}
+
+@mixin reduced-motion {
+  @media (prefers-reduced-motion: reduce) {
+    @content;
+  }
+}
+
+@mixin hover {
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      @content;
+    }
+  }
+}
+
+/* ---------- Helpers ------------------------------------- */
+
+@mixin container($width: $max-width) {
+  width: 100%;
+  max-width: $width;
+  margin-inline: auto;
+  padding-inline: $gutter;
+}
+
+@mixin eyebrow {
+  font-family: $font-body;
+  font-size: $text-2xs;
+  font-weight: $weight-medium;
+  letter-spacing: $tracking-wide;
+  text-transform: uppercase;
+  color: $dust;
+}
+
+@mixin display($size: $text-2xl) {
+  font-family: $font-display;
+  font-size: $size;
+  font-weight: $weight-regular;
+  line-height: $leading-tight;
+  letter-spacing: $tracking-tight;
+  color: $bone;
+  text-wrap: balance;
+}
+
+@mixin body-copy {
+  font-family: $font-body;
+  font-size: $text-base;
+  font-weight: $weight-light;
+  line-height: $leading-body;
+  color: $ash;
+  text-wrap: pretty;
+}
+
+@mixin focus-ring($color: $flame) {
+  &:focus-visible {
+    outline: 2px solid $color;
+    outline-offset: 4px;
+    border-radius: $radius-sm;
+  }
+}
+
+/* A whisper of shade at the foot of a photograph, so a caption below it has
+   something to sit against. Not a tint — the colour in the picture stays. */
+@mixin bordo-veil {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(23, 18, 22, 0.5) 0%,
+    rgba(23, 18, 22, 0.1) 34%,
+    transparent 62%
+  );
+  transition: opacity $duration-base $ease-out;
+  pointer-events: none;
+}

@@ -1,0 +1,225 @@
+@use "variables" as *;
+
+.section {
+  position: relative;
+  padding-block: $section-gap;
+}
+
+.inner {
+  @include container(82rem);
+}
+
+/* ---------- Head ---------------------------------------- */
+
+.head {
+  margin-bottom: clamp(2.5rem, 7vw, 5rem);
+}
+
+.title {
+  @include display($text-3xl);
+  /* Full width — the line is the width of the page, not of a column. */
+  max-width: none;
+
+  em {
+    font-style: italic;
+    color: $bordo-bright;
+  }
+
+  &::after {
+    content: "";
+    display: block;
+    width: 100%;
+    height: 1px;
+    margin-top: clamp(1.25rem, 3vw, 2.25rem);
+    background: linear-gradient(to right, $bordo-lit, rgba(168, 40, 63, 0.1) 55%, transparent);
+  }
+}
+
+/* ---------- Grid ----------------------------------------
+   Tiles are deliberately small: several files are low
+   resolution, and a smaller frame flatters them.
+   -------------------------------------------------------- */
+
+.grid {
+  display: grid;
+  gap: clamp(1.5rem, 3.5vw, 2.75rem);
+  grid-template-columns: 1fr;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  @include mq(xs) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @include mq(md) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  @include mq(lg) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    column-gap: clamp(1.5rem, 2.6vw, 2.5rem);
+  }
+}
+
+.cell {
+  opacity: 0;
+  transform: translateY(2rem);
+  transition:
+    opacity $duration-slow $ease-out,
+    transform $duration-slow $ease-out;
+  transition-delay: calc(var(--i) * 70ms);
+
+  /* The hang: two of every four columns drop, so the grid never reads as a
+     table. margin, not transform — transform belongs to the reveal. */
+  @include mq(lg) {
+    &:nth-child(4n + 2) {
+      margin-block-start: 2.75rem;
+    }
+
+    &:nth-child(4n) {
+      margin-block-start: 1.5rem;
+    }
+  }
+}
+
+.section[data-shown] .cell {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------- A tile -------------------------------------- */
+
+.figure {
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+  height: 100%;
+  margin: 0;
+}
+
+/* Shared by photographs and by the sealed one, so every tile is the same
+   object with different contents. */
+.plate {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  box-shadow: $shadow-deep;
+  transition:
+    box-shadow $duration-slow $ease-out,
+    transform $duration-slow $ease-out;
+
+  /* Three crops in rotation, so no two neighbours share a shape. */
+  .cell:nth-child(3n + 2) & {
+    aspect-ratio: 3 / 4;
+  }
+
+  .cell:nth-child(3n) & {
+    aspect-ratio: 1 / 1;
+  }
+
+  @include hover {
+    transform: translateY(-6px);
+    box-shadow: $shadow-deep, $glow-bordo;
+  }
+}
+
+.caption {
+  padding-inline-start: $space-sm;
+  border-inline-start: 1px solid $line-bordo;
+}
+
+.index {
+  display: block;
+  font-family: $font-display;
+  font-size: $text-xs;
+  letter-spacing: 0.14em;
+  color: rgba(214, 81, 106, 0.8);
+}
+
+.name {
+  @include display($text-md);
+  margin-block: 0.1rem 0.1rem;
+}
+
+.place {
+  font-family: $font-display;
+  font-style: italic;
+  font-size: $text-sm;
+  color: $dust;
+}
+
+/* ---------- The one with no photograph ------------------- */
+
+.sealed {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: $space-sm;
+  padding: clamp(1rem, 2.4vw, 1.75rem);
+  overflow: hidden;
+  background:
+    radial-gradient(90% 120% at 15% 0%, rgba(125, 26, 45, 0.45), transparent 70%),
+    rgba(41, 31, 37, 0.8);
+  border: 1px dashed $line-bordo;
+  border-radius: $radius-sm;
+  box-shadow: $shadow-deep;
+}
+
+.sealedMark {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  flex-shrink: 0;
+  color: $bone;
+  background-color: rgba(125, 26, 45, 0.5);
+  border: 1px solid $line-bordo;
+  border-radius: $radius-pill;
+}
+
+/* Title and subtitle live on the plate — it is their background, not a
+   picture with a caption underneath. */
+.sealedText {
+  position: relative;
+  z-index: 1;
+}
+
+.sealedTitle {
+  @include display($text-md);
+  margin-block: 0.1rem 0.25rem;
+}
+
+.sealedLine {
+  font-family: $font-display;
+  font-size: $text-sm;
+  font-style: italic;
+  line-height: 1.4;
+  color: $ash;
+}
+
+/* Stays behind everything, half off the edge. */
+.sealedGlyph {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-end: -0.75rem;
+  z-index: 0;
+  translate: 0 -50%;
+  font-family: $font-display;
+  font-size: clamp(6rem, 14vw, 9rem);
+  line-height: 1;
+  color: rgba(214, 81, 106, 0.18);
+  pointer-events: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+@include reduced-motion {
+  .cell {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

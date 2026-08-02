@@ -1,0 +1,325 @@
+@use "variables" as *;
+
+.section {
+  position: relative;
+  padding-block: $section-gap;
+  background-color: $cream;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      70ch 46ch at 50% 108%,
+      rgba(44, 74, 97, 0.12),
+      transparent 68%
+    );
+    pointer-events: none;
+  }
+}
+
+.inner {
+  @include container(62rem);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.eyebrow {
+  @include eyebrow;
+  display: flex;
+  align-items: center;
+  gap: $space-xs;
+  margin-bottom: $space-md;
+}
+
+.rule {
+  display: block;
+  width: clamp(1.5rem, 5vw, 3.5rem);
+  height: 1px;
+  background-color: $line-strong;
+}
+
+.title {
+  @include display($text-2xl);
+  margin-bottom: $space-md;
+
+  em {
+    font-style: italic;
+    color: $ocean;
+  }
+}
+
+.lede {
+  @include body-copy;
+  max-width: 46ch;
+  color: $muted;
+  margin-bottom: clamp(2.5rem, calc(1.5rem + 3vw), 4rem);
+}
+
+/* ---------- Selection ----------------------------------- */
+
+.form {
+  width: 100%;
+}
+
+.fieldset {
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+.options {
+  display: grid;
+  gap: $space-sm;
+  text-align: start;
+
+  @include mq(sm) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @include mq(lg) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.option {
+  position: relative;
+  display: flex;
+}
+
+/* Real radio, visually hidden — keyboard and AT behaviour stay native. */
+.input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: $space-3xs;
+  width: 100%;
+  padding: $space-md $space-sm $space-sm;
+  background-color: $cream-tint;
+  border: 1px solid $line;
+  border-radius: $radius-md;
+  cursor: pointer;
+  transition:
+    background-color $duration-base $ease-out,
+    border-color $duration-base $ease-out,
+    box-shadow $duration-base $ease-out,
+    transform $duration-base $ease-out;
+
+  @include hover {
+    border-color: $line-strong;
+    transform: translateY(-3px);
+    box-shadow: $shadow-soft;
+  }
+}
+
+.cardMonth {
+  @include eyebrow;
+  font-size: $text-2xs;
+}
+
+.cardDate {
+  font-family: $font-display;
+  font-size: $text-xl;
+  line-height: 1.05;
+  letter-spacing: $tracking-tight;
+  color: $charcoal;
+  transition: color $duration-base $ease-out;
+}
+
+.cardHint {
+  margin-top: $space-2xs;
+  padding-top: $space-2xs;
+  border-top: 1px solid $line;
+  font-size: $text-xs;
+  font-style: italic;
+  line-height: 1.5;
+  color: $faint;
+}
+
+.cardTick {
+  position: absolute;
+  inset-block-start: $space-sm;
+  inset-inline-end: $space-sm;
+  display: grid;
+  place-items: center;
+  width: 1.375rem;
+  height: 1.375rem;
+  color: $cream;
+  background-color: $ocean;
+  border-radius: $radius-pill;
+  opacity: 0;
+  transform: scale(0.6);
+  transition:
+    opacity $duration-fast $ease-out,
+    transform $duration-fast $ease-out;
+}
+
+/* Selected + focus states, driven entirely by the native input. */
+.input:checked + .card {
+  background-color: $cream;
+  border-color: $ocean;
+  box-shadow: $shadow-soft, inset 0 0 0 1px rgba(44, 74, 97, 0.35);
+
+  .cardDate {
+    color: $ocean;
+  }
+
+  .cardTick {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.input:focus-visible + .card {
+  outline: 2px solid $ocean;
+  outline-offset: 3px;
+}
+
+/* ---------- Actions ------------------------------------- */
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-sm;
+  margin-top: clamp(2rem, calc(1rem + 3vw), 3.25rem);
+}
+
+.primary {
+  @include focus-ring($charcoal);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-2xs;
+  padding: 0.95rem 2rem;
+  font-size: $text-sm;
+  font-weight: $weight-medium;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: $cream;
+  background-color: $charcoal;
+  border: 1px solid $charcoal;
+  border-radius: $radius-pill;
+  transition:
+    background-color $duration-base $ease-out,
+    color $duration-base $ease-out,
+    transform $duration-base $ease-out,
+    opacity $duration-base $ease-out;
+
+  svg {
+    transition: transform $duration-base $ease-out;
+  }
+
+  @include hover {
+    background-color: $ocean;
+    border-color: $ocean;
+    transform: translateY(-2px);
+
+    svg:last-child {
+      transform: translate(2px, -2px);
+    }
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.32;
+    transform: none;
+  }
+}
+
+.ghost {
+  @include focus-ring;
+  font-size: $text-xs;
+  letter-spacing: 0.04em;
+  color: $muted;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-color: $line-strong;
+  transition: color $duration-fast $ease-out;
+
+  @include hover {
+    color: $charcoal;
+  }
+}
+
+.deadline {
+  font-size: $text-xs;
+  font-style: italic;
+  color: $faint;
+}
+
+/* ---------- Confirmation -------------------------------- */
+
+.done {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 34rem;
+  padding: clamp(2rem, calc(1rem + 3vw), 3.5rem) $space-lg;
+  background-color: $cream-tint;
+  border: 1px solid $line;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-lift;
+  animation: settle $duration-slow $ease-out backwards;
+}
+
+.doneMark {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  margin-bottom: $space-md;
+  color: $cream;
+  background-color: $ocean;
+  border-radius: $radius-pill;
+}
+
+.doneKicker {
+  @include eyebrow;
+  margin-bottom: $space-2xs;
+}
+
+.doneDate {
+  @include display($text-xl);
+  margin-bottom: $space-sm;
+  color: $ocean;
+}
+
+.doneBody {
+  @include body-copy;
+  font-size: $text-sm;
+  max-width: 38ch;
+  color: $muted;
+  margin-bottom: $space-lg;
+}
+
+.doneActions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-sm;
+}
+
+@keyframes settle {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 0.75rem, 0) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

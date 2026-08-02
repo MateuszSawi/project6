@@ -1,0 +1,104 @@
+@use "variables" as *;
+
+/* ============================================================
+   FRAME
+   A camera grade, not a colour cast: the photographs keep their
+   own colour and get depth, bite and edge instead.
+   Every number lives in these two blocks.
+   ============================================================ */
+
+.frame {
+  /* Default — for files that already have colour in them. */
+  --sat: 1.2;
+  --contrast: 1.14;
+  --bright: 0.98;
+
+  position: relative;
+  overflow: hidden;
+  background-color: $ink-raise;
+  border-radius: $radius-sm;
+  isolation: isolate;
+}
+
+/* Flat, hazy or overcast files, which need the push. */
+.frame[data-grade="strong"] {
+  --sat: 1.38;
+  --contrast: 1.24;
+  --bright: 0.95;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: var(--focus, 50% 50%);
+  /* Sharpen first, then grade — the same order a raw converter uses. */
+  filter: url("#dslr-sharpen") saturate(var(--sat)) contrast(var(--contrast))
+    brightness(var(--bright));
+  transform: scale(1.03);
+  transition:
+    transform $duration-slow $ease-out,
+    filter $duration-slow $ease-out;
+}
+
+.frame:hover {
+  --sat: 1.32;
+  --contrast: 1.18;
+  --bright: 1.03;
+
+  .image {
+    transform: scale(1);
+  }
+}
+
+/* ---------- Placeholder --------------------------------- */
+
+.placeholder {
+  position: relative;
+  display: grid;
+  place-items: center;
+  gap: $space-sm;
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(120% 90% at 50% 0%, rgba(125, 26, 45, 0.5), transparent 70%),
+    linear-gradient(160deg, $ink-raise 0%, $ink 55%, $bordo-deep 140%);
+}
+
+.placeholderMark {
+  width: clamp(2.5rem, 6vw, 4rem);
+  height: 1px;
+  background: linear-gradient(to right, transparent, $line-strong, transparent);
+}
+
+.placeholderLabel {
+  @include eyebrow;
+  font-size: $text-2xs;
+  color: rgba(247, 242, 236, 0.32);
+  text-align: center;
+  padding-inline: $space-sm;
+}
+
+/* ---------- Overlays -------------------------------------
+   Deliberately light. Anything heavier here is a colour cast,
+   and the photographs are supposed to keep their own.
+   -------------------------------------------------------- */
+
+.veil {
+  @include bordo-veil;
+  z-index: 2;
+}
+
+.frame:hover .veil {
+  opacity: 0.4;
+}
+
+.grain {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  opacity: 0.045;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+}

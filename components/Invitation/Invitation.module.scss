@@ -1,0 +1,239 @@
+@use "variables" as *;
+
+.section {
+  position: relative;
+  padding-block: $section-gap;
+  overflow: hidden;
+}
+
+.inner {
+  @include container(56rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.eyebrow {
+  @include eyebrow;
+  margin-bottom: $space-sm;
+}
+
+.title {
+  @include display($text-xl);
+  margin-bottom: clamp(2.5rem, 7vw, 4.5rem);
+  color: $ash;
+}
+
+/* ---------- The word ------------------------------------ */
+
+.stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+}
+
+.yes {
+  @include focus-ring;
+  grid-area: 1 / 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-2xs;
+  padding: $space-md clamp(2.5rem, 8vw, 4.5rem);
+  cursor: pointer;
+  transition:
+    opacity $duration-base $ease-out,
+    transform $duration-slow $ease-out,
+    filter $duration-slow $ease-out;
+
+  @include hover {
+    .word {
+      color: $flame;
+      text-shadow: 0 0 70px rgba(247, 195, 119, 0.7);
+      transform: scale(1.06);
+    }
+
+    .hint {
+      background-color: $bordo-lit;
+      color: $bone;
+    }
+  }
+}
+
+/* Two rings leaving the button, forever, so it never reads as static text. */
+.pulse,
+.pulseTwo {
+  position: absolute;
+  inset: 12% 8%;
+  border: 2px solid rgba(214, 81, 106, 0.7);
+  border-radius: $radius-pill;
+  opacity: 0;
+  pointer-events: none;
+  animation: ripple 2.4s $ease-out infinite;
+}
+
+.pulseTwo {
+  animation-delay: 1.2s;
+}
+
+.hint {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-3xs;
+  padding: 0.35rem 0.85rem;
+  font-family: $font-body;
+  font-size: $text-2xs;
+  font-weight: $weight-medium;
+  letter-spacing: $tracking-wide;
+  text-transform: uppercase;
+  color: $bone;
+  background-color: rgba(168, 40, 63, 0.75);
+  border-radius: $radius-pill;
+  box-shadow: 0 0 30px rgba(168, 40, 63, 0.55);
+  animation: flash 1.6s $ease-in-out infinite;
+  transition:
+    background-color $duration-fast $ease-out,
+    color $duration-fast $ease-out;
+
+  svg {
+    flex-shrink: 0;
+  }
+}
+
+.word {
+  font-family: $font-display;
+  font-size: $text-4xl;
+  font-style: italic;
+  line-height: 0.9;
+  letter-spacing: $tracking-tight;
+  color: $bordo-bright;
+  text-shadow: 0 0 60px rgba(214, 81, 106, 0.5);
+  animation: throb 2s $ease-in-out infinite;
+  transition:
+    color $duration-base $ease-out,
+    text-shadow $duration-base $ease-out,
+    transform $duration-base $ease-out;
+}
+
+.arrows {
+  display: flex;
+  gap: $space-2xs;
+  font-size: $text-sm;
+  line-height: 1;
+  color: rgba(214, 81, 106, 0.85);
+
+  span {
+    animation: fall 1.4s $ease-in-out infinite;
+  }
+
+  span:nth-child(2) {
+    animation-delay: 0.15s;
+  }
+
+  span:nth-child(3) {
+    animation-delay: 0.3s;
+  }
+}
+
+.stage[data-said] .yes {
+  opacity: 0;
+  transform: scale(0.9);
+  filter: blur(10px);
+  pointer-events: none;
+}
+
+/* ---------- What follows -------------------------------- */
+
+.after {
+  grid-area: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-lg;
+  max-width: 44ch;
+  opacity: 0;
+  transform: translateY(1.5rem);
+  pointer-events: none;
+  transition:
+    opacity $duration-bloom $ease-out 320ms,
+    transform $duration-bloom $ease-out 320ms;
+}
+
+.stage[data-said] .after {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+.afterLine {
+  font-family: $font-display;
+  font-size: $text-md;
+  line-height: 1.45;
+  color: $bone;
+  text-wrap: balance;
+
+  em {
+    display: block;
+    margin-top: $space-sm;
+    font-style: italic;
+    color: $bordo-bright;
+  }
+}
+
+/* The last thing on the page, and quieter than what it follows. */
+.afterCall {
+  padding-top: $space-md;
+  border-block-start: 1px solid $line-bordo;
+  font-size: $text-sm;
+  font-style: italic;
+  line-height: 1.6;
+  color: $ash;
+}
+
+/* ---------- Keyframes ----------------------------------- */
+
+@keyframes ripple {
+  0% {
+    opacity: 0.75;
+    transform: scale(0.85);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.5);
+  }
+}
+
+@keyframes flash {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+@keyframes throb {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.04);
+  }
+}
+
+@keyframes fall {
+  0%,
+  100% {
+    transform: translateY(-2px);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translateY(3px);
+    opacity: 1;
+  }
+}

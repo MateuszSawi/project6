@@ -1,0 +1,55 @@
+@use "variables" as *;
+
+.stage {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  /* Holds the section on its own if no photograph loads. */
+  background:
+    radial-gradient(110% 80% at 50% 0%, rgba(125, 26, 45, 0.38), transparent 68%),
+    linear-gradient(180deg, $ink-raise 0%, $ink 60%, $bordo-deep 190%);
+}
+
+.shot {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 55%;
+  opacity: 0;
+  /* Same camera grade as the tiles — colour kept, contrast and bite added. */
+  filter: saturate(1.2) contrast(1.12) brightness(0.88);
+  transition: opacity 1800ms $ease-soft;
+}
+
+/* The active photograph fades up and keeps pushing in while it holds. */
+.shot[data-active] {
+  opacity: 1;
+  animation: press 9s $ease-soft forwards;
+}
+
+.grain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='a'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23a)'/%3E%3C/svg%3E");
+}
+
+@keyframes press {
+  from {
+    scale: 1;
+  }
+  to {
+    scale: 1.11;
+  }
+}
+
+@include reduced-motion {
+  .shot[data-active] {
+    animation: none;
+  }
+}

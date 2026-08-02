@@ -1,0 +1,208 @@
+@use "variables" as *;
+
+.section {
+  position: relative;
+  padding-block: $section-gap;
+}
+
+.inner {
+  @include container(72rem);
+}
+
+.head {
+  margin-bottom: clamp(2.5rem, 6vw, 4.5rem);
+}
+
+.eyebrow {
+  @include eyebrow;
+  margin-bottom: $space-sm;
+}
+
+.title {
+  @include display($text-2xl);
+  max-width: 16ch;
+
+  em {
+    font-style: italic;
+    color: $bordo-bright;
+  }
+}
+
+.list {
+  display: grid;
+  gap: 0;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  @include mq(md) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: clamp(2rem, 5vw, 4.5rem);
+  }
+}
+
+/* ---------- A term -------------------------------------- */
+
+.term {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: $space-sm;
+  align-items: start;
+  padding-block: $space-md;
+  border-block-start: 1px solid $line;
+  opacity: 0;
+  transform: translateY(1.5rem);
+  transition:
+    opacity $duration-slow $ease-out,
+    transform $duration-slow $ease-out,
+    border-color $duration-base $ease-out;
+  transition-delay: calc(var(--i) * 90ms);
+
+  @include hover {
+    border-block-start-color: $line-bordo;
+
+    .icon {
+      color: $flame;
+      border-color: rgba(247, 195, 119, 0.45);
+      background-color: rgba(125, 26, 45, 0.25);
+    }
+
+    .line {
+      color: $bone;
+    }
+
+    .sub {
+      color: $bordo-bright;
+    }
+  }
+}
+
+.section[data-shown] .term {
+  opacity: 1;
+  transform: none;
+}
+
+/* The one carrying the most weight gets the full width and a bigger voice. */
+.term[data-wide] {
+  @include mq(md) {
+    grid-column: 1 / -1;
+    align-items: center;
+    padding-block: $space-lg;
+  }
+
+  .line {
+    font-size: $text-lg;
+    color: $bone;
+  }
+}
+
+.icon {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  color: $ash;
+  border: 1px solid $line;
+  border-radius: $radius-pill;
+  transition:
+    color $duration-base $ease-out,
+    border-color $duration-base $ease-out,
+    background-color $duration-base $ease-out;
+}
+
+.text {
+  min-width: 0;
+}
+
+.line {
+  font-family: $font-display;
+  font-size: $text-md;
+  line-height: 1.22;
+  letter-spacing: $tracking-tight;
+  color: rgba(247, 242, 236, 0.88);
+  transition: color $duration-base $ease-out;
+}
+
+.sub {
+  margin-top: $space-3xs;
+  font-size: $text-xs;
+  font-style: italic;
+  line-height: 1.5;
+  color: $dust;
+  transition: color $duration-base $ease-out;
+}
+
+/* ---------- The one that is not a joke -------------------
+   Out of the grid, centred, and given room. It has to look
+   like a different kind of statement, because it is one.
+   -------------------------------------------------------- */
+
+.grave {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-top: clamp(3rem, 8vw, 6rem);
+  padding: clamp(2.25rem, 6vw, 5rem) clamp(1.5rem, 5vw, 4.5rem);
+  background:
+    radial-gradient(100% 130% at 50% 0%, rgba(125, 26, 45, 0.3), transparent 66%),
+    rgba(41, 31, 37, 0.72);
+  border: 1px solid $line-bordo;
+  border-radius: $radius-lg;
+  opacity: 0;
+  transform: translateY(1.5rem);
+  transition:
+    opacity $duration-slow $ease-out,
+    transform $duration-slow $ease-out;
+  transition-delay: calc(var(--i) * 90ms);
+}
+
+.section[data-shown] .grave {
+  opacity: 1;
+  transform: none;
+}
+
+.graveIcon {
+  display: grid;
+  place-items: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  margin-bottom: $space-lg;
+  color: $bone;
+  background-color: rgba(125, 26, 45, 0.4);
+  border: 1px solid $line-bordo;
+  border-radius: $radius-pill;
+  box-shadow: 0 0 0 8px rgba(41, 31, 37, 0.6);
+}
+
+.graveLine {
+  @include display($text-xl);
+  margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
+}
+
+.graveBody {
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+  max-width: 64ch;
+}
+
+.graveText {
+  font-family: $font-display;
+  font-size: $text-md;
+  line-height: 1.45;
+  color: $ash;
+  text-wrap: balance;
+
+  /* "That one is not a joke." — the whole panel exists for this line. */
+  &[data-last] {
+    margin-top: $space-sm;
+    padding-top: $space-md;
+    border-block-start: 1px solid $line-bordo;
+    font-style: italic;
+    font-size: $text-lg;
+    color: $bone;
+  }
+}

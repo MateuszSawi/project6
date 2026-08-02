@@ -1,0 +1,97 @@
+@use "variables" as *;
+
+/* The section is taller than the viewport while pinned; JS sets that height.
+   No padding of its own — the shelf is a divider, not a section. */
+.section {
+  position: relative;
+  padding-block: 0;
+}
+
+/* Static until JS confirms the pin is on, so nothing sticks with no JS. */
+.sticky {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding-block: $space-2xl;
+}
+
+.section[data-pinned] .sticky {
+  position: sticky;
+  inset-block-start: 0;
+  height: 100svh;
+  padding-block: 0;
+  overflow: hidden;
+}
+
+.inner {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  padding-inline: clamp(0.5rem, 2vw, 2rem);
+}
+
+/* The room warms as the shelf fills. */
+.inner::before {
+  content: "";
+  position: absolute;
+  inset-block-end: -30%;
+  inset-inline: -10%;
+  height: 220%;
+  background: radial-gradient(
+    60% 60% at 50% 78%,
+    rgba(247, 195, 119, 0.2),
+    rgba(125, 26, 45, 0.11) 45%,
+    transparent 72%
+  );
+  opacity: 0;
+  transition: opacity 1.4s $ease-out;
+  pointer-events: none;
+}
+
+.section[data-all] .inner::before {
+  opacity: 1;
+}
+
+/* Fifteen candles across, always on one line, never wider than the screen.
+   --base drives the size of every candle, so the row scales with the
+   viewport instead of wrapping onto a second shelf. */
+.row {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  flex-wrap: nowrap;
+  gap: clamp(0.2rem, 1.4vw, 1.1rem);
+  width: 100%;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  --base: clamp(0.26rem, 1.5vw, 0.8rem);
+}
+
+/* Pinned, the shelf has a whole screen to itself, so it can be bigger. */
+.section[data-pinned] .row {
+  --base: clamp(0.4rem, 2.4vw, 1.35rem);
+}
+
+.slot {
+  display: flex;
+  align-items: flex-end;
+}
+
+.ledge {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 1px;
+  margin-top: -1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    $line-bordo 18%,
+    $line-strong 50%,
+    $line-bordo 82%,
+    transparent
+  );
+}

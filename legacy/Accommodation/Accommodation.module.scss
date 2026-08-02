@@ -1,0 +1,233 @@
+@use "variables" as *;
+
+.section {
+  position: relative;
+  padding-block: $section-gap;
+  background-color: $cream-tint;
+  border-block: 1px solid $line;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      64ch 44ch at 88% 6%,
+      rgba(120, 137, 108, 0.12),
+      transparent 70%
+    );
+    pointer-events: none;
+  }
+}
+
+.inner {
+  @include container;
+  position: relative;
+}
+
+.grid {
+  display: grid;
+  gap: clamp(2.5rem, calc(1rem + 5vw), 5.5rem);
+  align-items: start;
+
+  @include mq(lg) {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  @include mq(xl) {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    gap: 7rem;
+  }
+}
+
+/* ---------- Editorial column ---------------------------- */
+
+.head {
+  @include mq(lg) {
+    position: sticky;
+    top: clamp(3rem, 12vh, 7rem);
+  }
+}
+
+.eyebrow {
+  @include eyebrow;
+  display: flex;
+  align-items: center;
+  gap: $space-xs;
+  margin-bottom: $space-md;
+}
+
+.rule {
+  display: block;
+  width: clamp(1.5rem, 5vw, 3.5rem);
+  height: 1px;
+  background-color: $line-strong;
+}
+
+.title {
+  @include display($text-2xl);
+  margin-bottom: $space-md;
+
+  em {
+    font-style: italic;
+    color: $sage;
+  }
+}
+
+.lede {
+  @include body-copy;
+  font-size: $text-md;
+  line-height: 1.5;
+  color: $charcoal;
+  max-width: $measure;
+  margin-bottom: $space-md;
+}
+
+.body {
+  @include body-copy;
+  font-size: $text-sm;
+  color: $muted;
+  max-width: $measure;
+}
+
+.pledge {
+  position: relative;
+  max-width: 32rem;
+  margin-top: $space-lg;
+  padding-inline-start: $space-md;
+  border-inline-start: 2px solid $sage;
+  font-family: $font-display;
+  font-style: italic;
+  font-size: $text-md;
+  line-height: 1.45;
+  color: $charcoal;
+}
+
+.pledgeMark {
+  position: absolute;
+  inset-inline-start: $space-sm;
+  inset-block-start: -0.55em;
+  font-family: $font-display;
+  font-size: 3.5rem;
+  line-height: 1;
+  color: rgba(120, 137, 108, 0.28);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ---------- Panel --------------------------------------- */
+
+.panel {
+  position: relative;
+  padding: clamp(1.5rem, calc(0.75rem + 2.4vw), 3rem);
+  background-color: $cream;
+  border: 1px solid $line;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-soft;
+
+  /* Offset frame — a printed plate lifted off the page. */
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    translate: 0.75rem 0.75rem;
+    border: 1px solid rgba(120, 137, 108, 0.35);
+    border-radius: $radius-lg;
+    pointer-events: none;
+    z-index: -1;
+  }
+}
+
+.plate {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2xs;
+  margin-bottom: $space-lg;
+  padding: 0.4rem 0.85rem;
+  font-size: $text-2xs;
+  font-weight: $weight-medium;
+  letter-spacing: $tracking-wide;
+  text-transform: uppercase;
+  color: $sage;
+  background-color: rgba(120, 137, 108, 0.09);
+  border-radius: $radius-pill;
+
+  svg {
+    flex-shrink: 0;
+  }
+}
+
+.comforts {
+  display: grid;
+  gap: $space-md;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.comfort {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: $space-sm;
+  align-items: start;
+  padding-bottom: $space-md;
+  border-bottom: 1px solid $line;
+
+  &:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+
+  @include hover {
+    .comfortIcon {
+      color: $cream;
+      background-color: $sage;
+      border-color: $sage;
+    }
+  }
+}
+
+.comfortIcon {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  color: $sage;
+  background-color: transparent;
+  border: 1px solid $line;
+  border-radius: $radius-pill;
+  transition:
+    color $duration-base $ease-out,
+    background-color $duration-base $ease-out,
+    border-color $duration-base $ease-out;
+}
+
+.comfortTitle {
+  font-family: $font-display;
+  font-size: $text-base;
+  line-height: $leading-snug;
+  color: $charcoal;
+  margin-bottom: $space-3xs;
+}
+
+.comfortBody {
+  font-size: $text-sm;
+  line-height: 1.62;
+  color: $muted;
+  max-width: 46ch;
+}
+
+.transit {
+  display: flex;
+  align-items: center;
+  gap: $space-2xs;
+  margin-top: $space-lg;
+  padding-top: $space-md;
+  border-top: 1px dashed $line-strong;
+  font-size: $text-xs;
+  color: $muted;
+
+  svg {
+    flex-shrink: 0;
+    color: $ocean;
+  }
+}

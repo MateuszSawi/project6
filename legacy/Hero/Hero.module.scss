@@ -1,0 +1,283 @@
+@use "variables" as *;
+
+.hero {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 100svh;
+  padding-block: $space-3xl $space-2xl;
+  overflow: hidden;
+
+  /* Two soft washes of warmth, so the cream never reads as flat. */
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background:
+      radial-gradient(70ch 55ch at 82% 12%, rgba(192, 113, 78, 0.09), transparent 68%),
+      radial-gradient(60ch 50ch at 6% 88%, rgba(120, 137, 108, 0.09), transparent 66%);
+    pointer-events: none;
+  }
+}
+
+.inner {
+  @include container;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* ---------- Eyebrow ------------------------------------- */
+
+.eyebrow {
+  @include eyebrow;
+  display: flex;
+  align-items: center;
+  gap: $space-xs;
+  margin-bottom: $space-lg;
+  animation: fade-up $duration-slow $ease-out 120ms backwards;
+}
+
+.rule {
+  display: block;
+  width: clamp(1.5rem, 5vw, 3.5rem);
+  height: 1px;
+  background-color: $line-strong;
+  transform-origin: left;
+  animation: draw $duration-slow $ease-out 320ms backwards;
+}
+
+/* ---------- Display heading ----------------------------- */
+
+.title {
+  @include display($text-3xl);
+  max-width: 16ch;
+  margin-bottom: $space-md;
+
+  em {
+    font-style: italic;
+    color: $terracotta;
+  }
+}
+
+/* Each line clips its own inner span, so the type rises out of the page. */
+.line {
+  display: block;
+  overflow: hidden;
+  padding-block: 0.06em; // room for descenders inside the clip
+}
+
+.lineInner {
+  display: block;
+  animation: rise 1100ms $ease-out backwards;
+}
+
+.line:nth-child(1) .lineInner {
+  animation-delay: 180ms;
+}
+
+.line:nth-child(2) .lineInner {
+  animation-delay: 320ms;
+}
+
+.subtitle {
+  font-family: $font-display;
+  font-style: italic;
+  font-size: $text-md;
+  line-height: $leading-snug;
+  color: $muted;
+  margin-bottom: $space-lg;
+  animation: fade-up $duration-slow $ease-out 520ms backwards;
+}
+
+.lede {
+  @include body-copy;
+  max-width: $measure;
+  margin-bottom: $space-xl;
+  animation: fade-up $duration-slow $ease-out 620ms backwards;
+}
+
+/* ---------- Practical notice ---------------------------- */
+
+.notice {
+  position: relative;
+  max-width: 40rem;
+  padding: $space-md $space-md $space-md $space-lg;
+  background-color: rgba(245, 240, 230, 0.55);
+  border: 1px solid $line;
+  border-radius: $radius-md;
+  backdrop-filter: blur(6px);
+  animation: fade-up $duration-slow $ease-out 720ms backwards;
+
+  /* Editorial accent bar along the leading edge. */
+  &::before {
+    content: "";
+    position: absolute;
+    inset-block: -1px;
+    inset-inline-start: -1px;
+    width: 3px;
+    background: linear-gradient(to bottom, $terracotta, $sage);
+    border-start-start-radius: $radius-md;
+    border-end-start-radius: $radius-md;
+  }
+
+  @include mq(md) {
+    padding: $space-lg $space-xl;
+  }
+}
+
+.noticeList {
+  display: grid;
+  gap: $space-sm;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.noticeItem {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: $space-xs;
+  align-items: start;
+  font-size: $text-sm;
+  line-height: 1.6;
+  color: $charcoal-soft;
+
+  strong {
+    display: block;
+    font-weight: $weight-medium;
+    color: $charcoal;
+  }
+}
+
+.noticeIcon {
+  margin-top: 0.15em;
+  color: $terracotta;
+  flex-shrink: 0;
+}
+
+/* ---------- Scroll cue ---------------------------------- */
+
+.scroll {
+  @include focus-ring;
+  display: inline-flex;
+  align-items: center;
+  gap: $space-xs;
+  margin-top: $space-xl;
+  font-size: $text-2xs;
+  font-weight: $weight-medium;
+  letter-spacing: $tracking-wide;
+  text-transform: uppercase;
+  color: $muted;
+  transition: color $duration-fast $ease-out;
+  animation: fade-up $duration-slow $ease-out 860ms backwards;
+
+  @include hover {
+    color: $charcoal;
+
+    .scrollIcon {
+      border-color: $line-strong;
+      transform: translateY(3px);
+    }
+  }
+}
+
+.scrollIcon {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid $line;
+  border-radius: $radius-pill;
+  transition:
+    transform $duration-base $ease-out,
+    border-color $duration-base $ease-out;
+  animation: nudge 2.8s $ease-in-out 1.8s infinite;
+}
+
+/* ---------- Marginalia ---------------------------------- */
+
+.rail {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: $space-md;
+  z-index: 1;
+  display: none;
+  font-size: $text-2xs;
+  letter-spacing: $tracking-wider;
+  text-transform: uppercase;
+  color: $faint;
+  white-space: nowrap;
+  transform: translateY(-50%) rotate(180deg);
+  writing-mode: vertical-rl;
+  animation: fade-up $duration-slow $ease-out 900ms backwards;
+
+  @include mq(xl) {
+    display: block;
+  }
+}
+
+.corner {
+  position: absolute;
+  inset-block-end: $space-lg;
+  inset-inline-end: $gutter;
+  z-index: 1;
+  display: none;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: $space-3xs;
+  font-size: $text-2xs;
+  letter-spacing: $tracking-wide;
+  text-transform: uppercase;
+  color: $faint;
+  animation: fade-up $duration-slow $ease-out 960ms backwards;
+
+  @include mq(lg) {
+    display: flex;
+  }
+}
+
+/* ---------- Keyframes ----------------------------------- */
+
+@keyframes rise {
+  from {
+    transform: translate3d(0, 105%, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 1rem, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes draw {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes nudge {
+  0%,
+  76%,
+  100% {
+    transform: translateY(0);
+  }
+  86% {
+    transform: translateY(4px);
+  }
+}

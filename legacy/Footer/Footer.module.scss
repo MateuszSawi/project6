@@ -1,0 +1,58 @@
+@use "variables" as *;
+
+.footer {
+  padding-block: $space-xl;
+  background-color: $cream-tint;
+  border-top: 1px solid $line;
+}
+
+.inner {
+  @include container;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-sm;
+  text-align: center;
+
+  @include mq(md) {
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: start;
+  }
+}
+
+.mark {
+  @include eyebrow;
+  color: $charcoal-soft;
+}
+
+.line {
+  font-family: $font-display;
+  font-style: italic;
+  font-size: $text-base;
+  color: $muted;
+}
+
+.top {
+  @include focus-ring;
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2xs;
+  font-size: $text-2xs;
+  letter-spacing: $tracking-wide;
+  text-transform: uppercase;
+  color: $muted;
+  transition: color $duration-fast $ease-out;
+
+  svg {
+    transition: transform $duration-base $ease-out;
+  }
+
+  @include hover {
+    color: $charcoal;
+
+    svg {
+      transform: translateY(-3px);
+    }
+  }
+}

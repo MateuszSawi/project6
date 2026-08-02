@@ -1,0 +1,687 @@
+@use "variables" as *;
+
+/* ============================================================
+   THE MANIFESTO
+   An official certificate of guarantee, in nine articles.
+   Printed stock, hairline rules, and one un-signable clause.
+   ============================================================ */
+
+.section {
+  position: relative;
+  padding-block: $section-gap;
+  background-color: $cream;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(58ch 40ch at 12% 4%, rgba(192, 113, 78, 0.1), transparent 68%),
+      radial-gradient(58ch 40ch at 90% 92%, rgba(44, 74, 97, 0.09), transparent 70%);
+    pointer-events: none;
+  }
+}
+
+.inner {
+  @include container;
+  position: relative;
+}
+
+/* ---------- The certificate itself ---------------------- */
+
+.certificate {
+  position: relative;
+  padding: clamp(1.75rem, calc(0.75rem + 3.4vw), 4.5rem);
+  background-color: $cream-tint;
+  border: 1px solid $line-strong;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-soft;
+  transition: box-shadow $duration-slow $ease-out;
+
+  /* Faint engraved stock. Almost subliminal — that is the intent. */
+  background-image: repeating-linear-gradient(
+    135deg,
+    rgba(26, 26, 26, 0.016) 0 1px,
+    transparent 1px 8px
+  );
+
+  &[data-complete] {
+    box-shadow: $shadow-lift;
+  }
+}
+
+/* Inset rule + two corner marks, the way a printed plate is trimmed. */
+.frame {
+  position: absolute;
+  inset: 0.55rem;
+  border: 1px solid $line;
+  border-radius: $radius-md;
+  pointer-events: none;
+
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    width: 1.35rem;
+    height: 1.35rem;
+  }
+
+  &::before {
+    inset-block-start: -0.35rem;
+    inset-inline-start: -0.35rem;
+    border-block-start: 1px solid $line-strong;
+    border-inline-start: 1px solid $line-strong;
+  }
+
+  &::after {
+    inset-block-end: -0.35rem;
+    inset-inline-end: -0.35rem;
+    border-block-end: 1px solid $line-strong;
+    border-inline-end: 1px solid $line-strong;
+  }
+}
+
+/* ---------- Head ---------------------------------------- */
+
+.head {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 52rem;
+  margin-inline: auto;
+  margin-bottom: clamp(2.5rem, calc(1.25rem + 4vw), 4.5rem);
+  text-align: center;
+}
+
+.emblem {
+  display: grid;
+  place-items: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  margin-bottom: $space-md;
+  color: $terracotta;
+  background-color: $cream;
+  border: 1px solid $line;
+  border-radius: $radius-pill;
+  box-shadow: 0 0 0 5px rgba(253, 251, 247, 0.9), 0 0 0 6px $line;
+}
+
+.eyebrow {
+  @include eyebrow;
+  margin-bottom: $space-sm;
+}
+
+.title {
+  @include display($text-2xl);
+  margin-bottom: $space-md;
+
+  em {
+    font-style: italic;
+    color: $terracotta;
+  }
+}
+
+.lede {
+  @include body-copy;
+  max-width: 54ch;
+  color: $muted;
+  margin-bottom: $space-lg;
+}
+
+/* Issued-to block — a small registry table. */
+.issue {
+  display: grid;
+  gap: $space-2xs;
+  width: 100%;
+  max-width: 34rem;
+  padding-top: $space-md;
+  border-top: 1px solid $line;
+  margin: 0;
+  text-align: start;
+}
+
+.issueRow {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.1rem;
+  font-size: $text-xs;
+
+  dt {
+    @include eyebrow;
+    font-size: $text-2xs;
+    color: $faint;
+  }
+
+  dd {
+    margin: 0;
+    font-family: $font-display;
+    font-style: italic;
+    font-size: $text-sm;
+    color: $charcoal-soft;
+  }
+
+  @include mq(sm) {
+    grid-template-columns: 8rem minmax(0, 1fr);
+    gap: $space-sm;
+    align-items: baseline;
+  }
+}
+
+/* ---------- Article grid -------------------------------- */
+
+.articles {
+  display: grid;
+  gap: $space-md;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  @include mq(md) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @include mq(xl) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Accent resolution, shared by both card flavours. */
+.card,
+.bond {
+  &[data-accent="terracotta"] {
+    --accent: #{$terracotta};
+    --accent-wash: rgba(192, 113, 78, 0.08);
+  }
+  &[data-accent="sage"] {
+    --accent: #{$sage};
+    --accent-wash: rgba(120, 137, 108, 0.08);
+  }
+  &[data-accent="ocean"] {
+    --accent: #{$ocean};
+    --accent-wash: rgba(44, 74, 97, 0.08);
+  }
+  &[data-accent="amber"] {
+    --accent: #{$amber};
+    --accent-wash: rgba(185, 139, 63, 0.08);
+  }
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: $space-md;
+  background-color: $cream;
+  border: 1px solid $line;
+  border-radius: $radius-md;
+  overflow: hidden;
+  transition:
+    border-color $duration-base $ease-out,
+    box-shadow $duration-base $ease-out,
+    transform $duration-base $ease-out;
+
+  /* Accent bar that draws itself across the top edge on hover. */
+  &::before {
+    content: "";
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline: 0;
+    height: 2px;
+    background-color: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform $duration-base $ease-out;
+  }
+
+  @include hover {
+    transform: translateY(-4px);
+    border-color: rgba(26, 26, 26, 0.2);
+    box-shadow: $shadow-soft;
+
+    &::before {
+      transform: scaleX(1);
+    }
+
+    .icon {
+      color: $cream;
+      background-color: var(--accent);
+      border-color: var(--accent);
+      transform: rotate(-6deg);
+    }
+
+    .numeral span {
+      color: var(--accent);
+    }
+  }
+
+  &[data-signed] {
+    background-color: var(--accent-wash);
+    border-color: var(--accent);
+
+    &::before {
+      transform: scaleX(1);
+    }
+
+    .icon {
+      color: $cream;
+      background-color: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .numeral span {
+      color: var(--accent);
+    }
+  }
+
+  @include mq(md) {
+    padding: $space-lg;
+  }
+}
+
+.cardHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: $space-sm;
+  margin-bottom: $space-sm;
+}
+
+.numeral {
+  @include eyebrow;
+  font-size: $text-2xs;
+  color: $faint;
+
+  span {
+    font-family: $font-display;
+    font-size: $text-sm;
+    letter-spacing: 0.08em;
+    color: $charcoal-soft;
+    transition: color $duration-base $ease-out;
+  }
+}
+
+.icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+  color: var(--accent);
+  background-color: transparent;
+  border: 1px solid $line;
+  border-radius: $radius-pill;
+  transition:
+    color $duration-base $ease-out,
+    background-color $duration-base $ease-out,
+    border-color $duration-base $ease-out,
+    transform $duration-base $ease-out;
+}
+
+.cardTitle {
+  @include display($text-md);
+  line-height: $leading-snug;
+  margin-bottom: $space-2xs;
+}
+
+.cardBody {
+  @include body-copy;
+  font-size: $text-sm;
+  margin-bottom: $space-sm;
+}
+
+/* The small print — where the teasing lives. */
+.clause {
+  margin-top: auto;
+  padding-top: $space-sm;
+  border-top: 1px dashed $line-strong;
+  font-size: $text-xs;
+  font-style: italic;
+  line-height: 1.55;
+  color: $faint;
+}
+
+.clauseLabel {
+  display: block;
+  margin-bottom: 0.2rem;
+  font-family: $font-body;
+  font-size: $text-2xs;
+  font-style: normal;
+  font-weight: $weight-medium;
+  letter-spacing: $tracking-wide;
+  text-transform: uppercase;
+  color: var(--accent);
+  opacity: 0.75;
+}
+
+.cardFoot {
+  display: flex;
+  align-items: center;
+  margin-top: $space-md;
+}
+
+/* ---------- Sign toggle --------------------------------- */
+
+.sign {
+  @include focus-ring;
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2xs;
+  font-size: $text-2xs;
+  font-weight: $weight-medium;
+  letter-spacing: $tracking-wide;
+  text-transform: uppercase;
+  color: $muted;
+  transition: color $duration-fast $ease-out;
+
+  @include hover {
+    color: $charcoal;
+
+    .signBox {
+      border-color: var(--accent);
+    }
+  }
+
+  &[aria-pressed="true"] {
+    color: var(--accent);
+  }
+}
+
+.signBox {
+  position: relative;
+  display: block;
+  width: 1.05rem;
+  height: 1.05rem;
+  border: 1px solid $line-strong;
+  border-radius: $radius-sm;
+  transition:
+    background-color $duration-fast $ease-out,
+    border-color $duration-fast $ease-out;
+
+  /* Hand-drawn tick, revealed by clipping it open. */
+  &::after {
+    content: "";
+    position: absolute;
+    inset-block-start: 0.08rem;
+    inset-inline-start: 0.32rem;
+    width: 0.28rem;
+    height: 0.58rem;
+    border: solid $cream;
+    border-width: 0 1.5px 1.5px 0;
+    transform: rotate(42deg) scale(0.4);
+    opacity: 0;
+    transition:
+      transform $duration-fast $ease-out,
+      opacity $duration-fast $ease-out;
+  }
+}
+
+.sign[aria-pressed="true"] .signBox {
+  background-color: var(--accent);
+  border-color: var(--accent);
+
+  &::after {
+    opacity: 1;
+    transform: rotate(42deg) scale(1);
+  }
+}
+
+/* ---------- Accepted stamp ------------------------------ */
+
+.stamp {
+  position: absolute;
+  inset-block-end: $space-md;
+  inset-inline-end: $space-md;
+  padding: 0.25rem 0.6rem;
+  font-family: $font-body;
+  font-size: $text-2xs;
+  font-weight: $weight-medium;
+  letter-spacing: $tracking-wide;
+  text-transform: uppercase;
+  color: var(--accent);
+  border: 1.5px solid var(--accent);
+  border-radius: $radius-sm;
+  opacity: 0;
+  transform: rotate(-10deg) scale(1.6);
+  pointer-events: none;
+  transition:
+    opacity $duration-fast $ease-out,
+    transform $duration-base $ease-out;
+}
+
+.card[data-signed] .stamp {
+  opacity: 0.85;
+  transform: rotate(-10deg) scale(1);
+}
+
+/* ---------- Article VII — the bond ---------------------- */
+
+.bond {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: clamp(1.5rem, calc(0.75rem + 2.6vw), 3rem);
+  background-color: rgba(44, 74, 97, 0.05);
+  border: 1px solid rgba(44, 74, 97, 0.28);
+  border-radius: $radius-md;
+
+  /* Solid accent edge — this one is not conditional on anything. */
+  &::before {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    width: 3px;
+    background-color: var(--accent);
+    border-start-start-radius: $radius-md;
+    border-end-start-radius: $radius-md;
+  }
+
+  @include mq(md) {
+    grid-column: 1 / -1;
+  }
+
+  .cardTitle {
+    @include display($text-lg);
+  }
+
+  .cardBody {
+    font-size: $text-base;
+    color: $charcoal-soft;
+    max-width: 68ch;
+  }
+
+  .clause {
+    max-width: 68ch;
+    color: $muted;
+    border-top-style: solid;
+  }
+
+  .icon {
+    color: $cream;
+    background-color: var(--accent);
+    border-color: var(--accent);
+  }
+}
+
+.bindingBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2xs;
+  padding: 0.35rem 0.75rem;
+  font-size: $text-2xs;
+  font-weight: $weight-medium;
+  letter-spacing: $tracking-wide;
+  text-transform: uppercase;
+  color: $ocean;
+  background-color: rgba(44, 74, 97, 0.09);
+  border-radius: $radius-pill;
+
+  svg {
+    flex-shrink: 0;
+  }
+}
+
+/* ---------- Foot: progress + signature ------------------ */
+
+.foot {
+  display: grid;
+  gap: clamp(2rem, calc(1rem + 3vw), 3.5rem);
+  margin-top: clamp(2.5rem, calc(1.25rem + 4vw), 4.5rem);
+  padding-top: $space-lg;
+  border-top: 1px solid $line;
+
+  @include mq(lg) {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    align-items: end;
+  }
+}
+
+.progressHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: $space-sm;
+  margin-bottom: $space-xs;
+}
+
+.progressLabel {
+  @include eyebrow;
+  display: flex;
+  align-items: baseline;
+  gap: $space-2xs;
+}
+
+.progressCount {
+  font-family: $font-display;
+  font-size: $text-md;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+  text-transform: none;
+  color: $charcoal;
+}
+
+.reset {
+  @include focus-ring;
+  font-size: $text-2xs;
+  font-style: italic;
+  color: $faint;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: $line;
+  transition: color $duration-fast $ease-out;
+
+  @include hover {
+    color: $terracotta;
+  }
+}
+
+.track {
+  position: relative;
+  height: 2px;
+  background-color: $line;
+  border-radius: $radius-pill;
+  overflow: hidden;
+}
+
+.fill {
+  display: block;
+  height: 100%;
+  background: linear-gradient(to right, $terracotta, $amber, $sage);
+  transform-origin: left;
+  transition: transform $duration-slow $ease-out;
+}
+
+.progressNote {
+  margin-top: $space-sm;
+  max-width: 52ch;
+  font-family: $font-display;
+  font-style: italic;
+  font-size: $text-sm;
+  line-height: 1.6;
+  color: $muted;
+}
+
+/* ---------- Signature ----------------------------------- */
+
+.signature {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: $space-md;
+
+  @include mq(lg) {
+    justify-content: flex-end;
+  }
+}
+
+.signatureLine {
+  padding-top: $space-sm;
+  border-top: 1px solid $line-strong;
+  min-width: 12rem;
+}
+
+.signatureName {
+  font-family: $font-display;
+  font-style: italic;
+  font-size: $text-lg;
+  line-height: 1.1;
+  color: $charcoal;
+}
+
+.signatureMeta {
+  margin-top: $space-3xs;
+  font-size: $text-2xs;
+  letter-spacing: 0.04em;
+  color: $faint;
+}
+
+.seal {
+  display: grid;
+  place-items: center;
+  gap: 0.1rem;
+  flex-shrink: 0;
+  width: 5rem;
+  height: 5rem;
+  color: $faint;
+  background-color: $cream;
+  border: 1px dashed $line-strong;
+  border-radius: $radius-pill;
+  transition:
+    color $duration-base $ease-out,
+    background-color $duration-base $ease-out,
+    border-color $duration-base $ease-out,
+    transform $duration-base $ease-out;
+
+  &[data-complete] {
+    color: $cream;
+    background-color: $terracotta;
+    border-style: solid;
+    border-color: $terracotta;
+    animation: press 620ms $ease-out;
+  }
+}
+
+.sealText {
+  font-size: 0.563rem;
+  font-weight: $weight-medium;
+  letter-spacing: $tracking-wide;
+  text-transform: uppercase;
+}
+
+@keyframes press {
+  0% {
+    transform: scale(1.5) rotate(-14deg);
+    opacity: 0.4;
+  }
+  60% {
+    transform: scale(0.94) rotate(3deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
