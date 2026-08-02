@@ -12,9 +12,16 @@
 
 /* ---------- Backdrop ------------------------------------ */
 
-/* The photographs and their grade live in <Backdrop>; this only positions it. */
+/* The photographs live in <Backdrop>; this positions them and takes them well
+   down in exposure. This section carries far more type than the hero, and all
+   of it sits directly on the picture — so the picture gives way, not the type.
+   Contrast and saturation go up to stop the darkening turning it to mud. */
 .stage {
   z-index: -1;
+
+  --shot-bright: 0.48;
+  --shot-contrast: 1.2;
+  --shot-sat: 1.3;
 }
 
 /* One even veil over the whole photograph — no hotspot behind the words.
@@ -82,7 +89,7 @@
 .jobLead {
   @include eyebrow;
   margin-bottom: $space-md;
-  color: $ash;
+  color: #ebe3e0;
 }
 
 /* Three duties, side by side — the list reads across, not down. */

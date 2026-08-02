@@ -19,8 +19,13 @@
   object-fit: cover;
   object-position: 50% 55%;
   opacity: 0;
-  /* Same camera grade as the tiles — colour kept, contrast and bite added. */
-  filter: saturate(1.2) contrast(1.12) brightness(0.88);
+  /* Same camera grade as the tiles — colour kept, contrast and bite added.
+     Each of the three is a custom property with its default inline, so a
+     section can darken its own backdrop without touching anyone else's.
+     Defaults live here, not on .stage: a parent class on the same element
+     would otherwise be a source-order coin flip. */
+  filter: saturate(var(--shot-sat, 1.2)) contrast(var(--shot-contrast, 1.12))
+    brightness(var(--shot-bright, 0.88));
   transition: opacity 1800ms $ease-soft;
 }
 
