@@ -17,22 +17,21 @@
   z-index: -1;
 }
 
-/* Enough shade for the type to win, not enough to hide the photograph.
-   The heavy part is concentrated behind the words; the edges stay open. */
+/* One even veil over the whole photograph — no hotspot behind the words.
+   Deeper at the top and bottom only so the section meets its neighbours
+   without a seam; through the middle it is a flat, moderate shade. */
 .scrim {
   position: absolute;
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background:
-    radial-gradient(70% 50% at 50% 52%, rgba(16, 12, 15, 0.8), transparent 78%),
-    linear-gradient(
-      180deg,
-      rgba(23, 18, 22, 0.7) 0%,
-      rgba(23, 18, 22, 0.2) 26%,
-      rgba(23, 18, 22, 0.32) 62%,
-      rgba(23, 18, 22, 0.9) 100%
-    );
+  background: linear-gradient(
+    180deg,
+    rgba(16, 12, 15, 0.72) 0%,
+    rgba(16, 12, 15, 0.5) 26%,
+    rgba(16, 12, 15, 0.5) 74%,
+    rgba(16, 12, 15, 0.82) 100%
+  );
 }
 
 /* ---------- Content ------------------------------------- */
@@ -46,25 +45,6 @@
   text-align: center;
 }
 
-/* A dark plate under the words themselves. The scrim shapes the whole frame;
-   this is what actually makes the type readable over a bright photograph.
-   Feathered to nothing at the edges so it never reads as a box. */
-.inner::before {
-  content: "";
-  position: absolute;
-  inset: -3rem -1rem;
-  z-index: -1;
-  pointer-events: none;
-  background:
-    radial-gradient(58% 46% at 50% 42%, rgba(10, 7, 9, 0.9), transparent 72%),
-    linear-gradient(
-      180deg,
-      transparent 0%,
-      rgba(10, 7, 9, 0.78) 16%,
-      rgba(10, 7, 9, 0.82) 74%,
-      transparent 100%
-    );
-}
 
 .title {
   @include display($text-3xl);

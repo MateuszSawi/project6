@@ -84,8 +84,8 @@ export const PLACES: Place[] = [
   },
   {
     id: 'castle',
-    title: 'The Unfinished',
-    place: 'Łapalice Castle',
+    title: 'The Abandoned Castle',
+    place: 'Łapalice',
     src: '/images/lapalice.jpg',
     grade: 'strong', // desaturated on purpose, but needs bite
   },
@@ -121,6 +121,7 @@ export type TermIcon =
   | 'language'
   | 'candle'
   | 'warm'
+  | 'care'
   | 'heart'
   | 'more'
   | 'shield';
@@ -194,6 +195,12 @@ export const TERMS: Term[] = [
     line: 'I have hair on my chest.',
     sub: 'So whenever you want to be held, you will be very warm.',
     icon: 'warm',
+  },
+  {
+    id: 'care',
+    line: 'You will be safe with me.',
+    sub: 'I will take care of you the way you deserve.',
+    icon: 'care',
   },
   {
     id: 'heart',

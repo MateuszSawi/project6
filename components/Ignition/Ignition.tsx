@@ -38,7 +38,7 @@ export default function Ignition() {
 
         <p className={styles.mask}>
           Keep pretending you don&rsquo;t give a fuck — you still look cute in that mask.
-          A mask that is beautifully crafted, and not at all opaque. Keep it on for the
+          Keep it on for the
           world, <em>but take it off for me</em>. I have already decided you are worth the
           whole of the effort.
         </p>
