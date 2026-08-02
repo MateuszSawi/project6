@@ -1,8 +1,13 @@
 @use "variables" as *;
 
-/* The section is taller than the viewport while pinned; JS sets that height.
-   No padding of its own — the shelf is a divider, not a section. */
+/* JS sets the height while pinned. No padding of its own — the shelf is a
+   divider, not a section.
+
+   --shelf is the height of the parked band. JS overwrites it inline with the
+   same figure in px; this clamp() is the identical fallback for no-JS. */
 .section {
+  --shelf: clamp(11rem, 32svh, 17rem);
+
   position: relative;
   padding-block: 0;
 }
@@ -12,13 +17,14 @@
   position: relative;
   display: grid;
   place-items: center;
-  padding-block: $space-2xl;
+  padding-block: $space-xl;
 }
 
 .section[data-pinned] .sticky {
   position: sticky;
-  inset-block-start: 0;
-  height: 100svh;
+  /* Parked in the middle of the screen, not against its top. */
+  inset-block-start: calc((100svh - var(--shelf)) / 2);
+  height: var(--shelf);
   padding-block: 0;
   overflow: hidden;
 }
