@@ -35,7 +35,18 @@ export default function Places() {
 
         <ol className={styles.grid}>
           {PLACES.map((place, i) => (
-            <li className={styles.cell} key={place.id} style={{ '--i': i } as CSSProperties}>
+            <li
+              className={styles.cell}
+              key={place.id}
+              /* --ratio is set inline so a photograph can opt out of the crop
+                 rotation; inline wins over the nth-child rules that set it. */
+              style={
+                {
+                  '--i': i,
+                  ...(place.ratio ? { '--ratio': place.ratio } : null),
+                } as CSSProperties
+              }
+            >
               {place.secret ? (
                 /* The plate is the background: title and subtitle sit on it. */
                 <div className={`${styles.plate} ${styles.sealed}`}>

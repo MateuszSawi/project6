@@ -21,84 +21,99 @@ export interface Place {
   /**
    * Grading strength. `strong` is for flat, hazy or overcast files that need
    * extra saturation and contrast to come alive. Files that already have their
-   * own colour are left on `soft`. Defaults to `soft`.
+   * own colour are left on `soft`. `none` shows the file untouched. Defaults
+   * to `soft`.
    */
-  grade?: 'soft' | 'strong';
+  grade?: 'soft' | 'strong' | 'none';
   /** object-position, when the subject is not in the middle of the file. */
   focus?: string;
+  /**
+   * Overrides the tile shape for this one photograph, as a CSS `aspect-ratio`
+   * value. The wall otherwise rotates three portrait crops so no two
+   * neighbours match; set this only when a file's own proportions matter more
+   * than the rhythm — a tall subject cropped to a shorter frame loses its
+   * point. Match the file exactly and nothing is cropped at all.
+   */
+  ratio?: string;
 }
 
 export const PLACES: Place[] = [
   {
-    id: 'oliwa',
-    title: 'The Park',
-    place: 'Park Oliwski',
-    src: '/images/park-oliwski.jpg',
-    grade: 'strong', // flat grey overcast sky
-  },
-  {
     id: 'oldtown',
-    title: 'Old Town',
-    place: 'Gdańsk',
+    title: 'Gdańsk',
+    place: 'Old Town',
     src: '/images/old-town.jpg',
+    grade: 'none', // shown exactly as the file is
+    ratio: '3 / 4', // the file's own shape — tall houses, nothing clipped
   },
   {
-    id: 'sopot',
-    title: 'The Pier',
-    place: 'Sopot',
-    src: '/images/sopot.jpg',
-    grade: 'strong', // hazy, pale, low contrast
-    focus: '50% 78%', // the top half of the file is empty sky
+    id: 'oliwa',
+    title: 'Park Oliwski',
+    place: '',
+    src: '/images/park-oliwski.jpg',
+    grade: 'none',
+  },
+  {
+    id: 'art',
+    title: 'Art gallery',
+    place: 'Art is a flash of love',
+    src: '/images/art.jpg', // already saturated
+    grade: 'none',
   },
   {
     id: 'gdynia',
-    title: 'The Port',
-    place: 'Gdynia',
+    title: 'Gdynia',
+    place: '',
     src: '/images/gdynia.jpg', // blue hour, warm lamps — rich already
+    grade: 'none',
   },
   {
-    id: 'cliff',
-    title: 'The Cliff',
-    place: 'Orłowo',
-    src: '/images/orlowo.jpg', // already saturated
+    id: 'sopot',
+    title: 'Sopot',
+    place: 'Polish Saranda',
+    src: '/images/sopot.jpg',
+    grade: 'none',
+    focus: '50% 78%', // the top half of the file is empty sky
   },
   {
     id: 'spit',
-    title: 'Two Seas',
-    place: 'Rewa',
+    title: 'Rewa',
+    place: 'Two Seas',
     src: '/images/rewa.jpg',
   },
   {
-    id: 'seals',
-    title: 'The Seals',
-    place: 'The fishing village',
-    src: '/images/wioska-fok.webp',
-  },
-  {
     id: 'alpacas',
-    title: 'The Alpacas',
-    place: 'Bojano',
+    title: 'Alpacas',
+    place: 'Yes, you will feed the alpacas',
     src: '/images/alpaki.jpg',
-    grade: 'strong', // overcast and flat
+    grade: 'none', // overcast and flat
     focus: '50% 40%', // keep the face, drop some of the ground
   },
   {
     id: 'castle',
-    title: 'The Abandoned Castle',
-    place: 'Łapalice',
+    title: 'Abandoned Castle',
+    place: 'Every princess needs a castle',
     src: '/images/lapalice.jpg',
-    grade: 'strong', // desaturated on purpose, but needs bite
+    grade: 'none', // desaturated on purpose, but needs bite
+  },
+  {
+    id: 'seals',
+    title: 'Historic Polish village',
+    place: '',
+    src: '/images/wioska-fok.webp',
+    grade: 'none',
   },
   {
     id: 'rumia',
-    title: 'Close to Home',
-    place: 'Rumia',
+    title: 'Rumia',
+    place: 'My city',
     src: '/images/rumia-park.jpg', // vivid green already
+    grade: 'none',
   },
   {
     id: 'sky',
     title: 'The Sky',
-    place: 'Away from every light',
+    place: 'Away from people and all problems',
     src: '/images/niebo-gwiazdy.jpg', // dark, keep it that way
   },
   {
@@ -106,7 +121,7 @@ export const PLACES: Place[] = [
     title: 'The Secret',
     place: 'Not telling.',
     /* Sits inside the tile rather than under it — the plate is its background. */
-    line: 'You will see when you come.',
+    line: 'There will be many more places. I have not shown you the best ones here. You will see when you come.',
     secret: true,
   },
 ];
@@ -151,7 +166,7 @@ export const TERMS: Term[] = [
   {
     id: 'vape',
     line: 'I will quit the vape for you.',
-    sub: 'Ask me afterwards how hard that was.',
+    sub: 'One time offer.',
     icon: 'vape',
   },
   {
@@ -205,7 +220,7 @@ export const TERMS: Term[] = [
   {
     id: 'heart',
     line: 'I will make your heart beat like it never has before.',
-    sub: 'You may call that arrogant. I will accept the accusation.',
+    sub: 'I will be careful with it though. I do not want to break it.',
     icon: 'heart',
     wide: true,
   },
@@ -236,10 +251,23 @@ export const TERMS: Term[] = [
  * Missing files simply never appear; the gradient underneath holds the section.
  */
 /* Backdrops run full-bleed at 100vw, so only wide, high-resolution files
-   belong here. These live directly in /public, not /public/images. */
+   belong here. They live in /public/hero-desktop and /public/arrival-desktop.
+
+   The first entry in each set is the one that shows on load and is fetched
+   eagerly, so it is the lightest file of the set — the rest stream in behind
+   the fade. */
 
 /** Behind the opening. */
-export const HERO_BACKDROP: string[] = ['/1.1.jpg', '/1.2.webp', '/1.3.jpg'];
+export const HERO_BACKDROP: string[] = [
+  '/hero-desktop/1.3.jpg',
+  '/hero-desktop/481041814_1174186204067568_5210615880035920574_n.jpg',
+  '/hero-desktop/pexels-gsn-travel-37635271.jpg',
+  '/hero-desktop/1733209364.Gdynia-noca.jpg',
+];
 
 /** Behind "You. Coming to me." */
-export const BACKDROP: string[] = ['/2.1.jpg', '/2.2.jpg'];
+export const BACKDROP: string[] = [
+  '/arrival-desktop/2.1.jpg',
+  '/arrival-desktop/pexels-gsn-travel-37635263.jpg',
+  '/arrival-desktop/pexels-kublizz-550505632-17505476.jpg',
+];

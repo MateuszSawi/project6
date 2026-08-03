@@ -32,7 +32,7 @@ export default function Ignition() {
         </h1>
 
         <p className={styles.lead}>
-          I want to spend time with you and get to know you without a screen between us.
+          I want to spend time with you and get to know everything about you without a screen between us.
           And I don&rsquo;t want to wait until autumn.
         </p>
 

@@ -25,8 +25,8 @@ export default function Arrival() {
         </h2>
 
         <p className={styles.body}>
-          Flights, food, tickets and dinners — everything is on me. All booked, all paid
-          for, none of it your problem.
+          Flights, food, tickets, planning and dinners — everything is on me. All booked, all paid
+          for, all planned, none of it your problem.
         </p>
 
         <p className={styles.jobLead}>

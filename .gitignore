@@ -9,3 +9,13 @@ next-env.d.ts
 .vercel
 *.tsbuildinfo
 .netlify
+
+# Untouched originals of photographs that have been resized for the web. Kept
+# on disk so a crop or a quality can be redone from the source, but everything
+# under public/ is published as-is, and these are multi-megabyte files nothing
+# on the page ever asks for.
+public/images/_full/
+
+# Discarded frames, parked next to the ones in use rather than deleted. Same
+# reason: local only, never published.
+public/**/old/

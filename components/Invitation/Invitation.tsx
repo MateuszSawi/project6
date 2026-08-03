@@ -46,7 +46,7 @@ export default function Invitation() {
 
           <div className={styles.after} role="status" aria-live="polite">
             <p className={styles.afterLine}>
-              Take time off work. Stay as long as you want, leave when you want — leave
+              Take time off work in August. Stay as long as you want, leave when you want — leave
               the rest to me. <em>I am waiting for you.</em>
             </p>
 

@@ -27,6 +27,19 @@
   --bright: 0.95;
 }
 
+/* Files that are to be shown exactly as they came out of the camera:
+   no grade, no veil, no grain. Only the hover motion is kept. */
+.frame[data-grade="none"] {
+  .image {
+    filter: none;
+  }
+
+  .veil,
+  .grain {
+    display: none;
+  }
+}
+
 .image {
   width: 100%;
   height: 100%;
@@ -35,19 +48,31 @@
   /* Sharpen first, then grade — the same order a raw converter uses. */
   filter: url("#dslr-sharpen") saturate(var(--sat)) contrast(var(--contrast))
     brightness(var(--bright));
-  transform: scale(1.03);
+  /* No transform at rest. The file is drawn at exactly its box size — one
+     resample, nothing softened. A resting scale, however small, costs a second
+     resample and the tile reads as mushy for the 99% of the time nobody is
+     pointing at it. The zoom belongs to the hover. */
+  transform: none;
   transition:
     transform $duration-slow $ease-out,
     filter $duration-slow $ease-out;
 }
 
-.frame:hover {
-  --sat: 1.32;
-  --contrast: 1.18;
-  --bright: 1.03;
+/* Hover only — and only on a real pointer, so a tap on a phone does not leave
+   a tile stuck in its zoomed state. */
+.frame {
+  @include hover {
+    --sat: 1.32;
+    --contrast: 1.18;
+    --bright: 1.03;
 
-  .image {
-    transform: scale(1);
+    .image {
+      transform: scale(1.04);
+    }
+
+    .veil {
+      opacity: 0.4;
+    }
   }
 }
 
@@ -87,10 +112,6 @@
 .veil {
   @include bordo-veil;
   z-index: 2;
-}
-
-.frame:hover .veil {
-  opacity: 0.4;
 }
 
 .grain {

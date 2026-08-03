@@ -14,8 +14,9 @@ interface FrameProps {
    * How hard to push the grade.
    *  soft   — the file already has colour and contrast of its own
    *  strong — flat, hazy or overcast, and needs the extra bite
+   *  none   — leave the file completely alone: no grade, no veil, no grain
    */
-  grade?: 'soft' | 'strong';
+  grade?: 'soft' | 'strong' | 'none';
   /** object-position, for photographs with the subject off-centre. */
   focus?: string;
   eager?: boolean;

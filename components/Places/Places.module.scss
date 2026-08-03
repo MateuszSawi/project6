@@ -63,6 +63,16 @@
 }
 
 .cell {
+  /* Three crops in rotation, so no two neighbours share a shape — but all
+     three are portrait. The square used to break the rhythm of the wall: among
+     tall frames it reads as a mistake rather than as variety. The unevenness
+     comes from how tall each one is, not from one of them being a different
+     species.
+
+     It lives here rather than on the plate so a photograph can override it
+     inline, from its entry in PLACES. */
+  --ratio: 4 / 5;
+
   opacity: 0;
   transform: translateY(2rem);
   transition:
@@ -81,6 +91,14 @@
       margin-block-start: 1.5rem;
     }
   }
+}
+
+.cell:nth-child(3n + 2) {
+  --ratio: 3 / 4;
+}
+
+.cell:nth-child(3n) {
+  --ratio: 2 / 3;
 }
 
 .section[data-shown] .cell {
@@ -102,20 +120,11 @@
    object with different contents. */
 .plate {
   width: 100%;
-  aspect-ratio: 4 / 5;
+  aspect-ratio: var(--ratio);
   box-shadow: $shadow-deep;
   transition:
     box-shadow $duration-slow $ease-out,
     transform $duration-slow $ease-out;
-
-  /* Three crops in rotation, so no two neighbours share a shape. */
-  .cell:nth-child(3n + 2) & {
-    aspect-ratio: 3 / 4;
-  }
-
-  .cell:nth-child(3n) & {
-    aspect-ratio: 1 / 1;
-  }
 
   @include hover {
     transform: translateY(-6px);

@@ -11,6 +11,35 @@
     linear-gradient(180deg, $ink-raise 0%, $ink 60%, $bordo-deep 190%);
 }
 
+/* ---------- The reel -------------------------------------
+   The push-in lives here, on the whole stack, and never on an
+   individual photograph.
+
+   Per-shot zoom cannot be made to work: whatever the outgoing
+   frame does, the incoming one starts at its own beginning, so
+   for the length of the cross-fade the picture taking over is
+   the less zoomed of the two and the backdrop visibly falls
+   backwards before the new photograph arrives.
+
+   Held in common, every frame shares one scale at any instant.
+   The two sides of a cross-fade are therefore always in exact
+   register, and the movement carries straight through the
+   change instead of resetting at it.
+   -------------------------------------------------------- */
+
+.reel {
+  position: absolute;
+  inset: 0;
+  /* Alternating, so it turns around at the ends of its travel and runs for
+     ever without a seam. A one-way animation has to restart, and a restart is
+     the jump this whole arrangement exists to avoid.
+
+     The period is deliberately not a multiple of the hold: the breath and the
+     photographs drift against each other rather than locking into a rhythm
+     that would make both feel mechanical. */
+  animation: breathe 27s $ease-soft infinite alternate;
+}
+
 .shot {
   position: absolute;
   inset: 0;
@@ -26,13 +55,12 @@
      would otherwise be a source-order coin flip. */
   filter: saturate(var(--shot-sat, 1.2)) contrast(var(--shot-contrast, 1.12))
     brightness(var(--shot-bright, 0.88));
-  transition: opacity 1800ms $ease-soft;
+  transition: opacity var(--fade, 1800ms) $ease-soft;
 }
 
-/* The active photograph fades up and keeps pushing in while it holds. */
+/* Opacity is the only thing a single photograph owns. */
 .shot[data-active] {
   opacity: 1;
-  animation: press 9s $ease-soft forwards;
 }
 
 .grain {
@@ -44,7 +72,7 @@
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='a'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23a)'/%3E%3C/svg%3E");
 }
 
-@keyframes press {
+@keyframes breathe {
   from {
     scale: 1;
   }
@@ -54,7 +82,7 @@
 }
 
 @include reduced-motion {
-  .shot[data-active] {
+  .reel {
     animation: none;
   }
 }
