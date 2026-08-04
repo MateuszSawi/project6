@@ -1,9 +1,20 @@
 'use client';
 
 import { useState } from 'react';
-import { MousePointerClick } from 'lucide-react';
+import { MessageCircle, MousePointerClick } from 'lucide-react';
 
 import styles from './Invitation.module.scss';
+
+/**
+ * wa.me opens the chat with the message already typed but unsent — she still
+ * has to press send, which is the point: the page never speaks for her.
+ *
+ * Double quotes because the message carries an apostrophe of its own, and a
+ * plain one: this is going into WhatsApp, not onto the page.
+ */
+const MESSAGE = "Yes, I will come. But I still don't give a fuck.";
+
+const WHATSAPP = `https://wa.me/48690688835?text=${encodeURIComponent(MESSAGE)}`;
 
 /**
  * The close. One word to press, and no dates to pick — the whole point is that
@@ -47,11 +58,30 @@ export default function Invitation() {
           <div className={styles.after} role="status" aria-live="polite">
             <p className={styles.afterLine}>
               Take time off work in August. Stay as long as you want, leave when you want — leave
-              the rest to me. <em>I am waiting for you.</em>
+              the rest to me.
             </p>
 
+            <a
+              className={styles.call}
+              href={WHATSAPP}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <MousePointerClick size={15} strokeWidth={2} />
+              <span className={styles.callLabel}>Click me again</span>
+
+              {/* Embers drifting off the edges. Decorative, five of them. */}
+              <span className={styles.sparks} aria-hidden="true">
+                <span />
+                <span />
+                <span />
+                <span />
+                <span />
+              </span>
+            </a>
+
             <p className={styles.afterCall}>
-              I will call you in the evening. I want to hear your voice and see you.
+              I will call you today in the evening.
             </p>
           </div>
         </div>

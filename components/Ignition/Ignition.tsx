@@ -22,25 +22,27 @@ export default function Ignition() {
       <div className={styles.inner}>
         <h1 className={styles.title}>
           <span className={styles.titleLine}>
-            <span>You are far more</span>
+            <span>Are you as</span>
           </span>
           <span className={styles.titleLine}>
             <span>
-              <em lang="sq">e mahnitshme</em> than I suspected.
+              <em lang="sq">e mahnitshme</em>
+              <br/>
+              as I suspect?
             </span>
           </span>
         </h1>
 
         <p className={styles.lead}>
-          I want to spend time with you and get to know everything about you without a screen between us.
-          And I don&rsquo;t want to wait until autumn.
+          I want to check.
+          Not through a screen, not in autumn.
+          I want your voice in the room, not in my headphones.
         </p>
 
         <p className={styles.mask}>
-          Keep pretending you don&rsquo;t give a fuck — you still look cute in that mask.
-          Keep it on for the
-          world, <em>but take it off for me</em>. I have already decided you are worth the
-          whole of the effort.
+          Keep pretending you don&rsquo;t give a fuck (you look cute in that mask).
+          Keep saying it to the world. <em>I know the truth</em>.<br/>
+          I've already decided you're worth the whole of the effort. Now I want to find out if I was right.
         </p>
 
         <a className={styles.onward} href="#arrival">

@@ -215,6 +215,120 @@ $breakpoints: (
   }
 }
 
+/* The page's one loud control, used twice: a lit pill with embers coming off
+   it. The lit state is the resting state — both of these are the only way on
+   from where they sit, so neither should need to be discovered by hovering.
+
+   The icon's own hover movement is deliberately left out: it belongs to the
+   icon, not the pill, and an arrow that nudges downward would read as nonsense
+   on a button that opens a conversation. */
+@mixin ember-button {
+  @include focus-ring;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: $space-xs;
+  padding: 1.05rem 2.25rem;
+  color: $flame;
+  background-color: rgba(74, 18, 32, 0.82);
+  border: 1px solid rgba(247, 195, 119, 0.5);
+  border-radius: $radius-pill;
+  box-shadow: $glow-flame;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  transition:
+    background-color $duration-base $ease-out,
+    border-color $duration-base $ease-out,
+    box-shadow $duration-base $ease-out,
+    transform $duration-base $ease-out;
+
+  svg {
+    transition: transform $duration-base $ease-out;
+  }
+
+  @include hover {
+    background-color: rgba(125, 26, 45, 0.9);
+    border-color: rgba(247, 195, 119, 0.85);
+    box-shadow: 0 0 34px rgba(247, 195, 119, 0.5);
+    transform: translateY(-2px);
+  }
+}
+
+@mixin ember-button-label {
+  font-size: $text-sm;
+  font-weight: $weight-medium;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* Embers drifting off the edges of an ember-button. Expects five child spans,
+   and the keyframes below in the same stylesheet. */
+@mixin ember-sparks {
+  position: absolute;
+  inset: -0.75rem -1.25rem;
+  pointer-events: none;
+
+  span {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    border-radius: $radius-pill;
+    background-color: $flame;
+    box-shadow: 0 0 8px 1px rgba(247, 195, 119, 0.9);
+    opacity: 0;
+    animation: ember 3.2s $ease-out infinite;
+  }
+
+  span:nth-child(1) {
+    inset-block-end: 18%;
+    inset-inline-start: 8%;
+    animation-delay: 0s;
+  }
+
+  span:nth-child(2) {
+    inset-block-end: 12%;
+    inset-inline-start: 34%;
+    animation-delay: 0.7s;
+  }
+
+  span:nth-child(3) {
+    inset-block-end: 22%;
+    inset-inline-start: 58%;
+    animation-delay: 1.4s;
+  }
+
+  span:nth-child(4) {
+    inset-block-end: 10%;
+    inset-inline-start: 82%;
+    animation-delay: 2.1s;
+  }
+
+  span:nth-child(5) {
+    inset-block-end: 26%;
+    inset-inline-start: 94%;
+    animation-delay: 2.7s;
+  }
+}
+
+/* Included at the root of any stylesheet using ember-sparks. It cannot live
+   inside that mixin — nesting @keyframes under a selector is invalid — and it
+   has to be emitted per file, since CSS Modules scopes the name locally. */
+@mixin ember-keyframes {
+  @keyframes ember {
+    0% {
+      opacity: 0;
+      transform: translateY(0) scale(0.6);
+    }
+    15% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-2.75rem) scale(1.1);
+    }
+  }
+}
+
 /* A whisper of shade at the foot of a photograph, so a caption below it has
    something to sit against. Not a tint — the colour in the picture stays. */
 @mixin bordo-veil {

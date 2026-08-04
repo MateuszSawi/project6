@@ -80,7 +80,17 @@
   animation-delay: 1.2s;
 }
 
-.hint {
+.afterCall {
+  padding-top: $space-md;
+  border-block-start: 1px solid $line-bordo;
+  font-size: $text-sm;
+  font-style: italic;
+  line-height: 1.6;
+  color: $ash;
+}
+
+.hint,
+.callHint {
   display: inline-flex;
   align-items: center;
   gap: $space-3xs;
@@ -184,17 +194,53 @@
   }
 }
 
-/* The last thing on the page, and quieter than what it follows. */
-.afterCall {
-  padding-top: $space-md;
-  border-block-start: 1px solid $line-bordo;
-  font-size: $text-sm;
-  font-style: italic;
-  line-height: 1.6;
-  color: $ash;
+/* ---------- The way out -------------------------------- */
+
+/* The last thing on the page, and the same pill as "see why you should come" —
+   the two loud controls bookend the invitation, and she has already learned
+   what this one looks like by the time she gets here. */
+.call {
+  @include ember-button;
+  /* Room above for the hint, which is lifted out of the flow. */
+  margin-top: $space-md;
+
+  margin-top: 0 !important;
+}
+
+.callLabel {
+  @include ember-button-label;
+}
+
+/* Floats above the pill rather than sitting inside it, so the button keeps the
+   shape she already recognises from the top of the page. */
+.callHint {
+  position: absolute;
+  inset-block-end: calc(100% + 0.55rem);
+  inset-inline-start: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.call:hover .callHint,
+.call:focus-visible .callHint {
+  background-color: $bordo-lit;
+  color: $bone;
+}
+
+.sparks {
+  @include ember-sparks;
 }
 
 /* ---------- Keyframes ----------------------------------- */
+
+@include ember-keyframes;
+
+@include reduced-motion {
+  .sparks {
+    display: none;
+  }
+}
 
 @keyframes ripple {
   0% {

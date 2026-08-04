@@ -92,7 +92,8 @@
   color: #ebe3e0;
 }
 
-/* Three duties, side by side — the list reads across, not down. */
+/* The duties read across, not down: one row of four where there is room, 2×2
+   once four no longer fit, and a single column on a phone. */
 .job {
   display: grid;
   gap: $space-md;
@@ -103,11 +104,22 @@
   margin: 0;
 
   @include mq(md) {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0;
+  }
+
+  @include mq(lg) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    /* Four columns want more room than two — otherwise every duty wraps to
+       four lines and the row grows taller than it is wide. */
+    max-width: 72rem;
   }
 }
 
+/* A rule only ever sits *between* two cells, so which edges are drawn depends
+   on the column count: nothing above the top row, nothing left of a row's
+   first cell. Each breakpoint restates both edges rather than inheriting, so
+   the three layouts can be read independently. */
 .duty {
   display: flex;
   flex-direction: column;
@@ -117,9 +129,33 @@
   padding-inline: $space-md;
   border-block-start: 1px solid $line;
 
-  @include mq(md) {
+  &:first-child {
     border-block-start: none;
+  }
+
+  /* 2×2 */
+  @include mq(md) {
+    border-block-start: 1px solid $line-bordo;
     border-inline-start: 1px solid $line-bordo;
+
+    &:nth-child(-n + 2) {
+      border-block-start: none;
+    }
+
+    &:nth-child(2n + 1) {
+      border-inline-start: none;
+    }
+  }
+
+  /* One row of four. */
+  @include mq(lg) {
+    border-block-start: none;
+
+    /* Restated at the same weight as the 2×2 reset above, which would
+       otherwise keep clearing the left edge of the third duty. */
+    &:nth-child(2n + 1) {
+      border-inline-start: 1px solid $line-bordo;
+    }
 
     &:first-child {
       border-inline-start: none;
@@ -145,39 +181,12 @@
 
 /* ---------- Onward -------------------------------------- */
 
-/* The lit state is the resting state — this is the only way on, so it should
-   never need to be discovered by hovering. */
 .more {
-  @include focus-ring;
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: $space-xs;
+  @include ember-button;
   margin-top: clamp(2rem, 5vw, 3.25rem);
-  padding: 1.05rem 2.25rem;
-  color: $flame;
-  background-color: rgba(74, 18, 32, 0.82);
-  border: 1px solid rgba(247, 195, 119, 0.5);
-  border-radius: $radius-pill;
-  box-shadow: $glow-flame;
-  -webkit-backdrop-filter: blur(6px);
-  backdrop-filter: blur(6px);
-  transition:
-    background-color $duration-base $ease-out,
-    border-color $duration-base $ease-out,
-    box-shadow $duration-base $ease-out,
-    transform $duration-base $ease-out;
 
-  svg {
-    transition: transform $duration-base $ease-out;
-  }
-
+  /* The arrow leans toward what it points at. */
   @include hover {
-    background-color: rgba(125, 26, 45, 0.9);
-    border-color: rgba(247, 195, 119, 0.85);
-    box-shadow: 0 0 34px rgba(247, 195, 119, 0.5);
-    transform: translateY(-2px);
-
     svg {
       transform: translateY(3px);
     }
@@ -185,74 +194,16 @@
 }
 
 .moreLabel {
-  font-size: $text-sm;
-  font-weight: $weight-medium;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  @include ember-button-label;
 }
 
 /* ---------- Embers -------------------------------------- */
 
 .sparks {
-  position: absolute;
-  inset: -0.75rem -1.25rem;
-  pointer-events: none;
-
-  span {
-    position: absolute;
-    width: 3px;
-    height: 3px;
-    border-radius: $radius-pill;
-    background-color: $flame;
-    box-shadow: 0 0 8px 1px rgba(247, 195, 119, 0.9);
-    opacity: 0;
-    animation: ember 3.2s $ease-out infinite;
-  }
-
-  span:nth-child(1) {
-    inset-block-end: 18%;
-    inset-inline-start: 8%;
-    animation-delay: 0s;
-  }
-
-  span:nth-child(2) {
-    inset-block-end: 12%;
-    inset-inline-start: 34%;
-    animation-delay: 0.7s;
-  }
-
-  span:nth-child(3) {
-    inset-block-end: 22%;
-    inset-inline-start: 58%;
-    animation-delay: 1.4s;
-  }
-
-  span:nth-child(4) {
-    inset-block-end: 10%;
-    inset-inline-start: 82%;
-    animation-delay: 2.1s;
-  }
-
-  span:nth-child(5) {
-    inset-block-end: 26%;
-    inset-inline-start: 94%;
-    animation-delay: 2.7s;
-  }
+  @include ember-sparks;
 }
 
-@keyframes ember {
-  0% {
-    opacity: 0;
-    transform: translateY(0) scale(0.6);
-  }
-  15% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-2.75rem) scale(1.1);
-  }
-}
+@include ember-keyframes;
 
 @include reduced-motion {
   .sparks {

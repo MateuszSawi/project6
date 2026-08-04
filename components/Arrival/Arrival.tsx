@@ -8,8 +8,9 @@ import styles from './Arrival.module.scss';
 /** Her entire workload, in full. */
 const DUTIES = [
   'Get on the plane.',
-  'Bring the best dress you own.',
+  'Pack the best dress you own.',
   'Look as perfect as you always do.',
+  'Bring your amazing energy.'
 ];
 
 export default function Arrival() {
@@ -25,8 +26,9 @@ export default function Arrival() {
         </h2>
 
         <p className={styles.body}>
-          Flights, food, tickets, planning and dinners — everything is on me. All booked, all paid
-          for, all planned, none of it your problem.
+          Flights, food, tickets, dinners — all booked, all paid for, everything is on me.<br/>
+          You get your own room and your own key. You decide who comes in and when.<br/>
+          From the moment you land your safety and comfort are my responsibility.
         </p>
 
         <p className={styles.jobLead}>

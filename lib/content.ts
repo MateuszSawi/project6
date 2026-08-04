@@ -41,7 +41,7 @@ export const PLACES: Place[] = [
   {
     id: 'oldtown',
     title: 'Gdańsk',
-    place: 'Old Town',
+    place: 'Old Town & Ferris wheel',
     src: '/images/old-town.jpg',
     grade: 'none', // shown exactly as the file is
     ratio: '3 / 4', // the file's own shape — tall houses, nothing clipped
@@ -49,21 +49,21 @@ export const PLACES: Place[] = [
   {
     id: 'oliwa',
     title: 'Park Oliwski',
-    place: '',
+    place: 'There is a Japanese garden art',
     src: '/images/park-oliwski.jpg',
     grade: 'none',
   },
   {
     id: 'art',
     title: 'Art gallery',
-    place: 'Art is a flash of love',
+    place: '“Art is a flash of love”',
     src: '/images/art.jpg', // already saturated
     grade: 'none',
   },
   {
     id: 'gdynia',
     title: 'Gdynia',
-    place: '',
+    place: 'We’ll go here at sunset',
     src: '/images/gdynia.jpg', // blue hour, warm lamps — rich already
     grade: 'none',
   },
@@ -99,7 +99,7 @@ export const PLACES: Place[] = [
   {
     id: 'seals',
     title: 'Historic Polish village',
-    place: '',
+    place: 'Even older than you',
     src: '/images/wioska-fok.webp',
     grade: 'none',
   },
@@ -121,7 +121,7 @@ export const PLACES: Place[] = [
     title: 'The Secret',
     place: 'Not telling.',
     /* Sits inside the tile rather than under it — the plate is its background. */
-    line: 'There will be many more places. I have not shown you the best ones here. You will see when you come.',
+    line: 'I have not shown you the best ones here. You will see when you come.',
     secret: true,
   },
 ];
@@ -165,7 +165,7 @@ export const TERMS: Term[] = [
   },
   {
     id: 'vape',
-    line: 'I will quit the vape for you.',
+    line: 'I will consider quitting the vape for you.',
     sub: 'One time offer.',
     icon: 'vape',
   },
@@ -184,12 +184,12 @@ export const TERMS: Term[] = [
   {
     id: 'carry',
     line: 'I will carry you. In my arms and on my shoulders.',
-    sub: 'I am tall. You have never had this view.',
+    sub: 'I am tall and strong. Even if you gained some weight since we met, I can handle it.',
     icon: 'tall',
   },
   {
     id: 'money',
-    line: 'I plan it, I book it, I pay for it.',
+    line: 'I take care of everything.',
     sub: 'You can turn off your brain and let me make you happy.',
     icon: 'wallet',
   },
@@ -214,7 +214,7 @@ export const TERMS: Term[] = [
   {
     id: 'care',
     line: 'You will be safe with me.',
-    sub: 'I will take care of you the way you deserve.',
+    sub: 'Out of the two of us, I am only worried about my own safety around you.',
     icon: 'care',
   },
   {
@@ -227,7 +227,7 @@ export const TERMS: Term[] = [
   {
     id: 'more',
     line: 'And this is not the whole list.',
-    sub: 'The rest do not survive being written down. You will have to come and see them.',
+    sub: 'You will have to come and see them.',
     icon: 'more',
     wide: true,
   },
@@ -235,9 +235,10 @@ export const TERMS: Term[] = [
     id: 'safe',
     line: 'No pressure. No expectations.',
     lines: [
-      'If you want to go home, say so — I book the flight and ask no questions.',
+      'If you want to go home earlier, say so — I book the earliest flight and ask no questions.',
       'I will never make you uncomfortable and I will never cross a line.',
-      'But I will still lead.',
+      'Your safety and comfort are my priorities.',
+      'I will still lead.',
       'That one is not a joke.',
     ],
     icon: 'shield',
