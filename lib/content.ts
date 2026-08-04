@@ -233,7 +233,7 @@ export const TERMS: Term[] = [
   },
   {
     id: 'safe',
-    line: 'No pressure. No expectations.',
+    line: 'No pressure. No expectations. No rush with anything.',
     lines: [
       'If you want to go home earlier, say so — I book the earliest flight and ask no questions.',
       'I will never make you uncomfortable and I will never cross a line.',
