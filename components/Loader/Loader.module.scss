@@ -2,16 +2,41 @@
 
 /* Mirrored in Loader.tsx — the component owns the schedule, the stylesheet
    owns the movement, and the two have to agree on the numbers. */
-$stagger: 42ms;
-$rise: 900ms;
-$exit: 700ms;
+$stagger: 20ms;
+$rise: 340ms;
+$exit: 260ms;
 
+/* Absolute against the body, not fixed against the viewport — and the
+   difference is the whole bug this fixes.
+
+   A fixed box is sized by the initial containing block, and on a phone that is
+   not always the width you can see: measured here, `window.innerWidth` came
+   back 60px wider than `documentElement.clientWidth`. Everything fixed was laid
+   out to the larger figure, so the greeting sat in the middle of a box wider
+   than the screen — which reads as sitting too far right, until the page
+   settles and it snaps back. The body is the element that is actually the width
+   of the screen, so the greeting is centred against that instead.
+
+   Nothing is lost by dropping `fixed`: the component scrolls the page to the
+   top and holds it there, so an absolute box at the top of the document covers
+   exactly what a fixed one would.
+
+   The height stays in svh — the height *with* the address bar showing, which
+   is the one figure that does not move when the bar hides. The strip that
+   leaves uncovered is the page's own colour, so there is nothing to see. */
 .loader {
-  position: fixed;
-  inset: 0;
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline: 0;
+  height: 100svh;
   z-index: $z-top;
   display: grid;
   place-items: center;
+  overflow: hidden;
+  /* The document is briefly wider than the screen while the page below settles.
+     Containment walls this off from that entirely: nothing outside can affect
+     how the greeting is laid out, and nothing inside it can reach back out. */
+  contain: layout paint;
   background-color: $ink;
   /* The page behind is scroll-locked from hydration; these two hold the gap
      before that, and stop a touch drag from moving anything underneath. */
@@ -38,7 +63,7 @@ $exit: 700ms;
     transparent 74%
   );
   opacity: 0;
-  animation: bloom 1600ms $ease-out 120ms forwards;
+  animation: bloom 520ms $ease-out 30ms forwards;
 }
 
 .inner {
@@ -71,6 +96,7 @@ $exit: 700ms;
 /* Each word is its own inline block, so a narrow screen wraps between the two
    instead of scattering single letters down the page. */
 .word {
+  position: relative;
   display: inline-block;
   white-space: nowrap;
 
@@ -112,7 +138,7 @@ $exit: 700ms;
   height: 1px;
   background: linear-gradient(to right, transparent, $bordo-lit, transparent);
   transform: scaleX(0);
-  animation: sweep 1100ms $ease-out 340ms forwards;
+  animation: sweep 380ms $ease-out 90ms forwards;
 }
 
 /* ---------- Keyframes ----------------------------------- */

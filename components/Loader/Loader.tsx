@@ -22,20 +22,20 @@ const LETTERS = WORDS.map((word, w) => ({
 }));
 
 /** Milliseconds between one letter and the next. Mirrored in the stylesheet. */
-const STAGGER = 42;
+const STAGGER = 20;
 /** One letter's own rise. Mirrored in the stylesheet. */
-const RISE = 900;
+const RISE = 340;
 
 /* Long enough for the last letter to have landed, so the greeting is never cut
    off mid-word — and a ceiling on top of it, so a photograph that never
    arrives cannot leave her staring at a held screen. */
-const MIN_HOLD = cursor * STAGGER + RISE + 260;
-const MAX_HOLD = 3600;
+const MIN_HOLD = cursor * STAGGER + RISE + 40;
+const MAX_HOLD = 1100;
 /** Reduced motion gets the greeting, not the performance of it. */
-const MIN_HOLD_STILL = 500;
+const MIN_HOLD_STILL = 240;
 
 /** The fade out. Mirrored in the stylesheet. */
-const EXIT = 700;
+const EXIT = 260;
 
 /**
  * The first thing on the screen: her name, and a held beat while the opening
@@ -96,13 +96,20 @@ export default function Loader() {
   }, []);
 
   /* The page behind is already laid out and would otherwise scroll under the
-     screen. Locked from hydration until the screen is gone for good. */
+     screen. Locked from hydration until the screen is gone for good.
+
+     The screen sits at the top of the document rather than pinned to the
+     viewport — see the stylesheet — so a reload part-way down the page has to
+     be sent back to the top, or it would open behind the greeting. */
   useEffect(() => {
     if (phase === 'gone') {
       document.body.style.removeProperty('overflow');
       return;
     }
 
+    /* Explicitly instant: the root sets `scroll-behavior: smooth`, and a
+       loading screen that visibly slides the page upward defeats its purpose. */
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     document.body.style.overflow = 'hidden';
     return () => {
       document.body.style.removeProperty('overflow');

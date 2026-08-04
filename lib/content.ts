@@ -227,7 +227,7 @@ export const TERMS: Term[] = [
   {
     id: 'more',
     line: 'And this is not the whole list.',
-    sub: 'You will have to come and see them.',
+    sub: 'You will have to come and see the rest.',
     icon: 'more',
     wide: true,
   },

@@ -22,6 +22,9 @@ html {
 }
 
 body {
+  /* The loading screen measures itself against this rather than against the
+     viewport — see Loader.module.scss for why the two are not the same width. */
+  position: relative;
   min-height: 100dvh;
   background-color: $ink;
   color: $bone;

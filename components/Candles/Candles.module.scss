@@ -33,7 +33,7 @@
   position: relative;
   width: 100%;
   max-width: 100%;
-  padding-inline: clamp(0.5rem, 2vw, 2rem);
+  padding-inline: min(2vw, 2rem);
 }
 
 /* The room warms as the shelf fills. */
@@ -60,25 +60,34 @@
 
 /* Fifteen candles across, always on one line, never wider than the screen.
    --base drives the size of every candle, so the row scales with the
-   viewport instead of wrapping onto a second shelf. */
+   viewport instead of wrapping onto a second shelf.
+
+   `min()` rather than `clamp()`, and this matters: a clamp's lower bound is a
+   floor the result can be pushed *up* to. These floors were in rem, so on a
+   phone with a large root font size the rem won against the vw and fifteen
+   rigid candles were laid out wider than the screen — the row cannot wrap and
+   the candles cannot shrink, so the whole section blew past the viewport and
+   took the page's width with it. With `min()` the rem is only ever a ceiling:
+   it still holds the shelf back on a wide desktop, and it can no longer widen
+   anything on a narrow screen. */
 .row {
   position: relative;
   display: flex;
   align-items: flex-end;
   justify-content: center;
   flex-wrap: nowrap;
-  gap: clamp(0.2rem, 1.4vw, 1.1rem);
+  gap: min(1.4vw, 1.1rem);
   width: 100%;
   list-style: none;
   padding: 0;
   margin: 0;
 
-  --base: clamp(0.26rem, 1.5vw, 0.8rem);
+  --base: min(1.5vw, 0.8rem);
 }
 
 /* Pinned, the shelf has a whole screen to itself, so it can be bigger. */
 .section[data-pinned] .row {
-  --base: clamp(0.4rem, 2.4vw, 1.35rem);
+  --base: min(2.4vw, 1.35rem);
 }
 
 .slot {
