@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from 'next';
 import { Playfair_Display, Inter } from 'next/font/google';
 
+import Loader from '@/components/Loader/Loader';
+
 import './globals.scss';
 
 /* latin-ext carries both the Polish and the Albanian diacritics. */
@@ -42,7 +44,12 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${playfair.variable} ${inter.variable}`}>
-      <body>{children}</body>
+      <body>
+        {/* First in the body so it is painted with the document rather than
+            arriving after it — the page must never be seen before the name. */}
+        <Loader />
+        {children}
+      </body>
     </html>
   );
 }

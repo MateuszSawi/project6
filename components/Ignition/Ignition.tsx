@@ -20,6 +20,8 @@ export default function Ignition() {
       <span className={styles.margin} aria-hidden="true" />
 
       <div className={styles.inner}>
+        <p className={styles.hello}>Tung Iza</p>
+
         <h1 className={styles.title}>
           <span className={styles.titleLine}>
             <span>Are you as</span>
