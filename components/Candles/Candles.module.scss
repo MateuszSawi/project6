@@ -86,6 +86,25 @@
   align-items: flex-end;
 }
 
+/* While the shelf is pinned it owns the whole screen and nothing on it says
+   what to do, so this does.
+
+   Relative, like the row and the ledge above it: the warm glow is an absolutely
+   positioned pseudo-element and would otherwise paint straight over the top of
+   it. The plate is the page's own colour, so once the shelf fills and the light
+   spills, the words stay cut cleanly out of it instead of washing away. */
+.onward {
+  @include eyebrow;
+  position: relative;
+  width: fit-content;
+  margin-top: $space-md;
+  margin-inline: auto;
+  padding: 0.4rem 1.1rem;
+  text-align: center;
+  background-color: $ink;
+  border-radius: $radius-pill;
+}
+
 .ledge {
   position: relative;
   display: block;

@@ -150,6 +150,8 @@ export default function Candles() {
           </ul>
 
           <span className={styles.ledge} />
+
+          <p className={styles.onward}>Keep scrolling</p>
         </div>
       </div>
     </section>
