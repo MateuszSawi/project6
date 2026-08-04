@@ -180,6 +180,14 @@
 .graveLine {
   @include display($text-xl);
   margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
+
+  /* $text-xl bottoms out at 1.75rem, which is a shade too big for this line on
+     a phone — it breaks into three cramped rows. Easing down to 1.4rem keeps
+     it to two, and the upper bound is $text-xl's own floor so the two curves
+     meet without a step at the breakpoint. */
+  @include mq-below(sm) {
+    font-size: clamp(1.4rem, calc(1.15rem + 1.6vw), 1.75rem);
+  }
 }
 
 .graveBody {
