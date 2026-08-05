@@ -68,6 +68,10 @@ export default function Places() {
                 </div>
               ) : (
                 <figure className={styles.figure}>
+                  {/* Every tile loads lazily. The wall is four screens down,
+                      and the first two used to be fetched eagerly — competing
+                      with the opening photograph, which is the one thing the
+                      loading screen actually waits on. */}
                   <Frame
                     className={styles.plate}
                     src={place.src}
@@ -75,7 +79,6 @@ export default function Places() {
                     label={place.place}
                     grade={place.grade}
                     focus={place.focus}
-                    eager={i < 2}
                   />
 
                   <figcaption className={styles.caption}>
