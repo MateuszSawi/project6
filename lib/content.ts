@@ -164,6 +164,12 @@ export const TERMS: Term[] = [
     icon: 'key',
   },
   {
+    id: 'care',
+    line: 'You will be safe with me.',
+    sub: 'Out of the two of us, I am only worried about my own safety around you.',
+    icon: 'care',
+  },
+  {
     id: 'vape',
     line: 'I will consider quitting the vape for you.',
     sub: 'One time offer.',
@@ -176,21 +182,21 @@ export const TERMS: Term[] = [
     icon: 'hands',
   },
   {
+    id: 'carry',
+    line: 'I will carry you. In my arms and on my shoulders.',
+    sub: 'I am strong and tall. You have never had this view.',
+    icon: 'tall',
+  },
+  {
     id: 'sound',
     line: 'We will listen to good music. You are the DJ.',
     sub: 'I have good speakers at home and in the car.',
     icon: 'sound',
   },
   {
-    id: 'carry',
-    line: 'I will carry you. In my arms and on my shoulders.',
-    sub: 'I am tall and strong. Even if you gained some weight since we met, I can handle it.',
-    icon: 'tall',
-  },
-  {
     id: 'money',
     line: 'I take care of everything.',
-    sub: 'You can turn off your brain and let me make you happy.',
+    sub: 'Just relax and let me make you happy.',
     icon: 'wallet',
   },
   {
@@ -210,12 +216,6 @@ export const TERMS: Term[] = [
     line: 'I have hair on my chest.',
     sub: 'So whenever you want to be held, you will be very warm.',
     icon: 'warm',
-  },
-  {
-    id: 'care',
-    line: 'You will be safe with me.',
-    sub: 'Out of the two of us, I am only worried about my own safety around you.',
-    icon: 'care',
   },
   {
     id: 'heart',
@@ -238,8 +238,8 @@ export const TERMS: Term[] = [
       'If you want to go home earlier, say so — I book the earliest flight and ask no questions.',
       'I will never make you uncomfortable and I will never cross a line.',
       'Your safety and comfort are my priorities.',
-      'I will still lead.',
-      'That one is not a joke.',
+      // 'I will still lead.',
+      'That part is not a joke.',
     ],
     icon: 'shield',
     grave: true,

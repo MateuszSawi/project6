@@ -48,9 +48,18 @@ export default function Ignition() {
         </p>
 
         <a className={styles.onward} href="#arrival">
-          <span className={styles.onwardWord}>So</span>
+          <span className={styles.onwardWord}>See what’s waiting for you</span>
           <span className={styles.onwardIcon} aria-hidden="true">
             <ArrowDown size={17} strokeWidth={1.6} />
+          </span>
+
+          {/* Embers drifting off the edges. Decorative, five of them. */}
+          <span className={styles.sparks} aria-hidden="true">
+            <span />
+            <span />
+            <span />
+            <span />
+            <span />
           </span>
         </a>
       </div>

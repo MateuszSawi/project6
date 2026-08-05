@@ -43,7 +43,14 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${playfair.variable} ${inter.variable}`}>
+    /* `data-loading` is in the markup rather than set on hydration, so the
+       opening screen's entrance is held from the very first frame. The loader
+       takes it off as it starts to leave — see Loader.tsx. */
+    <html
+      lang="en"
+      data-loading=""
+      className={`${playfair.variable} ${inter.variable}`}
+    >
       <body>
         {/* First in the body so it is painted with the document rather than
             arriving after it — the page must never be seen before the name. */}

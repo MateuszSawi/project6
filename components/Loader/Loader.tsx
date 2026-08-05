@@ -22,20 +22,23 @@ const LETTERS = WORDS.map((word, w) => ({
 }));
 
 /** Milliseconds between one letter and the next. Mirrored in the stylesheet. */
-const STAGGER = 20;
+const STAGGER = 34;
 /** One letter's own rise. Mirrored in the stylesheet. */
-const RISE = 340;
+const RISE = 520;
 
 /* Long enough for the last letter to have landed, so the greeting is never cut
    off mid-word — and a ceiling on top of it, so a photograph that never
    arrives cannot leave her staring at a held screen. */
-const MIN_HOLD = cursor * STAGGER + RISE + 40;
-const MAX_HOLD = 1100;
+/* The tail is the beat the greeting is left standing once the last letter has
+   landed. It is tuned so MIN_HOLD + EXIT comes to almost exactly 1.2s — change
+   the stagger or the rise and the tail is what to adjust to keep that total. */
+const MIN_HOLD = cursor * STAGGER + RISE + 140;
+const MAX_HOLD = 1800;
 /** Reduced motion gets the greeting, not the performance of it. */
-const MIN_HOLD_STILL = 240;
+const MIN_HOLD_STILL = 300;
 
 /** The fade out. Mirrored in the stylesheet. */
-const EXIT = 260;
+const EXIT = 300;
 
 /**
  * The first thing on the screen: her name, and a held beat while the opening
@@ -101,6 +104,13 @@ export default function Loader() {
      The screen sits at the top of the document rather than pinned to the
      viewport — see the stylesheet — so a reload part-way down the page has to
      be sent back to the top, or it would open behind the greeting. */
+  /* Releases the hero's entrance. Done on `leaving` rather than on `gone` so
+     the two overlap: the greeting dissolves while the title is already rising
+     through it, instead of the page waiting for a blank beat first. */
+  useEffect(() => {
+    if (phase !== 'holding') document.documentElement.removeAttribute('data-loading');
+  }, [phase]);
+
   useEffect(() => {
     if (phase === 'gone') {
       document.body.style.removeProperty('overflow');

@@ -2,9 +2,9 @@
 
 /* Mirrored in Loader.tsx — the component owns the schedule, the stylesheet
    owns the movement, and the two have to agree on the numbers. */
-$stagger: 20ms;
-$rise: 340ms;
-$exit: 260ms;
+$stagger: 34ms;
+$rise: 520ms;
+$exit: 300ms;
 
 /* Absolute against the body, not fixed against the viewport — and the
    difference is the whole bug this fixes.
@@ -63,7 +63,7 @@ $exit: 260ms;
     transparent 74%
   );
   opacity: 0;
-  animation: bloom 520ms $ease-out 30ms forwards;
+  animation: bloom 820ms $ease-out 40ms forwards;
 }
 
 .inner {
@@ -138,7 +138,7 @@ $exit: 260ms;
   height: 1px;
   background: linear-gradient(to right, transparent, $bordo-lit, transparent);
   transform: scaleX(0);
-  animation: sweep 380ms $ease-out 90ms forwards;
+  animation: sweep 580ms $ease-out 140ms forwards;
 }
 
 /* ---------- Keyframes ----------------------------------- */

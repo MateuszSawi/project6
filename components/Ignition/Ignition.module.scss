@@ -146,10 +146,16 @@
    One object, not three loose pieces: a low burgundy pill
    with the word set into it and the arrow riding at its end.
    Deliberately short — it must not become a second headline.
+
+   It is also the only thing on the opening screen that has
+   to be pressed, and it is read by someone who is not
+   looking for a button, so it does not sit still: it
+   breathes, it pulses a ring, and it throws embers.
    -------------------------------------------------------- */
 
 .onward {
   @include focus-ring;
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: $space-md;
@@ -162,25 +168,31 @@
   border-radius: $radius-pill;
   -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
+  /* `bob` is delayed past the end of `rise` on purpose: both drive `transform`,
+     and only one of them can hold it at a time. */
   animation:
     rise $duration-slow $ease-out 980ms backwards,
-    beacon 3.4s $ease-in-out 2s infinite;
+    beacon 2.6s $ease-in-out 1.9s infinite,
+    bob 2.6s $ease-in-out 1.9s infinite;
   transition:
     background-color $duration-base $ease-out,
-    border-color $duration-base $ease-out,
-    transform $duration-base $ease-out;
+    border-color $duration-base $ease-out;
 
   @include hover {
     background-color: rgba(168, 40, 63, 0.62);
     border-color: rgba(247, 195, 119, 0.5);
-    transform: translateY(-2px);
 
     .onwardIcon {
       background-color: $flame;
       color: $ink;
-      transform: translateY(2px);
     }
   }
+}
+
+/* The same embers as the button at the foot of the arrival section — the two
+   are the same invitation to carry on, so they behave the same way. */
+.sparks {
+  @include ember-sparks;
 }
 
 .onwardWord {
@@ -199,11 +211,33 @@
   color: $bone;
   background-color: rgba(214, 81, 106, 0.85);
   border-radius: $radius-pill;
-  animation: nudge 2.8s $ease-in-out 1.6s infinite;
+  animation: nudge 2.2s $ease-in-out 1.6s infinite;
   transition:
     color $duration-base $ease-out,
-    background-color $duration-base $ease-out,
-    transform $duration-base $ease-out;
+    background-color $duration-base $ease-out;
+}
+
+/* ---------- Held until the page is hers ------------------
+   Every entrance on this screen is paused while the loading
+   screen is up, and released the moment it starts to leave.
+   Without this the whole opening plays out behind the
+   greeting and she arrives to a hero that has already
+   finished moving.
+
+   A fixed delay would not do: the loader stays up longer
+   when the opening photograph is slow, so the hero has to
+   wait for the signal rather than for a number.
+   -------------------------------------------------------- */
+
+:global(html[data-loading]) {
+  .margin,
+  .hello,
+  .titleLine > *,
+  .lead,
+  .mask,
+  .onward {
+    animation-play-state: paused;
+  }
 }
 
 /* ---------- Keyframes ----------------------------------- */
@@ -239,22 +273,54 @@
 
 @keyframes nudge {
   0%,
-  70%,
+  55%,
   100% {
     transform: translateY(0);
   }
-  85% {
-    transform: translateY(5px);
+  72% {
+    transform: translateY(6px);
   }
 }
 
-/* A slow halo, so the pill reads as the one thing left to press. */
+/* A halo, so the pill reads as the one thing left to press. */
 @keyframes beacon {
+  0% {
+    box-shadow:
+      0 0 26px rgba(214, 81, 106, 0.4),
+      0 0 0 0 rgba(214, 81, 106, 0.5);
+  }
+  70% {
+    box-shadow:
+      0 0 26px rgba(214, 81, 106, 0.4),
+      0 0 0 16px rgba(214, 81, 106, 0);
+  }
+  /* Back to no ring at all rather than to the first frame: the radius has to
+     collapse while the ring is still invisible, or every cycle would start
+     with it snapping inward in plain sight. */
+  100% {
+    box-shadow:
+      0 0 26px rgba(214, 81, 106, 0.4),
+      0 0 0 0 rgba(214, 81, 106, 0);
+  }
+}
+
+/* A slow rise and fall. Small — the pill has to look alive, not restless. */
+@keyframes bob {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(214, 81, 106, 0);
+    transform: translateY(0);
   }
   50% {
-    box-shadow: 0 0 34px 2px rgba(214, 81, 106, 0.4);
+    transform: translateY(-5px);
+  }
+}
+
+@include ember-keyframes;
+
+/* Nothing here may move on its own if she has asked for that. */
+
+@include reduced-motion {
+  .sparks {
+    display: none;
   }
 }
