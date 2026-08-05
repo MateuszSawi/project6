@@ -167,16 +167,22 @@
   }
 }
 
+/* The blur is held at one value across every frame, and only the brightness
+   moves. A changing blur radius forces the flame to be re-blurred from scratch
+   on each frame, and fifteen of these run for as long as the shelf is lit;
+   brightness on a fixed blur is a colour matrix the compositor applies to a
+   rasterisation it already has. The flicker is the brightness — the radius was
+   swinging by three tenths of a pixel on a flame a few pixels tall. */
 @keyframes breathe {
   0%,
   100% {
     filter: blur(0.6px) brightness(1);
   }
   40% {
-    filter: blur(0.5px) brightness(1.16);
+    filter: blur(0.6px) brightness(1.16);
   }
   70% {
-    filter: blur(0.8px) brightness(0.9);
+    filter: blur(0.6px) brightness(0.9);
   }
 }
 

@@ -30,13 +30,23 @@
 
 /* ---------- Film grain ---------------------------------- */
 
+/* The layer is pulled out past the viewport on every side, by more than the
+   largest step below, and then moved with `transform` rather than by shifting
+   its `background-position`.
+
+   The result on screen is the same — a repeating noise field jumping a few
+   pixels — but the cost is not. `background-position` is a paint property, so
+   every step repainted the whole viewport, several times a second, forever.
+   A transform is handled by the compositor: the texture is rasterised once and
+   the layer is simply moved. The bleed is what keeps an edge from showing. */
 .grain {
   z-index: 2;
+  inset: -24px;
   opacity: 0.05;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-repeat: repeat;
   animation: shift 700ms steps(1) infinite;
-  will-change: background-position;
+  will-change: transform;
 
   @include reduced-motion {
     animation: none;
@@ -57,21 +67,21 @@
 
 @keyframes shift {
   0% {
-    background-position: 0 0;
+    transform: translate3d(0, 0, 0);
   }
   20% {
-    background-position: -14px 8px;
+    transform: translate3d(-14px, 8px, 0);
   }
   40% {
-    background-position: 9px -12px;
+    transform: translate3d(9px, -12px, 0);
   }
   60% {
-    background-position: -7px -9px;
+    transform: translate3d(-7px, -9px, 0);
   }
   80% {
-    background-position: 12px 6px;
+    transform: translate3d(12px, 6px, 0);
   }
   100% {
-    background-position: 0 0;
+    transform: translate3d(0, 0, 0);
   }
 }
