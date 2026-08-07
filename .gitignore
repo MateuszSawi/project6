@@ -19,3 +19,6 @@ public/images/_full/
 # Discarded frames, parked next to the ones in use rather than deleted. Same
 # reason: local only, never published.
 public/**/old/
+
+# Source artwork — kept locally, never shipped and never committed.
+assets/

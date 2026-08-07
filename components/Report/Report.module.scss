@@ -1,0 +1,352 @@
+@use "variables" as *;
+
+/* ============================================================
+   THE ANALYSIS
+   A machine that pretends to think for four seconds and then
+   says exactly what we both wanted to hear. Two of the six
+   readings are real, which is what sells the other four.
+   ============================================================ */
+
+/* ---------- While it "thinks" ---------------------------- */
+
+.working {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-2xs;
+  width: 100%;
+  padding-block: $space-md;
+}
+
+.workingMark {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  margin-bottom: $space-2xs;
+  color: $flame;
+  background-color: rgba(74, 18, 32, 0.6);
+  border: 1px solid rgba(247, 195, 119, 0.35);
+  border-radius: $radius-pill;
+  box-shadow: $glow-flame;
+
+  svg {
+    animation: pulse 1.6s $ease-in-out infinite;
+  }
+}
+
+.workingLabel {
+  @include eyebrow;
+}
+
+.percent {
+  font-family: $font-display;
+  font-size: clamp(3rem, 16vw, 5rem);
+  line-height: 1;
+  color: $flame;
+  text-shadow: 0 0 40px rgba(247, 195, 119, 0.45);
+  font-variant-numeric: tabular-nums;
+
+  span {
+    font-size: 0.4em;
+    color: $dust;
+    margin-inline-start: 0.15em;
+  }
+}
+
+.workingTrack {
+  position: relative;
+  width: min(100%, 22rem);
+  height: 2px;
+  margin-top: $space-2xs;
+  background-color: $line;
+  border-radius: $radius-pill;
+  overflow: hidden;
+}
+
+.workingFill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: calc(var(--p, 0) * 1%);
+  background: linear-gradient(to right, $bordo-lit, $flame);
+  box-shadow: 0 0 14px rgba(247, 195, 119, 0.7);
+  transition: width $duration-fast linear;
+}
+
+.stage {
+  min-height: 2.6em;
+  max-width: 32ch;
+  font-family: $font-display;
+  font-size: $text-sm;
+  font-style: italic;
+  line-height: 1.3;
+  color: $ash;
+  text-align: center;
+}
+
+/* ---------- The readings -------------------------------- */
+
+.report {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-md;
+  width: 100%;
+}
+
+.block {
+  width: 100%;
+  text-align: start;
+}
+
+.blockTitle {
+  @include eyebrow;
+  padding-bottom: $space-2xs;
+  margin-bottom: $space-sm;
+  border-block-end: 1px solid $line;
+}
+
+/* ---------- One name per line ---------------------------- */
+
+.findings {
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.finding {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-sm;
+  padding-block: $space-2xs;
+  border-block-end: 1px solid rgba(247, 242, 236, 0.06);
+
+  &:last-child {
+    border-block-end: none;
+  }
+}
+
+.findingLabel {
+  font-family: $font-display;
+  font-size: $text-sm;
+  line-height: 1.3;
+  color: $bone;
+}
+
+/* The ruling. A face and a name, because a name alone reads as data. */
+.winner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  flex-shrink: 0;
+  width: 4.25rem;
+}
+
+.winnerFace {
+  width: 2.1rem;
+  height: 2.1rem;
+  border: 1px solid rgba(247, 195, 119, 0.5);
+  border-radius: $radius-pill;
+}
+
+.winnerName {
+  font-family: $font-display;
+  font-size: $text-2xs;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: $flame;
+}
+
+/* ---------- The two of them as one thing ----------------- */
+
+.bars {
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.barHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: $space-2xs;
+}
+
+.barLabel {
+  font-family: $font-display;
+  font-size: $text-sm;
+  line-height: 1.3;
+  color: $bone;
+}
+
+.barValue {
+  flex-shrink: 0;
+  font-family: $font-display;
+  font-size: $text-md;
+  color: $flame;
+  font-variant-numeric: tabular-nums;
+}
+
+.barTrack {
+  position: relative;
+  display: block;
+  height: 3px;
+  margin-block: 0.4rem 0.35rem;
+  background-color: rgba(247, 242, 236, 0.1);
+  border-radius: $radius-pill;
+  overflow: hidden;
+}
+
+.barFill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 0;
+  background: linear-gradient(to right, $bordo-lit, $flame);
+  box-shadow: 0 0 12px rgba(247, 195, 119, 0.5);
+  transition: width $duration-bloom $ease-out;
+  transition-delay: calc(var(--i) * 90ms + 120ms);
+}
+
+.report[data-grown] .barFill {
+  width: calc(var(--v) * 1%);
+}
+
+/* ---------- The reveal ----------------------------------- */
+
+/* Every row of the report arrives in turn, findings first. */
+.finding,
+.bar {
+  opacity: 0;
+  transform: translateY(0.6rem);
+  transition:
+    opacity $duration-base $ease-out,
+    transform $duration-base $ease-out;
+  transition-delay: calc(var(--i) * 90ms);
+}
+
+.report[data-grown] .finding,
+.report[data-grown] .bar {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------- The verdict --------------------------------- */
+
+.verdict {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-3xs;
+  width: 100%;
+  padding-top: $space-md;
+  border-block-start: 1px solid $line-bordo;
+  text-align: center;
+}
+
+.verdictLabel {
+  @include eyebrow;
+}
+
+.verdictNumber {
+  display: flex;
+  align-items: baseline;
+  font-family: $font-display;
+  font-size: clamp(3.5rem, 20vw, 6rem);
+  line-height: 1;
+  color: $flame;
+  text-shadow: 0 0 60px rgba(247, 195, 119, 0.5);
+  font-variant-numeric: tabular-nums;
+  animation: land $duration-bloom $ease-out both;
+}
+
+.verdictUnit {
+  font-size: 0.35em;
+  color: $dust;
+  margin-inline-start: 0.12em;
+}
+
+.verdictLine {
+  font-family: $font-display;
+  font-size: $text-md;
+  font-style: italic;
+  color: $bordo-bright;
+  text-wrap: balance;
+}
+
+/* The condition attached to the result. Meant to be read, not skimmed past —
+   it is the only instruction the whole report gives. */
+.required {
+  width: 100%;
+  padding: $space-sm;
+  font-family: $font-display;
+  font-size: $text-md;
+  font-style: italic;
+  line-height: 1.4;
+  color: $flame;
+  text-align: center;
+  text-wrap: balance;
+  background-color: rgba(74, 18, 32, 0.45);
+  border: 1px solid rgba(247, 195, 119, 0.4);
+  border-radius: $radius-sm;
+  box-shadow: 0 0 30px rgba(247, 195, 119, 0.12);
+  margin: 10px 0;
+}
+
+
+/* ---------- Keyframes ----------------------------------- */
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.55;
+    transform: scale(0.88);
+  }
+}
+
+@keyframes land {
+  0% {
+    opacity: 0;
+    transform: scale(1.25);
+    filter: blur(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
+@include reduced-motion {
+  .finding,
+  .bar,
+  .report[data-grown] .finding,
+  .report[data-grown] .bar {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .barFill {
+    transition: none;
+  }
+
+  .verdictNumber {
+    animation: none;
+  }
+
+  .workingMark svg {
+    animation: none;
+  }
+}

@@ -246,6 +246,70 @@ export const TERMS: Term[] = [
   },
 ];
 
+/* ============================================================
+   THE WAITING MONTH — games, quizzes, tests
+   ============================================================ */
+
+export interface Game {
+  id: string;
+  /**
+   * Route under /games. Absent while the game is still sealed — a tile with
+   * no href renders as a locked plate instead of a link, so a game can be
+   * announced here long before it exists.
+   */
+  href?: string;
+  /** The whole tile — there is nothing above or below it any more. */
+  title: string;
+  /** Photograph behind the tile. Only the ones that are open get one. */
+  src?: string;
+  /** See Place.grade. */
+  grade?: 'soft' | 'strong' | 'none';
+  /** object-position, when the subject is not in the middle of the file. */
+  focus?: string;
+}
+
+/**
+ * The list at the foot of the page. Order is the order she sees.
+ *
+ * The sealed ones are numbered rather than named on purpose — naming a game
+ * that does not exist yet is a promise with a shape, and the shape is the part
+ * most likely to change.
+ *
+ * To open a sealed one: add `href` (and a `src`, if it deserves a photograph)
+ * and build the matching route under app/games. Nothing else changes.
+ */
+export const GAMES: Game[] = [
+  {
+    id: 'likely',
+    /* Built and deployed, but not linked yet — put this line back when it
+       opens and the tile turns into a door. */
+    // href: '/games/who-is-more-likely/',
+    title: 'Who is more likely to?',
+    src: '/games/who-is-more-likely.webp',
+    grade: 'none',
+  },
+  {
+    id: 'truth',
+    title: 'Game two',
+  },
+  {
+    id: 'know',
+    title: 'Game three',
+  },
+  {
+    id: 'never',
+    title: 'Game four',
+  },
+  {
+    id: 'lie',
+    title: 'Game five',
+  },
+  {
+    id: 'box',
+    title: 'Game six',
+  },
+];
+
 /**
  * Backdrop for the arrival section — these cross-fade behind the headline,
  * each one slowly pushing in. Landscape, and dark enough to carry white text.

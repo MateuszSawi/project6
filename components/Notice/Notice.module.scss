@@ -1,0 +1,167 @@
+@use "variables" as *;
+
+/* ============================================================
+   THE KNOCK
+   The whole screen, once per device. Not a toast in a corner:
+   she has to answer it before she gets the page back.
+   ============================================================ */
+
+.screen {
+  position: fixed;
+  inset: 0;
+  z-index: $z-top;
+  display: grid;
+  place-items: center;
+  padding: $gutter;
+  overflow: hidden;
+  background-color: rgba(16, 12, 15, 0.94);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  animation: arrive $duration-base $ease-out both;
+}
+
+/* One warm light behind her, same as everywhere else on this page. */
+.glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(60ch 50ch at 50% 42%, rgba(125, 26, 45, 0.5), transparent 70%);
+  pointer-events: none;
+}
+
+.inner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-sm;
+  width: 100%;
+  max-width: 34rem;
+  text-align: center;
+}
+
+.mark {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  margin-bottom: $space-2xs;
+  color: $flame;
+  background-color: rgba(74, 18, 32, 0.7);
+  border: 1px solid rgba(247, 195, 119, 0.4);
+  border-radius: $radius-pill;
+  box-shadow: $glow-flame;
+  animation: breathe 2.4s $ease-in-out infinite;
+}
+
+.title {
+  @include display($text-xl);
+  color: $bone;
+}
+
+.sub {
+  font-family: $font-display;
+  font-size: $text-md;
+  font-style: italic;
+  color: $bordo-bright;
+}
+
+/* ---------- The only way out ---------------------------- */
+
+/* The page's loud pill, but let out onto several lines: the label is the
+   joke, and cutting it down to two words would throw the joke away. */
+.answer {
+  @include ember-button;
+  flex-direction: column;
+  max-width: 26rem;
+  margin-top: $space-md;
+  padding: 1rem 1.5rem;
+  text-align: center;
+}
+
+.answerLabel {
+  font-family: $font-body;
+  font-size: $text-sm;
+  font-weight: $weight-regular;
+  line-height: 1.5;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  text-wrap: balance;
+}
+
+/* Sits under the label, inside the button — it is not a second control, it is
+   an instruction about the one she is already looking at. */
+.hint {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-3xs;
+  margin-top: $space-2xs;
+  padding: 0.3rem 0.8rem;
+  font-family: $font-body;
+  font-size: $text-2xs;
+  font-weight: $weight-medium;
+  letter-spacing: $tracking-wide;
+  text-transform: uppercase;
+  color: $bone;
+  background-color: rgba(168, 40, 63, 0.8);
+  border-radius: $radius-pill;
+  box-shadow: 0 0 24px rgba(168, 40, 63, 0.55);
+  animation: flash 1.6s $ease-in-out infinite;
+
+  svg {
+    flex-shrink: 0;
+  }
+}
+
+.sparks {
+  @include ember-sparks;
+}
+
+/* ---------- Keyframes ----------------------------------- */
+
+@include ember-keyframes;
+
+@keyframes arrive {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes flash {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(0.94);
+  }
+}
+
+@include reduced-motion {
+  .screen {
+    animation: none;
+  }
+
+  .mark,
+  .hint {
+    animation: none;
+  }
+
+  .sparks {
+    display: none;
+  }
+}

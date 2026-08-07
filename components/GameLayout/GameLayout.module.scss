@@ -1,0 +1,105 @@
+@use "variables" as *;
+
+.page {
+  display: flow-root;
+  min-height: 100dvh;
+  padding-block: clamp(1.75rem, 5vw, 3rem) $space-3xl;
+}
+
+.inner {
+  @include container(62rem);
+}
+
+/* ---------- The way back -------------------------------- */
+
+.back {
+  @include focus-ring;
+  display: inline-flex;
+  align-items: center;
+  gap: $space-3xs;
+  padding: 0.45rem 1rem 0.45rem 0.8rem;
+  color: $ash;
+  border: 1px solid $line;
+  border-radius: $radius-pill;
+  transition:
+    color $duration-fast $ease-out,
+    border-color $duration-fast $ease-out,
+    background-color $duration-fast $ease-out;
+
+  svg {
+    transition: transform $duration-base $ease-out;
+  }
+
+  @include hover {
+    color: $bone;
+    background-color: rgba(125, 26, 45, 0.35);
+    border-color: $line-bordo;
+
+    svg {
+      transform: translateX(-3px);
+    }
+  }
+}
+
+.backLabel {
+  font-family: $font-body;
+  font-size: $text-2xs;
+  font-weight: $weight-medium;
+  letter-spacing: $tracking-wide;
+  text-transform: uppercase;
+}
+
+/* ---------- Head ---------------------------------------- */
+
+.head {
+  margin-block: clamp(2.5rem, 7vw, 4.5rem) clamp(2.5rem, 6vw, 3.5rem);
+}
+
+.kind {
+  @include eyebrow;
+  margin-bottom: $space-sm;
+  color: rgba(247, 195, 119, 0.7);
+}
+
+.title {
+  @include display($text-2xl);
+  max-width: 20ch;
+
+  em {
+    font-style: italic;
+    color: $bordo-bright;
+  }
+
+  &::after {
+    content: "";
+    display: block;
+    width: 100%;
+    height: 1px;
+    margin-top: clamp(1.25rem, 3vw, 2rem);
+    background: linear-gradient(to right, $bordo-lit, rgba(168, 40, 63, 0.1) 55%, transparent);
+  }
+}
+
+.lede {
+  @include body-copy;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+  max-width: $measure;
+  margin-top: clamp(1.25rem, 3vw, 2rem);
+
+  /* The dare lands on the last line, so it gets the burgundy the page keeps
+     for the things said straight to her. */
+  p:last-child {
+    font-family: $font-display;
+    font-size: $text-base;
+    font-style: italic;
+    line-height: 1.5;
+    color: $bone;
+  }
+
+  em {
+    font-style: normal;
+    color: $bordo-bright;
+  }
+}
