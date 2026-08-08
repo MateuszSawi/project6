@@ -25,10 +25,12 @@ export default function WhoIsMoreLikelyPage() {
       lede={
         <>
           <p>
-            The questions are getting better and better.
+            All of this is about the trip. Poland, the two of us — and what each of
+            us thinks is going to happen.
           </p>
           <p>
-            So go through all of them until you finish.
+            Let us find out how much we can predict, and which of us turns out to be right. At
+            the end AI reads the answers and works out how well we match.
           </p>
         </>
       }

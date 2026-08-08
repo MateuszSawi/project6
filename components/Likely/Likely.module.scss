@@ -17,11 +17,11 @@
 
   /* Height of the answer row. Both states are laid out inside it. */
   --row: 4.75rem;
-  --avatar: 2.25rem;
+  --avatar: 2.75rem;
 
   @include mq(sm) {
     --row: 5.25rem;
-    --avatar: 2.5rem;
+    --avatar: 3rem;
   }
 }
 
@@ -112,6 +112,45 @@
   letter-spacing: 0.14em;
   color: $dust;
   white-space: nowrap;
+}
+
+/* Appears in the rail only once every question has been answered — and only
+   fires on a second tap. It rides along at the top of the screen for the whole
+   scroll, so one careless thumb must not be able to erase her game. */
+.railRestart {
+  @include focus-ring;
+  display: inline-flex;
+  align-items: center;
+  gap: $space-3xs;
+  flex-shrink: 0;
+  padding: 0.3rem 0.7rem;
+  font-family: $font-body;
+  font-size: $text-2xs;
+  font-weight: $weight-medium;
+  letter-spacing: $tracking-wide;
+  text-transform: uppercase;
+  color: $dust;
+  border: 1px solid $line;
+  border-radius: $radius-pill;
+  white-space: nowrap;
+  transition:
+    color $duration-fast $ease-out,
+    border-color $duration-fast $ease-out,
+    background-color $duration-fast $ease-out;
+
+  @include hover {
+    color: $bone;
+    background-color: rgba(125, 26, 45, 0.45);
+    border-color: $line-bordo;
+  }
+}
+
+/* Armed. Now it means it. */
+.railRestart[data-arming],
+.restart[data-arming] {
+  color: $bone;
+  background-color: rgba(168, 40, 63, 0.75);
+  border-color: rgba(214, 81, 106, 0.8);
 }
 
 /* Whether the last answer reached me. Deliberately tiny: the phone has every
@@ -281,8 +320,10 @@
 }
 
 /* ---------- A face ---------------------------------------
-   The photographs are small files and are only ever drawn at
-   ~40px, so they are an icon beside a name, not a portrait.
+   Pixel drawings of the two of them, beside a name. The white
+   plate they are drawn on is the disc itself — which is why
+   the crop is wide enough that the circle never reaches their
+   hands or their feet.
    -------------------------------------------------------- */
 
 .person {
@@ -296,7 +337,7 @@
   width: var(--avatar);
   height: var(--avatar);
   flex-shrink: 0;
-  border: 1px solid rgba(247, 195, 119, 0.35);
+  border: 1px solid rgba(247, 195, 119, 0.45);
   border-radius: $radius-pill;
   transition:
     border-color $duration-base $ease-out,
@@ -577,6 +618,9 @@
   display: inline-flex;
   align-items: center;
   gap: $space-3xs;
+  padding: 0.3rem 0.7rem;
+  border: 1px solid transparent;
+  border-radius: $radius-pill;
   font-family: $font-body;
   font-size: $text-2xs;
   font-weight: $weight-medium;

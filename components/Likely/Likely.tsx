@@ -3,35 +3,27 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react';
 import {
   Anchor,
-  Banana,
-  Binoculars,
   CalendarHeart,
   Check,
   Cherry,
-  CloudLightning,
   CloudOff,
-  Compass,
   Drama,
   Dumbbell,
   Eye,
   Fingerprint,
   Flame,
   Footprints,
-  Frown,
   Ghost,
   Gift,
   Globe,
   HandHeart,
   Heart,
-  HeartCrack,
   HeartHandshake,
   HeartPulse,
   Hourglass,
-  Laugh,
   Loader2,
   Medal,
   Pencil,
-  Popcorn,
   RefreshCw,
   RotateCcw,
   ShowerHead,
@@ -65,31 +57,23 @@ const TEASE = 950;
    component pulls the icon set in. */
 const ICONS: Record<string, LucideIcon> = {
   Anchor,
-  Banana,
-  Binoculars,
   CalendarHeart,
   Cherry,
-  CloudLightning,
-  Compass,
   Drama,
   Dumbbell,
   Eye,
   Fingerprint,
   Flame,
   Footprints,
-  Frown,
   Ghost,
   Gift,
   Globe,
   HandHeart,
   Heart,
-  HeartCrack,
   HeartHandshake,
   HeartPulse,
   Hourglass,
-  Laugh,
   Medal,
-  Popcorn,
   ShowerHead,
   Siren,
   Swords,
@@ -146,6 +130,13 @@ export default function Likely() {
   /** State of the last push. */
   const [sync, setSync] = useState<'idle' | 'saving' | 'saved' | 'failed'>('idle');
   /**
+   * Restart is armed by the first tap and only fires on the second. There is
+   * one of these buttons pinned to the top of the screen for the whole scroll,
+   * and a single mis-tap would wipe every answer she has given with no way
+   * back.
+   */
+  const [arming, setArming] = useState(false);
+  /**
    * The first read. Nothing is shown until it lands: an empty stack looks
    * exactly like a game she has not started, and she would answer straight
    * over the top of what is already in the table.
@@ -160,6 +151,8 @@ export default function Likely() {
   /* Taps come faster than round trips. Only the newest push may set the mark,
      or a slow early failure could land after a later success. */
   const pushes = useRef(0);
+  /** Disarms the restart button if the second tap never comes. */
+  const armed = useRef(0);
   /* The rigged question answers itself on a timer, so the handler that lands
      a second later must not write from the state it closed over. */
   const latest = useRef<Answers>({});
@@ -192,7 +185,13 @@ export default function Likely() {
 
   useEffect(read, [read]);
 
-  useEffect(() => () => window.clearTimeout(timer.current), []);
+  useEffect(
+    () => () => {
+      window.clearTimeout(timer.current);
+      window.clearTimeout(armed.current);
+    },
+    [],
+  );
 
   /* The next question is already unblurred by the time this runs — it is the
      render that follows the answer, not the one that carries it. */
@@ -252,6 +251,19 @@ export default function Likely() {
     }
 
     commit(question, index, question.rigged ?? value);
+  }
+
+  function askRestart() {
+    if (!arming) {
+      setArming(true);
+      window.clearTimeout(armed.current);
+      armed.current = window.setTimeout(() => setArming(false), 4000);
+      return;
+    }
+
+    window.clearTimeout(armed.current);
+    setArming(false);
+    restart();
   }
 
   /* Empties her column in the database. Mine is not touched — it is not hers
@@ -315,6 +327,20 @@ export default function Likely() {
         <span className={styles.railCount}>
           {String(answered).padStart(2, '0')} <span aria-hidden="true">/</span> {QUESTIONS.length}
         </span>
+
+        {/* Only once she has answered everything: until then the way forward
+            is down the page, not back to the start. */}
+        {done && (
+          <button
+            className={styles.railRestart}
+            type="button"
+            data-arming={arming || undefined}
+            onClick={askRestart}
+          >
+            <RotateCcw size={12} strokeWidth={2} />
+            <span>{arming ? 'Sure?' : 'Restart'}</span>
+          </button>
+        )}
 
         {/* Quiet on purpose. It is not a thing to worry about — the phone has
             every answer whatever this says. */}
@@ -478,7 +504,7 @@ export default function Likely() {
       {done && (
         <section className={styles.end} ref={end} aria-labelledby="end-title">
           <h2 className={styles.endTitle} id="end-title">
-            AI analysis of your answers
+            AI analysis of our answers
           </h2>
 
           {/* Four seconds of theatre, then a verdict that was decided long
@@ -514,9 +540,14 @@ export default function Likely() {
             </>
           ) : null}
 
-          <button className={styles.restart} type="button" onClick={restart}>
+          <button
+            className={styles.restart}
+            type="button"
+            data-arming={arming || undefined}
+            onClick={askRestart}
+          >
             <RotateCcw size={12} strokeWidth={2} />
-            <span>Start again</span>
+            <span>{arming ? 'Tap again to erase everything' : 'Start again'}</span>
           </button>
         </section>
       )}

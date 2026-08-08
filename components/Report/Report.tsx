@@ -53,16 +53,20 @@ const VERDICTS: string[] = [
 /* Shown while the "analysis" runs. Which one appears depends only on how far
    the counter has got, so the messages and the number can never disagree. */
 const STAGES: Array<[number, string]> = [
-  [0, 'Reading your thirty-four answers…'],
-  [16, 'Comparing them with his…'],
-  [32, 'Measuring what you did not say…'],
-  [48, 'Consulting the candles…'],
-  [62, 'Discarding one result as not safe for work…'],
-  [78, 'Checking this twice. It came out high.'],
-  [92, 'Almost there, Izabela…'],
+  [0, 'Reading your answers…'],
+  [20, 'Comparing answers…'],
+  [40, 'Measuring what you lied about…'],
+  [60, 'Checking this twice…'],
+  [80, 'Almost there, Izabela…'],
 ];
 
-/** ~4.5s from nothing to a verdict. Long enough to feel like work. */
+/**
+ * Milliseconds between steps of the counter. With a random 1–4% jump each
+ * time, the whole analysis runs ~2.2s — anywhere from 1.7s to 2.9s, which is
+ * the point: a machine that always takes exactly the same time is a machine
+ * that is not thinking. Raise this to slow the whole thing down; nothing else
+ * controls the duration.
+ */
 const TICK = 55;
 
 function build(): Analysis {
@@ -127,7 +131,7 @@ export default function Report() {
           <Sparkles size={18} strokeWidth={1.5} />
         </span>
 
-        <p className={styles.workingLabel}>Analysing the two of you</p>
+        <p className={styles.workingLabel}>Analysing Iza's answers</p>
 
         <p className={styles.percent}>
           {percent}

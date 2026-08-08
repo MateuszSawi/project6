@@ -23,11 +23,12 @@ export interface Player {
   focus?: string;
 }
 
-/* Placeholders taken from /public — drop the real two in and change `src`.
-   These are only ever drawn ~44px wide, so small files are fine here. */
+/* Cropped to the face and cut down to 256px: these are drawn at ~40px and
+   nowhere else, so anything larger is bytes she pays for and never sees. The
+   uncropped originals live outside public/ — see assets/players. */
 export const PLAYERS: Player[] = [
-  { id: 'iza', name: 'Iza', src: '/1.1.jpg' },
-  { id: 'mateusz', name: 'Mateusz', src: '/2.2.jpg' },
+  { id: 'iza', name: 'Iza', src: '/players/iza.webp' },
+  { id: 'mateusz', name: 'Mateusz', src: '/players/mateusz.webp' },
 ];
 
 export interface Question {
@@ -48,23 +49,15 @@ export interface Question {
 }
 
 export const QUESTIONS: Question[] = [
+  { id: 'arrested', icon: 'Siren', text: 'Who is more likely to get arrested?' },
   {
-    id: 'movie-sleep',
-    icon: 'Popcorn',
-    text: 'Who is more likely to fall asleep during a movie?',
+    id: 'horror',
+    icon: 'Ghost',
+    text: 'Who is more likely to shit themselves from fear while watching a horror?',
   },
-  { id: 'lost', icon: 'Compass', text: 'Who is more likely to get us lost?' },
-  {
-    id: 'trouble',
-    icon: 'Binoculars',
-    text: 'Who is more likely to have to keep the other out of trouble?',
-  },
+  { id: 'responsible', icon: 'Anchor', text: 'Who is more likely to be the responsible one?' },
   { id: 'drunk', icon: 'Wine', text: 'Who is more likely to get drunk first?' },
-  {
-    id: 'bad-idea',
-    icon: 'TriangleAlert',
-    text: 'Who is more likely to say “this was a bad idea” and secretly love it?',
-  },
+  { id: 'sing', icon: 'ShowerHead', text: 'Who is more likely to sing in the shower?' },
   {
     id: 'argument',
     icon: 'Swords',
@@ -72,66 +65,37 @@ export const QUESTIONS: Question[] = [
     rigged: 'iza',
   },
   {
-    id: 'responsible',
-    icon: 'Anchor',
-    text: 'Who is more likely to be the responsible one?',
-  },
-  {
-    id: 'arrested',
-    icon: 'Siren',
-    text: 'Who is more likely to get arrested?',
-  },
-  {
-    id: 'moods',
-    icon: 'CloudLightning',
-    text: 'Who is more likely not to survive the trip?',
-  },
-  {
-    id: 'carry',
-    icon: 'Dumbbell',
-    text: 'Who is more likely to carry the other in their arms?',
-  },
-  { id: 'ass', icon: 'Cherry', text: 'Who is more likely to have better ass?' },
-  {
-    id: 'cry',
-    icon: 'Frown',
-    text: 'Who is more likely to cry at a sad movie?',
-  },
-  {
-    id: 'horror',
-    icon: 'Ghost',
-    text: 'Who is more likely to shit themselves from fear while watching a horror?',
-  },
-  {
-    id: 'funny',
-    icon: 'Laugh',
-    text: 'Who is more likely to have to pretend that Iza is funny?',
-  },
-  {
-    id: 'sing',
-    icon: 'ShowerHead',
-    text: 'Who is more likely to sing in the shower?',
-  },
-  {
-    id: 'first-move',
-    icon: 'Footprints',
-    text: 'Who is more likely to make the first move?',
-  },
-  { id: 'jealous', icon: 'Eye', text: 'Who is more likely to get jealous?' },
-  {
-    id: 'flirt',
-    icon: 'Flame',
-    text: 'Who is more likely to do more of the flirting?',
-  },
-  {
     id: 'apologize',
     icon: 'HandHeart',
-    text: 'Who is more likely to make peace first after Iza does something wrong?',
+    text: 'Who is more likely to make peace first after an argument?',
   },
+  { id: 'jealous', icon: 'Eye', text: 'Who is more likely to get jealous?' },
   {
     id: 'prove',
     icon: 'Medal',
     text: 'Who is more likely to have to prove themselves to the other?',
+  },
+  {
+    id: 'pretend',
+    icon: 'Drama',
+    text: 'Who is more likely to pretend they don’t give a fuck when they obviously do?',
+  },
+  { id: 'hugs', icon: 'HeartHandshake', text: 'Who is more likely to give better hugs?' },
+  { id: 'carry', icon: 'Dumbbell', text: 'Who is more likely to carry the other in their arms?' },
+  { id: 'flirt', icon: 'Flame', text: 'Who is more likely to do more of the flirting?' },
+  { id: 'first-move', icon: 'Footprints', text: 'Who is more likely to make the first move?' },
+  { id: 'ass', icon: 'Cherry', text: 'Who is more likely to have better ass?' },
+  { id: 'kiss', icon: 'Heart', text: 'Who is more likely to kiss better?' },
+  { id: 'surprise', icon: 'Gift', text: 'Who is more likely to plan a ridiculous surprise?' },
+  {
+    id: 'bad-idea',
+    icon: 'TriangleAlert',
+    text: 'Who is more likely to say “this was a bad idea” and secretly love it?',
+  },
+  {
+    id: 'obsessed',
+    icon: 'Globe',
+    text: 'Who is more likely to become obsessed with the other’s country?',
   },
   {
     id: 'miss-first',
@@ -139,45 +103,14 @@ export const QUESTIONS: Question[] = [
     text: 'Who is more likely to miss the other one first?',
   },
   {
-    id: 'hugs',
-    icon: 'HeartHandshake',
-    text: 'Who is more likely to give better hugs?',
-  },
-  { id: 'kiss', icon: 'Heart', text: 'Who is more likely to kiss better?' },
-  {
-    id: 'surprise',
-    icon: 'Gift',
-    text: 'Who is more likely to plan a ridiculous surprise?',
-  },
-  {
-    id: 'pretend',
-    icon: 'Drama',
-    text: 'Who is more likely to pretend they don’t give a fuck when they obviously do?',
-  },
-  {
     id: 'love-first',
     icon: 'HeartPulse',
     text: 'Who is more likely to steal the other’s heart?',
   },
   {
-    id: 'break-heart',
-    icon: 'HeartCrack',
-    text: 'Who is more likely to break the other’s heart?',
-  },
-  {
-    id: 'oral',
-    icon: 'Banana',
-    text: 'Who is more likely to give better oral?',
-  },
-  {
     id: 'one-more-day',
     icon: 'CalendarHeart',
     text: 'Who is more likely to want one more day together?',
-  },
-  {
-    id: 'obsessed',
-    icon: 'Globe',
-    text: 'Who is more likely to become obsessed with the other’s country?',
   },
   {
     id: 'lied',
