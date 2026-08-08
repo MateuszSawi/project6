@@ -49,7 +49,7 @@ export default function Games() {
               A month is a long time to be told to wait. But i am not gonna let you be bored.
             </p>
             <p>
-              Every few days something new appears down here — a game, a quiz, a test, some
+              From time to time something new appears down here — a game, a quiz, a test, some
               excuse to keep you thinking about me. Play them while you miss me (I know you do).
             </p>
             <p className={styles.ledeNote}></p>

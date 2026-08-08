@@ -96,6 +96,10 @@
   @include mq(lg) {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
+
+  /* Air under the last tile, on top of the section's own padding — the tiles
+     are the last thing on the page and should not end at its edge. */
+  margin-bottom: 50px;
 }
 
 .cell {

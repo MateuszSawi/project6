@@ -290,23 +290,11 @@ export const GAMES: Game[] = [
   },
   {
     id: 'truth',
-    title: 'Game two',
+    title: 'Surprise two',
   },
   {
     id: 'know',
-    title: 'Game three',
-  },
-  {
-    id: 'never',
-    title: 'Game four',
-  },
-  {
-    id: 'lie',
-    title: 'Game five',
-  },
-  {
-    id: 'box',
-    title: 'Game six',
+    title: 'Surprise three',
   },
 ];
 

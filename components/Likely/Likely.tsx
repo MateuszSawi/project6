@@ -504,7 +504,7 @@ export default function Likely() {
       {done && (
         <section className={styles.end} ref={end} aria-labelledby="end-title">
           <h2 className={styles.endTitle} id="end-title">
-            AI analysis of our answers
+            Analysis of our answers
           </h2>
 
           {/* Four seconds of theatre, then a verdict that was decided long
@@ -547,7 +547,7 @@ export default function Likely() {
             onClick={askRestart}
           >
             <RotateCcw size={12} strokeWidth={2} />
-            <span>{arming ? 'Tap again to erase everything' : 'Start again'}</span>
+            <span>{arming ? 'Tap again to confirm' : 'Start again'}</span>
           </button>
         </section>
       )}

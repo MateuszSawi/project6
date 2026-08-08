@@ -17,7 +17,7 @@ import styles from './Report.module.scss';
  * this is going into WhatsApp, not onto the page.
  */
 const MESSAGE =
-  "Cool game, but you'll have to try harder to prove you deserve a sexy goddess like me.";
+  "Cool game, but you'll have to try harder to prove you deserve a sexy goddess like me. Call me tonight.";
 
 const WHATSAPP = `https://wa.me/48690688835?text=${encodeURIComponent(MESSAGE)}`;
 
@@ -27,7 +27,7 @@ const WHATSAPP = `https://wa.me/48690688835?text=${encodeURIComponent(MESSAGE)}`
  */
 const FINDINGS: Array<{ id: string; label: string; winner: Side }> = [
   { id: 'survive', label: 'Less likely to survive the trip', winner: 'mateusz' },
-  { id: 'scene', label: 'More likely to start a scene over nothing', winner: 'iza' },
+  // { id: 'scene', label: 'Better kisser', winner: 'mateusz' },
   { id: 'romantic', label: 'More romantic of the two', winner: 'mateusz' },
   { id: 'pretending', label: 'Lying about not giving a fuck', winner: 'iza' },
   { id: 'danger', label: 'In more danger around the other', winner: 'mateusz' },
