@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react';
-import { Sparkles } from 'lucide-react';
+import { MessageCircle, Sparkles } from 'lucide-react';
 
 import Frame from '@/components/Frame/Frame';
 import { PLAYERS, type Side } from '@/lib/games/who-is-more-likely';
@@ -9,16 +9,29 @@ import { PLAYERS, type Side } from '@/lib/games/who-is-more-likely';
 import styles from './Report.module.scss';
 
 /**
+ * Reading a verdict is not doing anything, so the report ends with the one
+ * thing that is: a chat with the message already typed and unsent. She still
+ * has to press send — the page never speaks for her.
+ *
+ * Double quotes because the message carries a plain apostrophe of its own:
+ * this is going into WhatsApp, not onto the page.
+ */
+const MESSAGE =
+  "Cool game, but you'll have to try harder to prove you deserve a sexy goddess like me.";
+
+const WHATSAPP = `https://wa.me/48690688835?text=${encodeURIComponent(MESSAGE)}`;
+
+/**
  * The machine's rulings. The winner never changes — these are not findings,
  * they are things I wanted said out loud by something that sounds objective.
  */
 const FINDINGS: Array<{ id: string; label: string; winner: Side }> = [
-  { id: 'romantic', label: 'More romantic of the two', winner: 'mateusz' },
-  { id: 'scene', label: 'More likely to start a scene over nothing', winner: 'iza' },
-  { id: 'danger', label: 'In more danger around the other', winner: 'mateusz' },
   { id: 'survive', label: 'Less likely to survive the trip', winner: 'mateusz' },
-  { id: 'missing', label: 'Missing the other one more', winner: 'iza' },
+  { id: 'scene', label: 'More likely to start a scene over nothing', winner: 'iza' },
+  { id: 'romantic', label: 'More romantic of the two', winner: 'mateusz' },
   { id: 'pretending', label: 'Lying about not giving a fuck', winner: 'iza' },
+  { id: 'danger', label: 'In more danger around the other', winner: 'mateusz' },
+  { id: 'missing', label: 'Missing the other one more', winner: 'iza' },
   { id: 'date', label: 'Better looking on our date in Poland', winner: 'iza' },
 ];
 
@@ -75,7 +88,7 @@ function build(): Analysis {
       { id: 'hot', label: 'Sexiness of the pair', value: between(100, 100) },
       { id: 'bed', label: 'Odds of sleeping in one bed', value: between(91, 97) },
     ],
-    compatibility: between(93, 99),
+    compatibility: between(95, 99),
     verdict: VERDICTS.length ? pick(VERDICTS) : undefined,
   };
 }
@@ -217,6 +230,19 @@ export default function Report() {
       </div>
 
       <p className={styles.required}>Confirmation requires live testing in Poland.</p>
+
+      <a className={styles.reply} href={WHATSAPP} target="_blank" rel="noopener noreferrer">
+        <MessageCircle size={15} strokeWidth={2} />
+        <span className={styles.replyLabel}>Click me</span>
+
+        <span className={styles.sparks} aria-hidden="true">
+          <span />
+          <span />
+          <span />
+          <span />
+          <span />
+        </span>
+      </a>
     </div>
   );
 }

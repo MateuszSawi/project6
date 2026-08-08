@@ -297,11 +297,30 @@
   border: 1px solid rgba(247, 195, 119, 0.4);
   border-radius: $radius-sm;
   box-shadow: 0 0 30px rgba(247, 195, 119, 0.12);
-  margin: 10px 0;
+  margin: 10px 0 0;
 }
 
 
+/* ---------- The one thing left to do -------------------- */
+
+/* The page's loud pill, third and last time it appears: "see why you should
+   come", "click me again", and now this. By here she knows what it is. */
+.reply {
+  @include ember-button;
+  margin-top: $space-2xs;
+}
+
+.replyLabel {
+  @include ember-button-label;
+}
+
+.sparks {
+  @include ember-sparks;
+}
+
 /* ---------- Keyframes ----------------------------------- */
+
+@include ember-keyframes;
 
 @keyframes pulse {
   0%,
@@ -329,6 +348,10 @@
 }
 
 @include reduced-motion {
+  .sparks {
+    display: none;
+  }
+
   .finding,
   .bar,
   .report[data-grown] .finding,
