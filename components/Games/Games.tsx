@@ -41,16 +41,19 @@ export default function Games() {
           </p>
 
           <h2 className={styles.title} id="games-title">
-            You were supposed to be <em>here</em>
+            See you <em>soon enough</em>
           </h2>
 
           <div className={styles.lede}>
             <p>
-              A month is a long time to be told to wait. But i am not gonna let you be bored.
+              A month is a long time to wait. But I'm not gonna let you be bored.
             </p>
             <p>
               From time to time something new appears down here — a game, a quiz, a test, some
               excuse to keep you thinking about me. Play them while you miss me (I know you do).
+            </p>
+            <p>
+              And don't worry about August not working out. You've got my full attention anyway, and you're keeping it until you get here.
             </p>
             <p className={styles.ledeNote}></p>
           </div>
