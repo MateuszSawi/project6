@@ -308,6 +308,7 @@
 .reply {
   @include ember-button;
   margin-top: $space-2xs;
+  margin-bottom: 5px; 
 }
 
 .replyLabel {
