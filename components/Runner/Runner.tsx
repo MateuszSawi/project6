@@ -321,35 +321,57 @@ export default function Runner() {
 
     /* ---------- Input ---------------------------------------------------- */
 
-    const press = () => {
+    /**
+     * Returns whether the press did anything, so the pad only lights up for
+     * the ones that landed.
+     *
+     * `deliberate` means it came from the pad or the keyboard rather than from
+     * the road. Only those can start a run: a tap anywhere on the canvas was
+     * enough before, and between the pad sitting right under the thumb and the
+     * screen being the biggest target on the page, runs kept beginning before
+     * anyone meant them to.
+     */
+    const press = (deliberate: boolean): boolean => {
       const g = game.current;
 
       if (phaseRef.current === 'ready') {
+        if (!deliberate) return false;
         game.current = freshGame();
         setMilestone(null);
         setSaveFailed(false);
         last = 0;
         toPhase('playing');
-        return;
+        return true;
       }
 
       /* Recorded rather than acted on: the step decides whether it can be
-         spent now or has to wait for her to land. */
-      if (phaseRef.current === 'playing') g.buffered = JUMP_BUFFER_S;
+         spent now or has to wait for her to land. Jumping stays available from
+         anywhere — it is reflex, not a decision. */
+      if (phaseRef.current === 'playing') {
+        g.buffered = JUMP_BUFFER_S;
+        return true;
+      }
 
-      /* The pad restarts too, so a whole run needs one thumb and no reaching
-         for the button. Deaf for a moment after a crash, or the tap that was
-         already on its way when she hit would skip straight past the score. */
-      if (phaseRef.current === 'over' && last >= armAt) reset();
+      /* Only as far as the opening screen, never straight into a run, so this
+         one is safe from anywhere. Deaf for a moment after a crash, or the tap
+         already on its way when she hit would skip past the score. */
+      if (phaseRef.current === 'over' && last >= armAt) {
+        reset();
+        return true;
+      }
 
       /* Nothing here for 'arrived'. Leaving Gdańsk is a button, deliberately:
          at that moment her thumb is still in the rhythm of jumping, and any
          tap-to-continue would be spent on reflex before she had read a word. */
+      return false;
     };
 
     /* touchstart rather than click: it arrives as the thumb lands instead of
        when it lifts, which on a phone is most of the difference between a jump
        that felt taken and one that felt missed. */
+    const fromPad = (e: Event) =>
+      Boolean((e.target as HTMLElement | null)?.closest('[data-pad]'));
+
     const onTouch = (e: TouchEvent) => {
       if ((e.target as HTMLElement | null)?.closest('button')) return;
       /* No preventDefault while the arrival screen is up: there is no jump to
@@ -357,8 +379,7 @@ export default function Runner() {
          long copy on a short phone needs. */
       if (phaseRef.current === 'arrived') return;
       e.preventDefault();
-      field.classList.add(styles.hit);
-      press();
+      if (press(fromPad(e))) field.classList.add(styles.hit);
     };
 
     const release = () => field.classList.remove(styles.hit);
@@ -367,8 +388,7 @@ export default function Runner() {
        is what stops a single tap counting twice. */
     const onMouse = (e: MouseEvent) => {
       if ((e.target as HTMLElement | null)?.closest('button')) return;
-      if (phaseRef.current !== 'arrived') field.classList.add(styles.hit);
-      press();
+      if (press(fromPad(e))) field.classList.add(styles.hit);
     };
 
     const onKey = (e: KeyboardEvent) => {
@@ -376,7 +396,8 @@ export default function Runner() {
       if (e.repeat) return;
       if ((e.target as HTMLElement | null)?.closest('button, a')) return;
       e.preventDefault();
-      press();
+      /* A key is as deliberate as the pad. */
+      press(true);
     };
 
     /* On the field, not the canvas: the pad underneath has to jump too, and it
@@ -780,12 +801,19 @@ export default function Runner() {
               >
                 {ARRIVAL.next}
               </p>
+              {/* onClick, not onPointerDown. A pointerdown swaps the screen
+                  out from under the finger, and the mouse events the browser
+                  then synthesises for the touch land on whatever replaced it —
+                  which on this screen meant leaving Gdańsk and spending a jump
+                  in the same tap. Waiting for the click keeps the button under
+                  the finger for the whole gesture. The field has
+                  touch-action: none, so there is no delay to pay for it. */}
               <button
                 className={styles.again}
                 style={{ animationDelay: `${ARRIVAL_BEAT_MS}ms` }}
                 type="button"
                 disabled={!canLeave}
-                onPointerDown={leaveGdansk}
+                onClick={leaveGdansk}
               >
                 <span className={styles.againLabel}>{ARRIVAL.cta}</span>
               </button>
@@ -808,7 +836,11 @@ export default function Runner() {
                 <p className={styles.record}>Furthest so far — {formatKm(best)} km</p>
               )}
               {saveFailed && <p className={styles.warn}>That one did not reach the table.</p>}
-              <button className={styles.again} type="button" onPointerDown={reset}>
+              {/* onClick for the same reason as the arrival button above: on
+                  pointerdown this screen vanished mid-tap and the synthetic
+                  mousedown landed on the opening screen behind it, starting a
+                  run nobody asked for. */}
+              <button className={styles.again} type="button" onClick={reset}>
                 <span className={styles.againLabel}>Again</span>
               </button>
             </div>
@@ -817,7 +849,10 @@ export default function Runner() {
 
         {/* Somewhere to put the thumb that is not on top of the game. Held in
             the same tap target as the canvas, so it does the same thing. */}
-        <div className={`${styles.pad}${phase === 'arrived' ? ` ${styles.padMuted}` : ''}`}>
+        <div
+          data-pad=""
+          className={`${styles.pad}${phase === 'arrived' ? ` ${styles.padMuted}` : ''}`}
+        >
           <span className={styles.padLabel}>{PAD_LABEL[phase]}</span>
         </div>
       </div>
