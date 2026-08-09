@@ -783,7 +783,7 @@ export default function Runner() {
           {phase === 'ready' && (
             <div className={`${styles.veil} ${styles.veilClear}`}>
               {/* <p className={styles.eyebrow}>Tirana</p> */}
-              <p className={styles.hint}>Tap to go. Use the pad below.</p>
+              <p className={styles.hint}>Tap to go.<br/>Use the pad below.<br/>&nbsp;</p>
               {best > 0 && <p className={styles.record}>Furthest so far — {formatKm(best)} km</p>}
             </div>
           )}
