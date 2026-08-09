@@ -1,0 +1,343 @@
+@use "variables" as *;
+
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+/* ---------- Reading and road ----------------------------- */
+
+.hud {
+  display: flex;
+  flex-direction: column;
+  /* Tight: the bar carries its own top padding, so this only has to separate
+     the record from the counter it sits over. */
+  gap: $space-2xs;
+}
+
+.reading {
+  display: flex;
+  align-items: baseline;
+  gap: $space-3xs;
+  font-family: $font-display;
+  color: $bone;
+}
+
+.km {
+  font-size: $text-lg;
+  font-variant-numeric: tabular-nums;
+  /* The number changes sixty times a second; without a fixed box the unit
+     beside it would shuffle sideways on every carry. */
+  font-feature-settings: "tnum" 1;
+  line-height: 1;
+}
+
+.unit {
+  @include eyebrow;
+  color: $dust;
+}
+
+/* Only on the endless road — see Runner.tsx. Its own line above the counter. */
+.bestReading {
+  @include eyebrow;
+  color: $bordo-bright;
+}
+
+/* Tirana on the first pixel, Gdańsk on the last — see barPosition() in
+   lib/games/runner.ts. */
+.bar {
+  /* Inset so the dot at 0 km and the Tirana label under it are not clipped. */
+  padding-inline: 4px;
+  padding-block: $space-xs $space-lg;
+}
+
+.track {
+  position: relative;
+  height: 1px;
+  background-color: $line;
+}
+
+.trail {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  height: 1px;
+  background-color: $bordo-lit;
+}
+
+.mark {
+  position: absolute;
+  inset-block-start: -3px;
+  width: 1px;
+  height: 7px;
+  background-color: $line-strong;
+}
+
+/* transform comes from the component: centred in the middle of the bar, but
+   aligned inward at the two ends so the labels stay on the bar. */
+.markCity {
+  position: absolute;
+  inset-block-start: 11px;
+  inset-inline-start: 0;
+  @include eyebrow;
+  font-size: 0.625rem;
+  white-space: nowrap;
+}
+
+.dot {
+  position: absolute;
+  inset-block-start: 50%;
+  width: 7px;
+  height: 7px;
+  margin-inline-start: -3.5px;
+  margin-block-start: -3.5px;
+  background-color: $bordo-bright;
+  border-radius: $radius-pill;
+  box-shadow: 0 0 10px rgba(214, 81, 106, 0.9);
+}
+
+/* ---------- The game itself ------------------------------ */
+
+/* Game and thumb pad together are one tap target, so a tap anywhere in here
+   jumps. Nothing inside should pan, zoom or select. */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2xs;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  cursor: pointer;
+}
+
+/* Only while the arrival screen is up. touch-action on the field constrains
+   everything under it, so the veil cannot scroll until this relaxes it.
+   Not named .reading — that is already the kilometre counter, and CSS Modules
+   would hand both the same class. */
+.arrivalOpen {
+  touch-action: pan-y;
+}
+
+.stage {
+  position: relative;
+  width: 100%;
+  /* Deliberately short. The pad below it needs a thumb's worth of room, and
+     both have to sit on screen at once on a phone held in one hand. */
+  height: min(42dvh, 66vw, 20rem);
+  overflow: hidden;
+  background-color: $ink;
+  border: 1px solid $line;
+  border-radius: $radius-md;
+}
+
+/* While the arrival screen is up the pad does nothing, so it should not look
+   like the way on — that is the button on the screen itself. */
+.padMuted {
+  opacity: 0.35;
+}
+
+/* Where the thumb goes. It exists so the hand is below the game instead of
+   over it — on a phone, tapping the canvas means covering the road she is
+   about to run into. */
+.pad {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: clamp(5rem, 14dvh, 7.5rem);
+  background-color: rgba(74, 18, 32, 0.28);
+  border: 1px solid $line-bordo;
+  border-radius: $radius-md;
+  transition:
+    background-color $duration-fast $ease-out,
+    border-color $duration-fast $ease-out;
+
+  /* .hit is put on by the touch handler rather than using :active, which
+     several mobile browsers drop once touchstart calls preventDefault. */
+  .field.hit & {
+    background-color: rgba(125, 26, 45, 0.5);
+    border-color: $bordo-bright;
+  }
+}
+
+.padLabel {
+  @include eyebrow;
+  color: $ash;
+}
+
+.canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* The canvas is already drawn at device resolution; this stops the browser
+     from resampling it a second time on the way to the screen. */
+  image-rendering: pixelated;
+}
+
+/* ---------- Things said over the top --------------------- */
+
+.milestone {
+  position: absolute;
+  inset-block-start: clamp(1rem, 6%, 2rem);
+  inset-inline: $space-md;
+  font-family: $font-display;
+  font-size: $text-md;
+  font-style: italic;
+  line-height: $leading-snug;
+  color: $bone;
+  text-align: center;
+  text-wrap: balance;
+  text-shadow: 0 2px 18px rgba(23, 18, 22, 0.95);
+  pointer-events: none;
+  animation: passing $duration-slow $ease-out both;
+}
+
+@keyframes passing {
+  0% {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  18%,
+  76% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+.veil {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $space-2xs;
+  padding: $space-md;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  text-align: center;
+  background-color: rgba(16, 12, 15, 0.82);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+}
+
+/* The opening screen, which has almost nothing to say and a whole character to
+   show. No blur and barely any tint: she is standing right there on the road
+   and the first thing anyone should see is her, not a frosted panel over her.
+   The two lines on top are short and pale, so a shadow is enough to hold them
+   against the sky without putting anything between her and the viewer. */
+.veilClear {
+  background-color: rgba(16, 12, 15, 0.2);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+
+  p {
+    text-shadow: 0 1px 12px rgba(16, 12, 15, 0.95), 0 0 3px rgba(16, 12, 15, 0.9);
+  }
+}
+
+.eyebrow {
+  @include eyebrow;
+}
+
+.loading {
+  @include eyebrow;
+  color: $ash;
+}
+
+.hint {
+  font-family: $font-body;
+  font-size: $text-sm;
+  font-weight: $weight-light;
+  color: $ash;
+}
+
+/* Arrival. Bigger than a milestone line and it stays put, because unlike a
+   milestone this one is waiting for an answer. */
+.arrival {
+  max-width: 26rem;
+  font-family: $font-display;
+  /* Deliberately not $text-md: this is the longest thing the game ever says
+     and the stage it says it in is only about 240px tall on a small phone. */
+  font-size: $text-base;
+  font-style: italic;
+  line-height: $leading-snug;
+  color: $bone;
+  text-wrap: balance;
+  animation: arrive $duration-base $ease-out both;
+}
+
+/* The second beat. animation-delay comes from the component — see ARRIVAL_BEAT_MS. */
+.onward {
+  margin-block-start: $space-2xs;
+  font-family: $font-body;
+  font-size: $text-sm;
+  font-weight: $weight-light;
+  color: $ash;
+  text-wrap: balance;
+  animation: arrive $duration-base $ease-out both;
+}
+
+@keyframes arrive {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.score {
+  display: flex;
+  align-items: baseline;
+  gap: $space-2xs;
+  font-family: $font-display;
+  font-size: $text-xl;
+  line-height: $leading-tight;
+  color: $bone;
+}
+
+.scoreUnit {
+  @include eyebrow;
+  color: $dust;
+}
+
+.record {
+  font-family: $font-body;
+  font-size: $text-xs;
+  font-weight: $weight-light;
+  color: $dust;
+}
+
+.warn {
+  font-family: $font-body;
+  font-size: $text-xs;
+  color: $bordo-bright;
+}
+
+.again {
+  @include ember-button;
+  margin-block-start: $space-sm;
+  padding: 0.8rem 1.9rem;
+  /* Used on the arrival screen too, where it fades in behind the second beat
+     and is disabled until then — see ARRIVAL_DEAF_MS. */
+  animation: arrive $duration-base $ease-out both;
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.45;
+    box-shadow: none;
+  }
+}
+
+.againLabel {
+  @include ember-button-label;
+}
