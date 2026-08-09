@@ -281,9 +281,7 @@ export interface Game {
 export const GAMES: Game[] = [
   {
     id: 'likely',
-    /* Built and deployed, but not linked yet — put this line back when it
-       opens and the tile turns into a door. */
-    // href: '/games/who-is-more-likely/',
+    href: '/games/who-is-more-likely/',
     title: 'Who is more likely to?',
     src: '/games/who-is-more-likely.webp',
     grade: 'none',
