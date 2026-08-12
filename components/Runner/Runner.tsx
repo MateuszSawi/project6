@@ -11,26 +11,28 @@ import {
   COYOTE_S,
   GRAVITY,
   GROUND_FROM_BOTTOM,
+  HEAD_H,
   HITBOX_W,
   JUMP_BUFFER_S,
   JOURNEY_KM,
+  JUMP_MIN_V,
   JUMP_V,
   KM_PER_UNIT,
   MAX_SPEED,
   MILESTONES,
   MILESTONE_MS,
-  OBSTACLE_MAX_H,
-  OBSTACLE_MAX_W,
-  OBSTACLE_MIN_H,
-  OBSTACLE_MIN_W,
   PALETTE,
+  PIT_FALL,
   RUNNER_X,
   SPEED_GAIN,
   SPRITE,
+  VOID_FLOOR,
   WORLD_H,
   barPosition,
   connected,
   loadBest,
+  pickFormation,
+  restGap,
   saveBest,
 } from '@/lib/games/runner';
 
@@ -40,12 +42,26 @@ import styles from './Runner.module.scss';
    told she made it, and the same run then carries on with `endless` set. */
 type Phase = 'loading' | 'ready' | 'playing' | 'arrived' | 'over';
 
-interface Obstacle {
+/** A ledge on the road. Landing on top of one is fine; meeting it side-on is not. */
+interface Block {
   x: number;
   w: number;
   h: number;
   /** Which of the three shapes to draw. */
   kind: number;
+}
+
+/** A beam over the road. Her head has to be below `clear` for the whole width. */
+interface Hang {
+  x: number;
+  w: number;
+  clear: number;
+}
+
+/** A hole in the road. Nothing to hit — there is simply no floor here. */
+interface Pit {
+  x: number;
+  w: number;
 }
 
 interface Game {
@@ -57,15 +73,22 @@ interface Game {
   lift: number;
   vy: number;
   grounded: boolean;
-  /** Height of the surface under her right now — the road, or a ledge top. */
+  /** Height of the surface under her right now — the road, a ledge top, or
+      VOID_FLOOR while there is nothing under her at all. */
   floor: number;
   /** Seconds of jump still allowed after stepping off a ledge. */
   coyote: number;
   /** Seconds a pressed jump stays remembered while she is still airborne. */
   buffered: number;
-  obstacles: Obstacle[];
-  /** World units still to travel before the next obstacle appears. */
+  /** Whether the button is down right now. The whole of the analogue jump. */
+  held: boolean;
+  blocks: Block[];
+  hangs: Hang[];
+  pits: Pit[];
+  /** World units still to travel before the next formation appears. */
   untilSpawn: number;
+  /** So the same shape of road never comes round twice running. */
+  lastForm: string | null;
   animT: number;
   /** How many milestones have already been shown. */
   passed: number;
@@ -94,8 +117,12 @@ function freshGame(): Game {
     floor: 0,
     coyote: 0,
     buffered: 0,
-    obstacles: [],
+    held: false,
+    blocks: [],
+    hangs: [],
+    pits: [],
     untilSpawn: 220,
+    lastForm: null,
     animT: 0,
     passed: 0,
     endless: false,
@@ -188,9 +215,12 @@ export default function Runner() {
     /* A clear stretch of road out of the city. Without it she resumes into
        whatever happened to be under her nose while the screen was up, which is
        a death she had no way to see coming. */
-    g.obstacles = [];
+    g.blocks = [];
+    g.hangs = [];
+    g.pits = [];
     g.untilSpawn = g.speed * 1.4;
     g.buffered = 0;
+    g.held = false;
     toPhase('playing');
   }, [toPhase]);
 
@@ -346,9 +376,13 @@ export default function Runner() {
 
       /* Recorded rather than acted on: the step decides whether it can be
          spent now or has to wait for her to land. Jumping stays available from
-         anywhere — it is reflex, not a decision. */
+         anywhere — it is reflex, not a decision.
+
+         `held` is the other half of it. How long this stays true is how high
+         she goes, so the press is a beginning now rather than an event. */
       if (phaseRef.current === 'playing') {
         g.buffered = JUMP_BUFFER_S;
+        g.held = true;
         return true;
       }
 
@@ -382,7 +416,12 @@ export default function Runner() {
       if (press(fromPad(e))) field.classList.add(styles.hit);
     };
 
-    const release = () => field.classList.remove(styles.hit);
+    /* Letting go is now part of the move, not just the end of one: the step
+       clips her rise the first frame it sees this false. */
+    const release = () => {
+      game.current.held = false;
+      field.classList.remove(styles.hit);
+    };
 
     /* Desktop. Suppressed on touch devices by the preventDefault above, which
        is what stops a single tap counting twice. */
@@ -391,13 +430,25 @@ export default function Runner() {
       if (press(fromPad(e))) field.classList.add(styles.hit);
     };
 
+    const isJumpKey = (code: string) =>
+      code === 'Space' || code === 'ArrowUp' || code === 'KeyW';
+
     const onKey = (e: KeyboardEvent) => {
-      if (e.code !== 'Space' && e.code !== 'ArrowUp' && e.code !== 'KeyW') return;
+      if (!isJumpKey(e.code)) return;
+      /* Auto-repeat is the operating system's, not hers. Ignored for the press
+         and irrelevant to `held`, which the keyup is what ends. */
       if (e.repeat) return;
       if ((e.target as HTMLElement | null)?.closest('button, a')) return;
       e.preventDefault();
       /* A key is as deliberate as the pad. */
-      press(true);
+      if (press(true)) field.classList.add(styles.hit);
+    };
+
+    /* The keyboard's half of the analogue jump. Without this a key press is a
+       held press forever and the whole thing collapses back to one arc. */
+    const onKeyUp = (e: KeyboardEvent) => {
+      if (!isJumpKey(e.code)) return;
+      release();
     };
 
     /* On the field, not the canvas: the pad underneath has to jump too, and it
@@ -408,6 +459,10 @@ export default function Runner() {
     field.addEventListener('touchcancel', release);
     window.addEventListener('mouseup', release);
     window.addEventListener('keydown', onKey);
+    window.addEventListener('keyup', onKeyUp);
+    /* A window that loses focus mid-jump never sees the keyup, and she would
+       carry the hold into the next thing she did. */
+    window.addEventListener('blur', release);
 
     /* ---------- Gdańsk ------------------------------------------------------ */
 
@@ -448,28 +503,50 @@ export default function Runner() {
          difference between landing on a ledge and walking into its side. */
       const wasAt = g.lift;
 
-      for (const o of g.obstacles) o.x -= moved;
-      if (g.obstacles.length && g.obstacles[0].x + g.obstacles[0].w < -20) {
-        g.obstacles.shift();
-      }
+      /* Three lists rather than one because they are three different questions
+         at collision time — what to stand on, what not to hit, and where there
+         is no floor. Each stays sorted by x, so only the head can have left. */
+      for (const o of g.blocks) o.x -= moved;
+      for (const o of g.hangs) o.x -= moved;
+      for (const o of g.pits) o.x -= moved;
+      /* `while`, not `if`: a formation puts down as many as three blocks at
+         once, and a long frame could carry more than one of them off the end. */
+      while (g.blocks.length && g.blocks[0].x + g.blocks[0].w < -20) g.blocks.shift();
+      while (g.hangs.length && g.hangs[0].x + g.hangs[0].w < -20) g.hangs.shift();
+      while (g.pits.length && g.pits[0].x + g.pits[0].w < -20) g.pits.shift();
 
-      /* Spawning is measured in distance, not in seconds, and the gap is a
-         multiple of the current speed — so the window to react stays the same
-         length however fast she is going. The floor of 1.0s of travel is still
-         well clear of the 0.6s she spends in the air, leaving her about 100
-         units of road to land on before the next block at full speed. */
+      /* Spawning is measured in distance, not in seconds, and everything the
+         formation puts down is a multiple of the current speed — so a hole
+         takes the same time to cross and a beam the same time to pass under
+         however fast she is going. See FORMATIONS. */
       g.untilSpawn -= moved;
       if (g.untilSpawn <= 0) {
-        const n = noise(Math.floor(g.dist));
-        const m = noise(Math.floor(g.dist) + 7.3);
+        const f = pickFormation(g.km, g.lastForm);
+        const s = g.speed;
+        const x0 = v.w + 12;
+        /* Where the formation actually finishes, measured rather than declared
+           — a piece can be wide in units or wide in seconds, and only the
+           spawner knows the speed that reconciles the two. */
+        let end = 0;
 
-        g.obstacles.push({
-          x: v.w + 12,
-          w: OBSTACLE_MIN_W + Math.round(m * (OBSTACLE_MAX_W - OBSTACLE_MIN_W)),
-          h: OBSTACLE_MIN_H + Math.round(n * (OBSTACLE_MAX_H - OBSTACLE_MIN_H)),
-          kind: Math.floor(m * 3) % 3,
-        });
-        g.untilSpawn = g.speed * (1.0 + noise(g.dist * 0.5) * 0.75);
+        for (const p of f.pieces) {
+          const at = p.at * s;
+          if (p.kind === 'block') {
+            g.blocks.push({ x: x0 + at, w: p.w, h: p.h, kind: p.face ?? 0 });
+            end = Math.max(end, at + p.w);
+          } else if (p.kind === 'hang') {
+            const w = p.secs * s;
+            g.hangs.push({ x: x0 + at, w, clear: p.clear });
+            end = Math.max(end, at + w);
+          } else {
+            const w = p.secs * s;
+            g.pits.push({ x: x0 + at, w });
+            end = Math.max(end, at + w);
+          }
+        }
+
+        g.lastForm = f.id;
+        g.untilSpawn = end + restGap(g.km) * s;
       }
 
       /* A jump asked for slightly too early is remembered rather than dropped,
@@ -481,6 +558,14 @@ export default function Runner() {
         g.grounded = false;
         g.coyote = 0;
         g.buffered = 0;
+      }
+
+      /* The analogue half. Clipped every frame the button is up rather than
+         once on release, which costs nothing and means a jump fired out of the
+         buffer after she let go comes out short — the tap she actually made,
+         not the one the buffer remembered. */
+      if (!g.grounded && !g.held && g.vy > JUMP_MIN_V) {
+        g.vy = JUMP_MIN_V;
       }
 
       /* Her speed at the start of the frame, kept so the entry test below can
@@ -510,7 +595,19 @@ export default function Runner() {
       const cx1 = RUNNER_X + half;
       let floor = 0;
 
-      for (const o of g.obstacles) {
+      /* A hole takes the floor away rather than putting something in the way,
+         which is what makes it the one thing that punishes jumping too early.
+         She has to be entirely inside one to fall: a toe on either lip is
+         enough to stand on, so an edge is caught rather than clipped. */
+      for (const p of g.pits) {
+        if (p.x > cx0) break;
+        if (cx1 <= p.x + p.w) {
+          floor = VOID_FLOOR;
+          break;
+        }
+      }
+
+      for (const o of g.blocks) {
         if (o.x > cx1 || o.x + o.w < cx0) continue;
 
         const before = o.x + moved;
@@ -524,21 +621,52 @@ export default function Runner() {
           }
         }
 
+        /* Above VOID_FLOOR by a mile, so a block laid across a hole bridges it. */
         floor = Math.max(floor, o.h);
       }
 
       if (g.lift <= floor) {
+        /* Reaching a surface from below it is not a landing — it is the far
+           wall of the hole she is already inside, and without this she would
+           be lifted out of a narrow one by the very edge she failed to reach.
+           `wasAt` rather than the current lift, so the unit or two a normal
+           landing overshoots by does not read the same way. */
+        if (wasAt < floor - 1) {
+          finish();
+          return;
+        }
         g.lift = floor;
         g.vy = 0;
         g.grounded = true;
       } else if (g.grounded) {
         /* Ran off the end of a ledge — falling, but still allowed to jump for
-           a beat, which is the difference between a mistake and a mistrial. */
+           a beat, which is the difference between a mistake and a mistrial.
+           Over a hole this is the last chance to get out of it, and it is a
+           real one: COYOTE_S is a hair longer than the fall to PIT_FALL. */
         g.grounded = false;
         g.coyote = COYOTE_S;
       }
 
       g.floor = floor;
+
+      /* Down the hole. Tested after the floor has settled, so a block bridging
+         a pit has already had its say. */
+      if (g.lift < -PIT_FALL) {
+        finish();
+        return;
+      }
+
+      /* Beams. Unlike a block this is not a moment of contact but a stretch of
+         road she has to be low along the whole of — she can jump into one from
+         underneath, which is exactly the mistake it exists to punish. */
+      for (const o of g.hangs) {
+        if (o.x > cx1) break;
+        if (o.x + o.w < cx0) continue;
+        if (g.lift + HEAD_H > o.clear) {
+          finish();
+          return;
+        }
+      }
 
       if (!g.endless && g.km >= JOURNEY_KM) {
         arrive();
@@ -603,6 +731,23 @@ export default function Runner() {
         ctx.fillRect(snap(x), snap(groundY + 7), 13, snap(1));
       }
 
+      /* Holes are punched out of the finished road rather than the road being
+         drawn around them — one fill over the top costs nothing and saves the
+         surface, its line and its dashes all having to know where the gaps
+         are. Both walls are lit, so the far one reads as something to land on
+         rather than as the end of the picture. */
+      const line = snap(1);
+      for (const p of g.pits) {
+        const x = snap(p.x);
+        const w = snap(p.w);
+
+        ctx.fillStyle = PALETTE.pit;
+        ctx.fillRect(x, groundY, w, v.h - groundY);
+        ctx.fillStyle = PALETTE.obstacleEdge;
+        ctx.fillRect(x, groundY, line, v.h - groundY);
+        ctx.fillRect(x + w - line, groundY, line, v.h - groundY);
+      }
+
       /* Every obstacle is a plain block, because every obstacle is a plain
          block to the collision code — she stands on that top edge. Sloped and
          pointed silhouettes were the first thing drawn here and had to go:
@@ -612,19 +757,32 @@ export default function Runner() {
          a near-black sky was something you noticed a moment too late. The top
          is drawn twice as thick as the sides: it is the one edge that is a
          surface, and it should look like one. */
-      for (const o of g.obstacles) {
+      for (const o of g.blocks) {
         const x = snap(o.x);
         const y = snap(groundY - o.h);
         const w = snap(o.w);
-        const line = snap(1);
+
+        /* A block standing in a hole has no road to sit on. Stopped at the
+           ground line like every other one it reads as a slab hanging over the
+           gap — a rendering fault rather than a stepping stone — so it is
+           carried down to the bottom of the frame instead, and stands in the
+           hole the way the walls of the hole do. */
+        let base = groundY;
+        for (const p of g.pits) {
+          if (p.x >= o.x + o.w) break;
+          if (p.x + p.w > o.x) {
+            base = v.h;
+            break;
+          }
+        }
 
         ctx.fillStyle = PALETTE.obstacle;
-        ctx.fillRect(x, y, w, groundY - y);
+        ctx.fillRect(x, y, w, base - y);
 
         ctx.fillStyle = PALETTE.obstacleEdge;
         ctx.fillRect(x, y, w, line * 2);
-        ctx.fillRect(x, y, line, groundY - y);
-        ctx.fillRect(x + w - line, y, line, groundY - y);
+        ctx.fillRect(x, y, line, base - y);
+        ctx.fillRect(x + w - line, y, line, base - y);
 
         ctx.fillStyle = PALETTE.obstacleFace;
         if (o.kind === 1) {
@@ -634,11 +792,35 @@ export default function Runner() {
         }
       }
 
+      /* Beams. Carried right up to the top of the frame rather than drawn as a
+         floating bar, so there is no reading of it that involves going over —
+         it is a bridge, and the sky above it is not somewhere she can be. The
+         underside gets the thick lit edge for the same reason the top of a
+         block does: it is the edge that decides things. */
+      for (const o of g.hangs) {
+        const x = snap(o.x);
+        const w = snap(o.w);
+        const y = snap(groundY - o.clear);
+
+        ctx.fillStyle = PALETTE.obstacle;
+        ctx.fillRect(x, 0, w, y);
+
+        ctx.fillStyle = PALETTE.obstacleEdge;
+        ctx.fillRect(x, y - line * 2, w, line * 2);
+        ctx.fillRect(x, 0, line, y);
+        ctx.fillRect(x + w - line, 0, line, y);
+
+        /* A rib down the middle, so a wide beam is not a blank slab. */
+        ctx.fillStyle = PALETTE.obstacleFace;
+        ctx.fillRect(x + snap(Math.floor(o.w / 2)), y - snap(9), line, snap(7));
+      }
+
       /* Her shadow, shrinking as she climbs — the only cue for how high she is
          once she has left the ground. */
       const img = sprite.current;
       const air = g.lift - g.floor;
-      if (air > 0.5) {
+      /* Nothing to cast onto over a hole, which is most of what a hole is. */
+      if (air > 0.5 && g.floor !== VOID_FLOOR) {
         /* Cast onto whatever is under her, not onto the road, or it detaches
            from her the moment she is over a ledge. */
         const t = Math.max(0, 1 - air / 60);
@@ -717,6 +899,8 @@ export default function Runner() {
       field.removeEventListener('touchcancel', release);
       window.removeEventListener('mouseup', release);
       window.removeEventListener('keydown', onKey);
+      window.removeEventListener('keyup', onKeyUp);
+      window.removeEventListener('blur', release);
     };
   }, [booted, toPhase, rememberBest, reset]);
 
@@ -783,7 +967,16 @@ export default function Runner() {
           {phase === 'ready' && (
             <div className={`${styles.veil} ${styles.veilClear}`}>
               {/* <p className={styles.eyebrow}>Tirana</p> */}
-              <p className={styles.hint}>Tap to go.<br/>Use the pad below.<br/>&nbsp;</p>
+              {/* The hold is the whole game now and nothing on screen shows it,
+                  so it gets said here. The beams are worth a line too: they are
+                  the one thing that kills for jumping rather than for not. */}
+              <p className={styles.hint}>
+                Tap the pad to go.
+                <br />
+                Hold it longer to jump higher.
+                <br /><br />
+                {/* Stay down for the beams. */}
+              </p>
               {/* {best > 0 && <p className={styles.record}>Furthest so far — {formatKm(best)} km</p>} */}
             </div>
           )}

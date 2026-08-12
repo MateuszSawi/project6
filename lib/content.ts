@@ -288,7 +288,9 @@ export interface Game {
 export const GAMES: Game[] = [
   {
     id: 'runner',
-    href: '/games/runner/',
+    /* Built and deployed, reachable by typing the address — but not linked
+       from here yet. Put this line back to open the door. */
+    // href: '/games/runner/',
     title: 'Iza on her way to Poland',
     /* Her, out of the game itself, standing still: one frame lifted from the
        sprite atlas by scripts/build-runner-sprites.py. */
@@ -296,7 +298,13 @@ export const GAMES: Game[] = [
   },
   {
     id: 'guide',
-    title: 'A guide to keeping Iza happy',
+    title: 'A guide to keeping Iza happy in Poland',
+    src: '/games/guide.webp',
+    /* A painting rather than a photograph — it arrived with its own colour and
+       contrast, and the camera grade would only be pushing an image that was
+       never shot. The full-size original lives in assets/games, out of the
+       deploy: at 1.2MB it was fifty times the weight of the tile it fills. */
+    grade: 'none',
   },
   {
     id: 'likely',
@@ -309,11 +317,11 @@ export const GAMES: Game[] = [
   },
   {
     id: 'truth',
-    title: 'Surprise two',
+    title: 'Surprise four',
   },
   {
     id: 'know',
-    title: 'Surprise three',
+    title: 'Surprise five',
   },
 ];
 

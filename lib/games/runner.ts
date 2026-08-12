@@ -165,8 +165,12 @@ export const WORLD_H = 172;
 export const GROUND_FROM_BOTTOM = 30;
 /** Where she runs, measured from the left edge. Well over toward it: every
     unit she moves left is a unit more road visible ahead of her, which is the
-    cheapest way to buy back the look-ahead that zooming in cost. */
-export const RUNNER_X = 32;
+    cheapest way to buy back the look-ahead that zooming in cost — and the road
+    needs more of it now that a formation can be three pieces long. Not much
+    further than this: the drawn frame is 80 wide and centred on her, so at 28
+    its left edge already sits off the canvas. Her body starts 27 units into
+    that frame, which is what keeps her on screen. */
+export const RUNNER_X = 24;
 
 /** Not a crawl. The opening used to sit at 130 for long enough to be dull. */
 export const BASE_SPEED = 165;
@@ -187,7 +191,32 @@ export const MAX_SPEED = 360;
 export const SPEED_GAIN = 0.16;
 
 export const GRAVITY = 1500;
+
+/* ---------- The jump -----------------------------------------------------
+   The jump is analogue: held to the top it peaks at JUMP_V² / 2·GRAVITY,
+   let go of at once it peaks at JUMP_MIN_V² / 2·GRAVITY. That is the whole
+   difference between this and the version before it, where one press bought
+   one arc and every obstacle on the road was cleared by the same one.
+
+     held      450 -> 67.5 units up, 0.60s in the air
+     released  250 -> 20.8 units up, 0.33s in the air
+
+   Read those against the block heights below: anything under 20 is a tap,
+   anything over 30 wants most of the hold, and the beams overhead are only
+   survivable at the short end. The two numbers are the difficulty curve.
+   ------------------------------------------------------------------------ */
+
+/** Straight up, and stays there as long as the button is down. */
 export const JUMP_V = 450;
+/**
+ * What the rise is cut back to the moment the button comes up.
+ *
+ * A floor rather than a multiplier: a proportional cut makes the shortest
+ * possible tap a twitch that barely leaves the road, and every runner that
+ * does it that way is fighting its own input latency. This way the smallest
+ * jump is still a jump — it just clears less.
+ */
+export const JUMP_MIN_V = 250;
 
 /** Kilometres per world unit. Sets how long the road takes: Gdańsk lands at
     about 56 seconds. Where the MILESTONES fall inside that follows from their
@@ -197,18 +226,296 @@ export const KM_PER_UNIT = 0.125;
 /** Her collision box. Narrower than SPRITE.content.w, so the skirt and the
     trailing hair overhang it and a near miss reads as a miss. */
 export const HITBOX_W = 20;
-export const OBSTACLE_MIN_H = 18;
-export const OBSTACLE_MAX_H = 34;
+/** How tall she counts as when something is passing over her head. Under her
+    real 48, for the same reason HITBOX_W is under her real width. */
+export const HEAD_H = 44;
 
 /**
- * Obstacles are ledges, not spikes: getting on top of one is a good outcome,
- * and only meeting one side-on ends the run. So the jump never has to carry
- * her over the whole width of anything — it only has to lift her feet above
- * OBSTACLE_MAX_H, and the arc peaks at JUMP_V² / 2·GRAVITY, which is roughly
- * twice that. Width can therefore be free, and no obstacle can be unfair.
+ * The range the formations below are allowed to use.
+ *
+ * Blocks are ledges, not spikes: landing on top of one is a good outcome and
+ * only meeting one side-on ends the run. What has changed is that clearing one
+ * is no longer free — at 36 a block needs three quarters of the hold, and the
+ * short end of the range is what a tap buys. Nothing may go above the max: she
+ * jumps from the top of ledges too, and the world only has so much headroom.
  */
-export const OBSTACLE_MIN_W = 16;
-export const OBSTACLE_MAX_W = 30;
+export const OBSTACLE_MIN_H = 14;
+export const OBSTACLE_MAX_H = 36;
+
+/** How far below the road counts as gone. The far wall of a hole is what
+    actually ends most falls — see the wall test in the step — so this is only
+    the backstop, and it is shallow so the screen changes while she is still
+    visibly in the hole rather than somewhere under it. */
+export const PIT_FALL = 10;
+
+/** The floor over a hole. Any number she cannot fall onto. */
+export const VOID_FLOOR = -999;
+
+/* ==========================================================================
+   Formations
+   --------------------------------------------------------------------------
+   The road is built out of these rather than out of single random blocks. A
+   block with random dimensions is noise: within one narrow range every one of
+   them asks the same question. A formation asks a different question each time
+   — how much jump, or none at all, or whether to go over the pair or land
+   between them.
+
+   Offsets and the widths of pits and beams are in SECONDS OF TRAVEL, scaled by
+   whatever speed she is doing when the formation spawns. That is the only way
+   the timing means anything: a hole 60 units wide is a stroll at 165 and a
+   commitment at 360. Block widths stay in world units, because a block's width
+   is furniture — the arc clears it either way.
+   ========================================================================== */
+
+export type Piece =
+  /** A ledge standing on the road. `w` in world units. */
+  | { kind: 'block'; at: number; h: number; w: number; face?: number }
+  /**
+   * A beam over the road — a gantry, a low bridge. `clear` is the height of
+   * its underside above the road, so she passes below it and dies if her head
+   * is in it. This is the piece that makes a big jump a mistake.
+   */
+  | { kind: 'hang'; at: number; clear: number; secs: number }
+  /** A hole in the road. The one thing that punishes jumping too early. */
+  | { kind: 'pit'; at: number; secs: number };
+
+export interface Formation {
+  id: string;
+  /** Kilometre from which this may appear, so the road opens up as she goes. */
+  from: number;
+  /** In ascending `at` order — the spawner relies on it to keep its arrays sorted. */
+  pieces: Piece[];
+}
+
+/**
+ * Every shape the road can take, in the order she meets them. Read the comment
+ * on each as the question it asks; if two of them ask the same question, one of
+ * them should not be here.
+ *
+ * The thresholds are spread across the whole 2000 km to Gdańsk — roughly one
+ * new shape every 200 km — rather than being spent in the first quarter of it.
+ * The last two arrive at the city and beyond it, so the endless road is still
+ * showing her something she has not seen.
+ */
+export const FORMATIONS: Formation[] = [
+  /* ---- Out of Tirana. Nothing here needs more than a tap. ---- */
+
+  /** A kerb. The tap. */
+  { id: 'hop', from: 0, pieces: [{ kind: 'block', at: 0, h: 16, w: 18 }] },
+  /** Waist high — the first one that wants more than the tap. */
+  { id: 'kerb', from: 0, pieces: [{ kind: 'block', at: 0, h: 24, w: 28, face: 1 }] },
+  /* ---- The road starts biting. ---- */
+
+  /** A hole. Jumping too early now costs something, which it never did before. */
+  { id: 'gap', from: 150, pieces: [{ kind: 'pit', at: 0, secs: 0.30 }] },
+  /**
+   * Kerb, then a hole too far past it to be taken in the same arc and too soon
+   * after it to stroll to. Land off the first and go straight back up: the
+   * first thing on the road that is two jumps rather than one.
+   */
+  {
+    id: 'stagger',
+    from: 250,
+    pieces: [
+      { kind: 'block', at: 0, h: 18, w: 20 },
+      { kind: 'pit', at: 0.40, secs: 0.26 },
+    ],
+  },
+  /** Nearly the full hold. */
+  { id: 'wall', from: 320, pieces: [{ kind: 'block', at: 0, h: 34, w: 22 }] },
+  /**
+   * A platform worth the name. On its own a ledge was nothing — hop up, run
+   * along, hop down, no decision anywhere in it — so this one ends at a cliff.
+   * Getting onto it is a real hold at 26 high, and the far edge is the takeoff
+   * for the hole rather than a step back down to the road.
+   */
+  {
+    id: 'drop',
+    from: 380,
+    pieces: [
+      { kind: 'block', at: 0, h: 26, w: 40, face: 2 },
+      { kind: 'pit', at: 0.34, secs: 0.26 },
+    ],
+  },
+  /**
+   * Two of them, close enough to read as one thing to get over — which is what
+   * they are. There is no landing between them, and the top of the first is a
+   * trap rather than a rest: step off it and the side of the second arrives
+   * before her feet reach the road. Held close together on purpose, so that
+   * one arc over the pair is the obvious answer rather than a discovery.
+   */
+  {
+    id: 'pair',
+    from: 480,
+    pieces: [
+      { kind: 'block', at: 0, h: 22, w: 20 },
+      { kind: 'block', at: 0.22, h: 22, w: 20 },
+    ],
+  },
+
+  /* ---- Beams, and with them the first reason ever to jump small. ---- */
+
+  /** Nothing to do but keep her feet down. A rest that looks like a threat. */
+  { id: 'beam', from: 650, pieces: [{ kind: 'hang', at: 0, clear: 50, secs: 0.40 }] },
+  /** Clear the hole and land on the shelf on the far side of it. */
+  {
+    id: 'shelf',
+    from: 800,
+    pieces: [
+      { kind: 'pit', at: 0, secs: 0.26 },
+      { kind: 'block', at: 0.32, h: 24, w: 30, face: 1 },
+    ],
+  },
+  /**
+   * A stepping stone standing in the middle of a hole — the one place a
+   * platform is not optional. Over the lot in one arc if she has the nerve,
+   * or down onto the stone and up again. Kept low so the second option is a
+   * tap rather than a second full commitment.
+   */
+  {
+    id: 'island',
+    from: 900,
+    pieces: [
+      { kind: 'pit', at: 0, secs: 0.40 },
+      { kind: 'block', at: 0.16, h: 14, w: 24 },
+    ],
+  },
+  /** Up onto the low one, up onto the high one, off the end. */
+  {
+    id: 'steps',
+    from: 1000,
+    pieces: [
+      { kind: 'block', at: 0, h: 18, w: 26 },
+      { kind: 'block', at: 0.24, h: 32, w: 26, face: 1 },
+    ],
+  },
+  /**
+   * Two holes with one stride of road between them. Too far apart for one arc
+   * — the full jump is 0.6s and this is 0.70 — so the landing has to turn
+   * straight back into a takeoff, on a strip she has about a fifth of a second
+   * of. The tightest rhythm on the road.
+   */
+  {
+    id: 'twin',
+    from: 1150,
+    pieces: [
+      { kind: 'pit', at: 0, secs: 0.24 },
+      { kind: 'pit', at: 0.46, secs: 0.24 },
+    ],
+  },
+
+  /* ---- The half of the road that asks her to choose. ---- */
+
+  /**
+   * The signature of the whole thing: hop the kerb, but hop it SHORT, because
+   * the beam lands 0.26s later and the full arc is still 0.30s from the ground
+   * at that point. Held all the way, this one is fatal however well timed.
+   */
+  {
+    id: 'duck',
+    from: 1200,
+    pieces: [
+      { kind: 'block', at: 0, h: 16, w: 18 },
+      { kind: 'hang', at: 0.26, clear: 56, secs: 0.22 },
+    ],
+  },
+  /** A hole worth respecting: the short hop does not cross this one. */
+  { id: 'chasm', from: 1450, pieces: [{ kind: 'pit', at: 0, secs: 0.40 }] },
+  /**
+   * Three beats in one breath: hop the kerb short, run the length of the beam
+   * with her feet down, then a real jump once she is out from under it. The
+   * last block sits a good stride past the beam and not right behind it —
+   * closer, the run-up for it starts while she is still underneath, and the
+   * only surviving answer is one exact hold rather than a decision.
+   */
+  {
+    id: 'tunnel',
+    from: 1600,
+    pieces: [
+      { kind: 'block', at: 0, h: 16, w: 18 },
+      { kind: 'hang', at: 0.26, clear: 56, secs: 0.24 },
+      { kind: 'block', at: 0.92, h: 26, w: 22, face: 1 },
+    ],
+  },
+  /** A staircase. Three hops up, then the drop off the top. */
+  {
+    id: 'climb',
+    from: 1700,
+    pieces: [
+      { kind: 'block', at: 0, h: 20, w: 18 },
+      { kind: 'block', at: 0.30, h: 28, w: 18 },
+      { kind: 'block', at: 0.60, h: 36, w: 18 },
+    ],
+  },
+
+  /* ---- Gdańsk, and the road past it. ---- */
+
+  /**
+   * The one that asks for the two halves of the jump at once: a hole to get
+   * over with a beam across the top of it. The hole is narrow deliberately —
+   * airtime and height are the same number, so a hole that needed a real jump
+   * would leave one exact hold that works and nothing either side of it. As it
+   * stands the tap crosses it comfortably and the hold is fatal, which is a
+   * decision rather than a lock. The beam starts before the hole so the two
+   * read as one obstacle.
+   */
+  {
+    id: 'bridge',
+    from: 2000,
+    pieces: [
+      { kind: 'hang', at: -0.06, clear: 78, secs: 0.34 },
+      { kind: 'pit', at: 0, secs: 0.18 },
+    ],
+  },
+  /** Over the hole, then straight back down for the gate. Endless road only. */
+  {
+    id: 'gate',
+    from: 2400,
+    pieces: [
+      { kind: 'pit', at: 0, secs: 0.26 },
+      { kind: 'hang', at: 0.46, clear: 52, secs: 0.24 },
+    ],
+  },
+];
+
+/**
+ * Picks the next shape of road.
+ *
+ * Weighted toward whatever has only just become possible, so crossing a
+ * threshold is something she notices rather than a slow change in the odds.
+ * Never the same one twice running: a repeat is the one thing guaranteed to
+ * read as a metronome again.
+ */
+export function pickFormation(km: number, last: string | null): Formation {
+  const open = FORMATIONS.filter((f) => km >= f.from);
+  const fresh = open.filter((f) => km - f.from < 700);
+  const pool = fresh.length > 1 && Math.random() < 0.55 ? fresh : open;
+
+  const draw = () => pool[Math.floor(Math.random() * pool.length)];
+  const first = draw();
+  /* One retry, not a loop — with a pool of one there is nothing else to pick
+     and a loop would spin forever. */
+  return first.id === last && pool.length > 1 ? draw() : first;
+}
+
+/**
+ * Clear road after a formation, in seconds of travel.
+ *
+ * The old spawner never gave less than a full second, and the jump is 0.6s —
+ * so there was always a stretch of ground to reset the rhythm on, every single
+ * time. This starts under a second and closes to about half of one, which is
+ * inside the length of a jump: by the far end a landing regularly has to go
+ * straight back into a takeoff. The random half is as much the point as the
+ * shrinking half.
+ *
+ * It does not go below about 0.45s. That is roughly the warning she gets at
+ * full speed once RUNNER_X and the width of the view are paid for, and a gap
+ * shorter than the look-ahead is not difficulty, it is a coin toss.
+ */
+export function restGap(km: number): number {
+  const t = Math.min(1, km / 1400);
+  return 0.82 - 0.34 * t + Math.random() * 0.34;
+}
 
 /** Grace after running off a ledge in which a jump still counts, in seconds. */
 export const COYOTE_S = 0.1;
@@ -250,5 +557,8 @@ export const PALETTE = {
   obstacle: '#4a1220',
   obstacleEdge: '#d4577a',
   obstacleFace: '#7d1a2d',
+  /* Inside a hole. Darker than anything else on the screen, because it is the
+     one place on the road that is not road. */
+  pit: '#0b080a',
   accent: '#d6516a',
 } as const;
