@@ -6,7 +6,7 @@
 --
 --  Trzyma dwie liczby: najdalszy przejechany dystans w km oraz
 --  ilosc podejsc. Jeden wiersz, bo to rekord jednej osoby, nie
---  tablica wynikow.
+--  tablica wynikow. Podejscia dodatkowo w rozbiciu na kraje.
 -- ════════════════════════════════════════════════════════════
 
 create table if not exists public.runner_best (
@@ -67,6 +67,40 @@ on conflict (ip) do nothing;
 
 
 -- ────────────────────────────────────────────────────────────
+--  Podejscia w rozbiciu na kraje
+--
+--  Osobna tabela, bo runner_best to jeden wiersz i kraj nie ma
+--  gdzie sie w nim zmiescic. Suma zostaje tam gdzie byla.
+--
+--  request_country() jest w obu plikach, oba razy jako "create or
+--  replace" z ta sama trescia — tak jak ignored_ip, wiec kolejnosc
+--  puszczania nie ma znaczenia. Kraj bierze sie z naglowka
+--  cf-ipcountry, ktory Cloudflare doklada przed Supabase.
+-- ────────────────────────────────────────────────────────────
+
+create table if not exists public.runner_attempt_country (
+  country  text primary key,
+  attempts bigint not null default 0,
+  last_at  timestamptz
+);
+
+alter table public.runner_attempt_country enable row level security;
+
+create or replace function public.request_country()
+returns text
+language sql
+stable
+as $$
+  select coalesce(
+    nullif(upper(left(trim(
+      nullif(current_setting('request.headers', true), '')::json ->> 'cf-ipcountry'
+    ), 2)), ''),
+    '??'
+  );
+$$;
+
+
+-- ────────────────────────────────────────────────────────────
 --  Zapis. Strona PISZE wylacznie przez ta funkcje — zadnego
 --  update dla anon, wiec z przegladarki nie da sie rekordu
 --  obnizyc ani skasowac.
@@ -119,6 +153,16 @@ begin
    where game = 'runner'
   returning best_km into v_best;
 
+  -- To samo podejscie, tylko z kraju. Wylaczone adresy pomijamy tak
+  -- samo jak w sumie wyzej — inaczej rozbicie nie zgadzaloby sie z nia.
+  if not v_mine then
+    insert into public.runner_attempt_country (country, attempts, last_at)
+    values (public.request_country(), 1, now())
+    on conflict (country) do update
+      set attempts = runner_attempt_country.attempts + 1,
+          last_at  = now();
+  end if;
+
   return coalesce(v_best, 0);
 end;
 $$;
@@ -126,10 +170,16 @@ $$;
 revoke all on function public.save_runner_best(integer) from public;
 grant execute on function public.save_runner_best(integer) to anon;
 
--- Podglad:
---   select game, best_km, attempts, set_at from public.runner_best;
+-- Podglad (czas lokalny, nie UTC):
+--   select game, best_km, attempts,
+--          set_at at time zone 'Europe/Warsaw' as set_at_pl
+--   from public.runner_best;
+-- Skad probowano:
+--   select country, attempts from public.runner_attempt_country
+--   order by attempts desc;
 -- Wyzerowanie przed wyslaniem strony:
 --   update public.runner_best set best_km = 0, attempts = 0, set_at = null;
+--   delete from public.runner_attempt_country;
 -- Sprawdzenie, jaki adres widzi baza (odpal z przegladarki, nie z SQL
 -- Editora — tam naglowkow nie ma):
 --   select current_setting('request.headers', true);
