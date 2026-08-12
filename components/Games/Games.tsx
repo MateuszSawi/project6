@@ -63,12 +63,14 @@ export default function Games() {
           {GAMES.map((game, i) => {
             const number = String(i + 1).padStart(2, '0');
 
+            const art = game.src || game.sprite;
+
             /* Everything inside the tile, so the linked and the sealed
                versions cannot drift apart — only the wrapper differs.
 
                The picture and the link are independent: a game can be
                announced with its artwork days before there is anything to
-               open, which is exactly what the first one is doing. */
+               open, which is exactly what the third one is doing. */
             const body = (
               <>
                 {game.src ? (
@@ -82,6 +84,23 @@ export default function Games() {
                     />
                     <span className={styles.scrim} aria-hidden="true" />
                   </>
+                ) : game.sprite ? (
+                  /* A drawn game shows its character rather than a photograph:
+                     she stands on the floor of the tile at her own proportions,
+                     with the tile's own gradient left visible behind her.
+                     Deliberately not a Frame — the grade, the veil and the
+                     grain are a camera's, and there is no camera here. */
+                  /* eslint-disable-next-line @next/next/no-img-element -- a
+                     handful of pixels, served at their own size; next/image
+                     would only resample them soft. */
+                  <img
+                    className={styles.sprite}
+                    src={game.sprite}
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                    aria-hidden="true"
+                  />
                 ) : (
                   <span className={styles.glyph} aria-hidden="true">
                     ?
@@ -115,7 +134,7 @@ export default function Games() {
                     {body}
                   </Link>
                 ) : (
-                  <div className={styles.card} data-art={game.src ? '' : undefined}>
+                  <div className={styles.card} data-art={art ? '' : undefined}>
                     {body}
                   </div>
                 )}

@@ -262,6 +262,13 @@ export interface Game {
   title: string;
   /** Photograph behind the tile. Only the ones that are open get one. */
   src?: string;
+  /**
+   * A still figure standing in the tile instead of a photograph — for the
+   * games that are drawn rather than shot. Pixel art, shown at its own edges
+   * and never stretched, so the file should be cropped to the character.
+   * Ignored when `src` is set; a tile gets one kind of picture or the other.
+   */
+  sprite?: string;
   /** See Place.grade. */
   grade?: 'soft' | 'strong' | 'none';
   /** object-position, when the subject is not in the middle of the file. */
@@ -271,14 +278,26 @@ export interface Game {
 /**
  * The list at the foot of the page. Order is the order she sees.
  *
- * The sealed ones are numbered rather than named on purpose — naming a game
- * that does not exist yet is a promise with a shape, and the shape is the part
- * most likely to change.
+ * A sealed tile is named only once its shape is settled — a title is a promise
+ * with edges, and the edges are the part most likely to move. The ones still
+ * numbered are the ones that could turn out to be anything.
  *
  * To open a sealed one: add `href` (and a `src`, if it deserves a photograph)
  * and build the matching route under app/games. Nothing else changes.
  */
 export const GAMES: Game[] = [
+  {
+    id: 'runner',
+    href: '/games/runner/',
+    title: 'Iza on her way to Poland',
+    /* Her, out of the game itself, standing still: one frame lifted from the
+       sprite atlas by scripts/build-runner-sprites.py. */
+    sprite: '/games/runner/iza-still.png',
+  },
+  {
+    id: 'guide',
+    title: 'A guide to keeping Iza happy',
+  },
   {
     id: 'likely',
     /* Built and deployed, but not linked yet — put this line back when it

@@ -197,6 +197,70 @@
   pointer-events: none;
 }
 
+/* Darker than a plain panel, because the tile next to it is a photograph under
+   a heavy scrim and the two sit side by side. Not a flat black either — the
+   light falls from above, the way it does on the tiles with pictures in them.
+
+   Has to stay below both [data-art] and [data-open]: it weighs the same as
+   either of them, so source order is what decides it. */
+.card:has(.sprite) {
+  background:
+    radial-gradient(85% 75% at 50% 0%, rgba(125, 26, 45, 0.24), transparent 72%),
+    linear-gradient(to top, $ink-deep 0%, $ink 60%, $ink-soft 100%);
+}
+
+/* A drawn game, standing in its own tile. She keeps her proportions and her
+   hard edges — a pixel figure resampled smooth is the one mistake this cannot
+   make — and the tile's gradient stays visible around her, so the difference
+   between this and a photograph tile is the point rather than an accident. */
+.sprite {
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline-end: 4%;
+  z-index: -1;
+  width: auto;
+  /* Every tile is a square at every width, so one number holds everywhere. At
+     68% of it she is about a third of the tile wide, which is what the title
+     below is given room for. */
+  height: 68%;
+  /* Nearest-neighbour on the way up, so the pixels stay pixels. */
+  image-rendering: pixelated;
+  /* The same low bordeaux light that falls on the rest of the tile, so she is
+     lit by the room rather than pasted into it. */
+  filter: drop-shadow(0 6px 22px rgba(11, 8, 10, 0.75))
+    drop-shadow(0 0 34px rgba(125, 26, 45, 0.5));
+  pointer-events: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* A floor for her to stand on. Without it she is a cut-out that stops dead at
+   the bottom edge of the tile; with it she is standing in the dark like
+   everything else on this page. */
+.card:has(.sprite)::after {
+  content: "";
+  position: absolute;
+  inset-block-end: -14%;
+  inset-inline-end: -6%;
+  z-index: -2;
+  width: 62%;
+  aspect-ratio: 1;
+  background: radial-gradient(
+    closest-side,
+    rgba(125, 26, 45, 0.42),
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+/* She is standing where the words go, so the words stop before they reach her.
+   Wrapping a title early is cheaper than setting it over a dress. */
+.card:has(.sprite) .name {
+  /* She takes 39% of the tile with her arms out, plus the 4% she is held off
+     the edge by — this is the rest of it. */
+  max-width: 55%;
+}
+
 /* ---------- Inside a tile ------------------------------- */
 
 .index {

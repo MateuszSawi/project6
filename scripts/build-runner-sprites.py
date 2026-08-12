@@ -79,6 +79,12 @@ ANIMATIONS = [
     ("jump", 3, 4),
 ]
 
+# The one frame that also leaves the atlas as a file of its own, for the tile
+# on the front page. A tile is not a canvas — it wants a picture it can drop
+# in, and the pose it wants is the one the game is named after: off the ground,
+# arms out, on her way. (animation, frame index)
+STILL = ("jump", 1)
+
 # --------------------------------------------------------------------------
 # Bordeaux ramp, darkest to lightest. Matches styles/variables.scss.
 # --------------------------------------------------------------------------
@@ -206,9 +212,19 @@ def main() -> None:
         "height": max(b[3] for b in boxes) - min(b[1] for b in boxes),
     }
 
+    # Cropped to its own edges rather than to contentBox: this file is placed
+    # by its outline, not aligned against the other frames, so the empty margin
+    # every cell carries would only push her off-centre in the tile.
+    still_row = meta["animations"][STILL[0]]["row"]
+    still = atlas.crop((STILL[1] * FRAME_W, still_row * FRAME_H,
+                        (STILL[1] + 1) * FRAME_W, (still_row + 1) * FRAME_H))
+    still = still.crop(still.getbbox())
+
     os.makedirs(OUT_DIR, exist_ok=True)
     atlas_path = os.path.join(OUT_DIR, "iza.png")
     atlas.save(atlas_path, optimize=True)
+    still_path = os.path.join(OUT_DIR, "iza-still.png")
+    still.save(still_path, optimize=True)
     with open(os.path.join(OUT_DIR, "iza.json"), "w", encoding="utf-8") as f:
         json.dump(meta, f, indent=2)
         f.write("\n")
@@ -219,6 +235,9 @@ def main() -> None:
               f"luma {r['luma_before']:>5.1f} -> {r['luma_after']:>5.1f}")
     print(f"\natlas   {atlas.size[0]}x{atlas.size[1]}  "
           f"{os.path.getsize(atlas_path)} bytes  -> {atlas_path}")
+    print(f"still   {still.size[0]}x{still.size[1]}  "
+          f"{os.path.getsize(still_path)} bytes  -> {still_path}  "
+          f"({STILL[0]} frame {STILL[1]})")
     print(f"content box inside each cell: {meta['contentBox']}")
 
 
