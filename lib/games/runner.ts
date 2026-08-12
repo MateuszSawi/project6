@@ -177,23 +177,31 @@ export const RUNNER_X = 24;
  * points below, held flat past the last one.
  *
  * A single rate was the simpler thing and the wrong shape: at a constant gain
- * the ceiling arrives around 1200km and the last two fifths of the road to
- * Gdańsk are run flat out, which is exactly where the formations that ask the
- * most of her open up. The knee at 1250 buys that stretch back — the climb
- * slows to a quarter of its rate for the last twenty units, so the hardest
- * shapes are met at a speed she can still read, and the ceiling lands at 1750
- * rather than sitting over half the journey.
+ * the ceiling arrived around 1200km and the last two fifths of the road to
+ * Gdańsk were run flat out, which is exactly where the formations that ask the
+ * most of her open up. The knee at 1250 buys that stretch back — past it the
+ * climb slows to a fifth of its rate — so `duck`, `chasm` and `climb` are all
+ * met at a speed she can still read, and the top of the road arrives with the
+ * city rather than sitting over half the journey.
  *
- * The ceiling itself is why the endless road can be run forever. At 360, with
- * her standing at RUNNER_X, an obstacle is on screen for about six tenths of a
- * second before it reaches her. It came down from 375 when the world was
- * zoomed in — a smaller world is a shorter view of the road — so the two have
- * to be read together: raise it and the zoom has to come back out.
+ * The last point is the ceiling, and it is why the endless road can be run
+ * forever: past Gdańsk nothing gets faster, only denser. At 350, with her
+ * standing at RUNNER_X, an obstacle is on screen for about six tenths of a
+ * second before it reaches her. That number came down from 375 when the world
+ * was zoomed in — a smaller world is a shorter view of the road — so the two
+ * have to be read together: raise it and the zoom has to come back out.
  */
 export const SPEED_RAMP: { km: number; speed: number }[] = [
   { km: 0, speed: 165 },
-  { km: 1250, speed: 340 },
-  { km: 1750, speed: 360 },
+  { km: 1250, speed: 320 },
+  /* These three are one straight line — 10 units per 250km — so the road out of
+     the knee climbs at a fifth of the rate it came in at. They are kept as
+     separate points rather than folded into the last one because this is the
+     stretch most likely to be retuned, and bending it here should not mean
+     working out a slope first. */
+  { km: 1500, speed: 330 },
+  { km: 1750, speed: 340 },
+  { km: 2000, speed: 350 },
 ];
 
 /** Not a crawl. The opening used to sit at 130 for long enough to be dull. */
