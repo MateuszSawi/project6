@@ -180,35 +180,37 @@ export const RUNNER_X = 20;
  * A single rate was the simpler thing and the wrong shape: at a constant gain
  * the ceiling arrived around 1200km and the last two fifths of the road to
  * Gdańsk were run flat out, which is exactly where the formations that ask the
- * most of her open up. Tapering it buys that stretch back — the climb is 31
- * units per 250km out of Tirana and ten by the end — so `duck`, `chasm` and
- * `climb` are all met at a speed she can still read, and the top of the road
- * arrives with the city rather than sitting over half the journey.
+ * most of her open up.
+ *
+ * What the curve has been doing over five revisions is flattening: it opens
+ * faster than it used to and finishes slower, so the whole road now sits inside
+ * a hundred units rather than the two hundred it began with. Speed was never
+ * the interesting variable — it only changes the tempo of the same press — and
+ * every time it was raised, reading time was what got spent.
  *
  * The last point is the ceiling, and it is why the endless road can be run
- * forever: past Gdańsk nothing gets faster, only denser. It has come down four
- * times now — 360, 350, 330, 310 — and each time for the same reason, which is
- * the only one that matters here: the road was arriving faster than it could be
- * read. At 300, with her standing at RUNNER_X, an obstacle is on screen for
- * about eight tenths of a second before it reaches her, against a person's
- * roughly two tenths of reaction. It also came down from 375 when the world was
- * zoomed in — a smaller world is a shorter view of the road — so the two have
- * to be read together: raise it and the zoom has to come back out.
+ * forever: past Gdańsk nothing gets faster, only denser. It has come down five
+ * times now — 375, 360, 350, 330, 310 — always for the same reason. At 280,
+ * with her standing at RUNNER_X, an obstacle is on screen for about eight
+ * tenths of a second before it reaches her, against a person's roughly two
+ * tenths of reaction. The first of those cuts was for the zoom rather than the
+ * speed — a smaller world is a shorter view of the road — so the two have to be
+ * read together: raise either and the other has to give.
  */
 export const SPEED_RAMP: { km: number; speed: number }[] = [
-  { km: 0, speed: 165 },
-  { km: 250, speed: 196 },
-  { km: 500, speed: 217 },
-  { km: 750, speed: 238 },
+  { km: 0, speed: 180 },
+  { km: 250, speed: 200 },
+  { km: 500, speed: 210 },
+  { km: 750, speed: 230 },
   /* From here on the road is opening up faster than it is speeding up: `duck`,
      `chasm`, `climb` and the rest all unlock past 1000, and what they need is
-     reading time rather than a slower thumb. The climb is down to ten units per
-     250km by the end, a third of what it leaves Tirana at. */
-  { km: 1000, speed: 250 },
-  { km: 1250, speed: 270 },
-  { km: 1500, speed: 280 },
-  { km: 1750, speed: 290 },
-  { km: 2000, speed: 300 },
+     reading time rather than a slower thumb. Ten units per 250km all the way
+     out, half of what it leaves Tirana at. */
+  { km: 1000, speed: 240 },
+  { km: 1250, speed: 250 },
+  { km: 1500, speed: 260 },
+  { km: 1750, speed: 270 },
+  { km: 2000, speed: 280 },
 ];
 
 /** Not a crawl. The opening used to sit at 130 for long enough to be dull. */
