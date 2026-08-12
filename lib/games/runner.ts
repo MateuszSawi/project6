@@ -172,23 +172,46 @@ export const GROUND_FROM_BOTTOM = 30;
     that frame, which is what keeps her on screen. */
 export const RUNNER_X = 24;
 
-/** Not a crawl. The opening used to sit at 130 for long enough to be dull. */
-export const BASE_SPEED = 165;
 /**
- * The ceiling, and the reason the endless road can be run forever.
+ * How fast she is going, by how far she has come. Straight lines between the
+ * points below, held flat past the last one.
  *
- * Speed climbs with distance and then stops here. At 360, with her standing at
- * RUNNER_X, an obstacle is on screen for 0.53s before it reaches her and the
- * jump has to start 0.10s out, leaving 0.44s to see it and press.
+ * A single rate was the simpler thing and the wrong shape: at a constant gain
+ * the ceiling arrives around 1200km and the last two fifths of the road to
+ * Gdańsk are run flat out, which is exactly where the formations that ask the
+ * most of her open up. The knee at 1250 buys that stretch back — the climb
+ * slows to a quarter of its rate for the last twenty units, so the hardest
+ * shapes are met at a speed she can still read, and the ceiling lands at 1750
+ * rather than sitting over half the journey.
  *
- * It came down from 375 when the world was zoomed in: a smaller world is a
- * shorter view of the road, and at 375 that left only 0.39s. The pair of them
- * have to be read together — raise this and the zoom has to come back out.
+ * The ceiling itself is why the endless road can be run forever. At 360, with
+ * her standing at RUNNER_X, an obstacle is on screen for about six tenths of a
+ * second before it reaches her. It came down from 375 when the world was
+ * zoomed in — a smaller world is a shorter view of the road — so the two have
+ * to be read together: raise it and the zoom has to come back out.
  */
-export const MAX_SPEED = 360;
-/** Units per second gained per km travelled — flat out at about 1200 km, some
-    forty seconds in. Gentler than it was, for the same reason as the ceiling. */
-export const SPEED_GAIN = 0.16;
+export const SPEED_RAMP: { km: number; speed: number }[] = [
+  { km: 0, speed: 165 },
+  { km: 1250, speed: 340 },
+  { km: 1750, speed: 360 },
+];
+
+/** Not a crawl. The opening used to sit at 130 for long enough to be dull. */
+export const BASE_SPEED = SPEED_RAMP[0].speed;
+/** The ceiling. Derived, so it cannot drift from the ramp that reaches it. */
+export const MAX_SPEED = SPEED_RAMP[SPEED_RAMP.length - 1].speed;
+
+/** Units per second at `km`, read off SPEED_RAMP. */
+export function speedAt(km: number): number {
+  for (let i = 1; i < SPEED_RAMP.length; i += 1) {
+    const b = SPEED_RAMP[i];
+    if (km < b.km) {
+      const a = SPEED_RAMP[i - 1];
+      return a.speed + ((b.speed - a.speed) * (km - a.km)) / (b.km - a.km);
+    }
+  }
+  return MAX_SPEED;
+}
 
 export const GRAVITY = 1500;
 

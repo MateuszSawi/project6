@@ -18,13 +18,11 @@ import {
   JUMP_MIN_V,
   JUMP_V,
   KM_PER_UNIT,
-  MAX_SPEED,
   MILESTONES,
   MILESTONE_MS,
   PALETTE,
   PIT_FALL,
   RUNNER_X,
-  SPEED_GAIN,
   SPRITE,
   VOID_FLOOR,
   WORLD_H,
@@ -34,6 +32,7 @@ import {
   pickFormation,
   restGap,
   saveBest,
+  speedAt,
 } from '@/lib/games/runner';
 
 import styles from './Runner.module.scss';
@@ -492,7 +491,7 @@ export default function Runner() {
       const g = game.current;
       const v = view.current;
 
-      g.speed = Math.min(MAX_SPEED, BASE_SPEED + g.km * SPEED_GAIN);
+      g.speed = speedAt(g.km);
 
       const moved = g.speed * dt;
       g.dist += moved;
