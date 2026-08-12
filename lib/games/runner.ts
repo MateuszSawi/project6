@@ -99,9 +99,9 @@ export const CITIES: { km: number; name: string }[] = [
  * would now flash underneath the arrival screen in the same frame.
  */
 export const MILESTONES: Milestone[] = [
-  { km: 500, line: 'Keep running.' },
-  { km: 1000, line: 'Halfway. Faster.' },
-  { km: 1500, line: 'Almost here.' },
+  { km: 500, line: 'Faster.' },
+  { km: 1000, line: 'Halfway.' },
+  { km: 1500, line: 'Almost.' },
 ];
 
 /** How long a milestone sentence stays on screen, in ms. */
@@ -166,11 +166,12 @@ export const GROUND_FROM_BOTTOM = 30;
 /** Where she runs, measured from the left edge. Well over toward it: every
     unit she moves left is a unit more road visible ahead of her, which is the
     cheapest way to buy back the look-ahead that zooming in cost — and the road
-    needs more of it now that a formation can be three pieces long. Not much
-    further than this: the drawn frame is 80 wide and centred on her, so at 28
-    its left edge already sits off the canvas. Her body starts 27 units into
-    that frame, which is what keeps her on screen. */
-export const RUNNER_X = 24;
+    needs more of it now that a formation can be three pieces long. The drawn
+    frame is 80 wide and centred on her, so its left edge has been off the
+    canvas for a while; what keeps her on screen is that her body starts 27
+    units into that frame. At 20 it begins at x=7 and there are seven units of
+    room left, so this is very nearly as far as it goes. */
+export const RUNNER_X = 20;
 
 /**
  * How fast she is going, by how far she has come. Straight lines between the
@@ -185,24 +186,29 @@ export const RUNNER_X = 24;
  * city rather than sitting over half the journey.
  *
  * The last point is the ceiling, and it is why the endless road can be run
- * forever: past Gdańsk nothing gets faster, only denser. At 330, with her
- * standing at RUNNER_X, an obstacle is on screen for about two thirds of a
- * second before it reaches her. That number came down from 375 when the world
- * was zoomed in — a smaller world is a shorter view of the road — so the two
- * have to be read together: raise it and the zoom has to come back out.
+ * forever: past Gdańsk nothing gets faster, only denser. It has come down
+ * three times now — 360, 350, and this — each time because the road turned out
+ * to be arriving faster than it could be read, which is the only thing that
+ * matters here. At 310, with her standing at RUNNER_X, an obstacle is on screen
+ * for about three quarters of a second before it reaches her, against a
+ * person's roughly two tenths of reaction. It also came down from 375 when the
+ * world was zoomed in — a smaller world is a shorter view of the road — so the
+ * two have to be read together: raise it and the zoom has to come back out.
  */
 export const SPEED_RAMP: { km: number; speed: number }[] = [
   { km: 0, speed: 165 },
   { km: 250, speed: 196 },
   { km: 500, speed: 227 },
+  /* The knee. Up to here the climb is 31 units per 250km; past it, ten — a
+     third of the rate. Where it sits is set by reaction rather than by feel:
+     the formations that need reading rather than reflex all open after 1000,
+     and the road has to still be legible when they do. */
   { km: 750, speed: 258 },
-  /* The knee. Everything above climbs at 31 units per 250km; everything below
-     it at ten, and then eleven — a third of the rate. */
-  { km: 1000, speed: 289 },
-  { km: 1250, speed: 300 },
-  { km: 1500, speed: 310 },
-  { km: 1750, speed: 320 },
-  { km: 2000, speed: 330 },
+  { km: 1000, speed: 270 },
+  { km: 1250, speed: 280 },
+  { km: 1500, speed: 290 },
+  { km: 1750, speed: 300 },
+  { km: 2000, speed: 310 },
 ];
 
 /** Not a crawl. The opening used to sit at 130 for long enough to be dull. */
