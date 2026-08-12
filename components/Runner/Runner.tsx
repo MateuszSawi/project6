@@ -6,7 +6,6 @@ import {
   ARRIVAL,
   ARRIVAL_BEAT_MS,
   ARRIVAL_DEAF_MS,
-  BASE_SPEED,
   CITIES,
   COYOTE_S,
   GRAVITY,
@@ -105,11 +104,31 @@ interface View {
   snap: (v: number) => number;
 }
 
-function freshGame(): Game {
+/**
+ * Where a run begins, from `?from=` on the address.
+ *
+ * For testing a stretch of road without running the whole way to it — the far
+ * half only opens after 1000km and getting there by hand every time is most of
+ * an hour. Absent, which is what every real visit is, this is zero and nothing
+ * about the game changes.
+ *
+ * Deliberately a query parameter rather than a constant: the address anyone is
+ * ever given stays the real game, so there is no version of this to remember to
+ * take out again. Runs started this way never touch the record — see finish().
+ */
+function startKm(): number {
+  if (typeof window === 'undefined') return 0;
+  const asked = Number(new URLSearchParams(window.location.search).get('from'));
+  if (!Number.isFinite(asked) || asked <= 0) return 0;
+  /* Past Gdańsk makes no sense: the arrival would fire on the first frame. */
+  return Math.min(asked, JOURNEY_KM - 1);
+}
+
+function freshGame(from = 0): Game {
   return {
-    dist: 0,
-    km: 0,
-    speed: BASE_SPEED,
+    dist: from / KM_PER_UNIT,
+    km: from,
+    speed: speedAt(from),
     lift: 0,
     vy: 0,
     grounded: true,
@@ -123,7 +142,9 @@ function freshGame(): Game {
     untilSpawn: 220,
     lastForm: null,
     animT: 0,
-    passed: 0,
+    /* Milestones already behind her count as said. Without this a run started
+       at 1000 fires every earlier line at once on the first frame. */
+    passed: MILESTONES.filter((m) => m.km <= from).length,
     endless: false,
   };
 }
@@ -196,6 +217,8 @@ export default function Runner() {
 
   /** Read inside the loop, where the state copy would be a frame stale. */
   const bestRef = useRef(0);
+  /** Where runs begin. Zero on every real visit — see startKm(). */
+  const fromRef = useRef(0);
 
   const toPhase = useCallback((next: Phase) => {
     phaseRef.current = next;
@@ -224,7 +247,7 @@ export default function Runner() {
   }, [toPhase]);
 
   const reset = useCallback(() => {
-    game.current = freshGame();
+    game.current = freshGame(fromRef.current);
     setMilestone(null);
     setSaveFailed(false);
     toPhase('ready');
@@ -270,6 +293,11 @@ export default function Runner() {
         toPhase('ready');
         setBooted(true);
       });
+
+    /* Read here rather than at first render: on the server there is no address
+       to read, and the counter would then disagree with itself on hydration. */
+    fromRef.current = startKm();
+    if (fromRef.current > 0) game.current = freshGame(fromRef.current);
 
     loadBest().then((record) => {
       if (alive) rememberBest(record);
@@ -365,7 +393,7 @@ export default function Runner() {
 
       if (phaseRef.current === 'ready') {
         if (!deliberate) return false;
-        game.current = freshGame();
+        game.current = freshGame(fromRef.current);
         setMilestone(null);
         setSaveFailed(false);
         last = 0;
@@ -478,8 +506,11 @@ export default function Runner() {
 
       /* Only the endless road is scored. A run that never reached Gdańsk has
          not started counting yet, and letting it write would leave a record
-         below the arrival — a number nobody in endless could ever be shown. */
-      if (!connected || !endless) return;
+         below the arrival — a number nobody in endless could ever be shown.
+
+         And never a run that was handed a head start: it did not travel the
+         distance it is claiming, and the record is shared. */
+      if (!connected || !endless || fromRef.current > 0) return;
       saveBest(km)
         .then(rememberBest)
         .catch(() => setSaveFailed(true));
@@ -965,6 +996,14 @@ export default function Runner() {
 
           {phase === 'ready' && (
             <div className={`${styles.veil} ${styles.veilClear}`}>
+              {/* Says so out loud, so a test run is never mistaken for a real
+                  one — and so a forgotten `?from=` on the address cannot quietly
+                  look like an ordinary game. */}
+              {fromRef.current > 0 && (
+                <p className={styles.eyebrow}>
+                  Test run — starting at {formatKm(fromRef.current)} km, not scored
+                </p>
+              )}
               {/* <p className={styles.eyebrow}>Tirana</p> */}
               {/* The hold is the whole game now and nothing on screen shows it,
                   so it gets said here. The beams are worth a line too: they are
