@@ -114,7 +114,7 @@ export const MILESTONE_MS = 3400;
  */
 export const ARRIVAL = {
   city: 'Gdańsk',
-  line: 'You made it. Now I finally get to do what I have been thinking about for months.',
+  line: 'You made it. You have no idea how much I have missed you.',
   next: 'You can keep playing in endless mode.',
   cta: 'Keep going',
 } as const;
