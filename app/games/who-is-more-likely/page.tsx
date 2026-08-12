@@ -21,6 +21,7 @@ export const metadata: Metadata = {
 export default function WhoIsMoreLikelyPage() {
   return (
     <GameLayout
+      count="likely"
       title="Who is more likely to?"
       lede={
         <>

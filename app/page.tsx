@@ -8,12 +8,14 @@ import Invitation from '@/components/Invitation/Invitation';
 import Notice from '@/components/Notice/Notice';
 import Places from '@/components/Places/Places';
 import Terms from '@/components/Terms/Terms';
+import Visit from '@/components/Visit/Visit';
 
 import styles from './page.module.scss';
 
 export default function Page() {
   return (
     <>
+      <Visit name="home" />
       <SvgFilters />
       <Atmosphere />
 

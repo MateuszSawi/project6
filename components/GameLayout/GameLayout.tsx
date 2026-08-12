@@ -4,10 +4,14 @@ import { ArrowLeft } from 'lucide-react';
 
 import Atmosphere from '@/components/Atmosphere/Atmosphere';
 import SvgFilters from '@/components/Filters/SvgFilters';
+import Visit from '@/components/Visit/Visit';
+import type { VisitKey } from '@/lib/visits';
 
 import styles from './GameLayout.module.scss';
 
 interface GameLayoutProps {
+  /** Which counter this page adds to. See visits-setup.sql. */
+  count: VisitKey;
   title: string;
   /** Set small above the title. Leave it out on a game that explains itself. */
   kind?: string;
@@ -33,9 +37,10 @@ interface GameLayoutProps {
  * Nothing here knows what a game is. A new one is a folder under app/games
  * with its own content inside this wrapper.
  */
-export default function GameLayout({ kind, title, lede, bleed, children }: GameLayoutProps) {
+export default function GameLayout({ count, kind, title, lede, bleed, children }: GameLayoutProps) {
   return (
     <>
+      <Visit name={count} />
       <SvgFilters />
       <Atmosphere />
 

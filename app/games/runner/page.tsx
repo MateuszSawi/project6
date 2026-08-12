@@ -18,6 +18,7 @@ export const metadata: Metadata = {
 export default function RunnerPage() {
   return (
     <GameLayout
+      count="runner"
       title="Iza on her way to Poland"
       lede={<p>Come to me. Jump over everything in your way.</p>}
       /* The road is the only thing on this page that gets wider for it. */

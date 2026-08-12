@@ -502,15 +502,18 @@ export default function Runner() {
       const { endless } = game.current;
       armAt = last + 450;
       toPhase('over');
-      setResult({ km, record: endless && km > bestRef.current, endless });
+      setResult({ km, record: km > bestRef.current, endless });
 
-      /* Only the endless road is scored. A run that never reached Gdańsk has
-         not started counting yet, and letting it write would leave a record
-         below the arrival — a number nobody in endless could ever be shown.
+      /* Every run is scored, whether or not it reached Gdańsk. It used to be
+         the endless road only, on the reasoning that a journey which had not
+         arrived was not yet counting — but that left every early run
+         unrecorded, and the furthest she has got is worth keeping from the
+         first attempt. Sending a smaller number is safe: the function behind
+         saveBest only ever moves the record upward.
 
-         And never a run that was handed a head start: it did not travel the
+         Never a run that was handed a head start, though: it did not travel the
          distance it is claiming, and the record is shared. */
-      if (!connected || !endless || fromRef.current > 0) return;
+      if (!connected || fromRef.current > 0) return;
       saveBest(km)
         .then(rememberBest)
         .catch(() => setSaveFailed(true));
