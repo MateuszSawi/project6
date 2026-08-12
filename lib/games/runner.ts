@@ -179,29 +179,30 @@ export const RUNNER_X = 24;
  * A single rate was the simpler thing and the wrong shape: at a constant gain
  * the ceiling arrived around 1200km and the last two fifths of the road to
  * Gdańsk were run flat out, which is exactly where the formations that ask the
- * most of her open up. The knee at 1250 buys that stretch back — past it the
- * climb slows to a fifth of its rate — so `duck`, `chasm` and `climb` are all
+ * most of her open up. The knee at 1000 buys that stretch back — past it the
+ * climb slows to a third of its rate — so `duck`, `chasm` and `climb` are all
  * met at a speed she can still read, and the top of the road arrives with the
  * city rather than sitting over half the journey.
  *
  * The last point is the ceiling, and it is why the endless road can be run
- * forever: past Gdańsk nothing gets faster, only denser. At 350, with her
- * standing at RUNNER_X, an obstacle is on screen for about six tenths of a
+ * forever: past Gdańsk nothing gets faster, only denser. At 330, with her
+ * standing at RUNNER_X, an obstacle is on screen for about two thirds of a
  * second before it reaches her. That number came down from 375 when the world
  * was zoomed in — a smaller world is a shorter view of the road — so the two
  * have to be read together: raise it and the zoom has to come back out.
  */
 export const SPEED_RAMP: { km: number; speed: number }[] = [
   { km: 0, speed: 165 },
-  { km: 1250, speed: 320 },
-  /* These three are one straight line — 10 units per 250km — so the road out of
-     the knee climbs at a fifth of the rate it came in at. They are kept as
-     separate points rather than folded into the last one because this is the
-     stretch most likely to be retuned, and bending it here should not mean
-     working out a slope first. */
-  { km: 1500, speed: 330 },
-  { km: 1750, speed: 340 },
-  { km: 2000, speed: 350 },
+  { km: 250, speed: 196 },
+  { km: 500, speed: 227 },
+  { km: 750, speed: 258 },
+  /* The knee. Everything above climbs at 31 units per 250km; everything below
+     it at ten, and then eleven — a third of the rate. */
+  { km: 1000, speed: 289 },
+  { km: 1250, speed: 300 },
+  { km: 1500, speed: 310 },
+  { km: 1750, speed: 320 },
+  { km: 2000, speed: 330 },
 ];
 
 /** Not a crawl. The opening used to sit at 130 for long enough to be dull. */
@@ -387,7 +388,7 @@ export const FORMATIONS: Formation[] = [
   /* ---- Beams, and with them the first reason ever to jump small. ---- */
 
   /** Nothing to do but keep her feet down. A rest that looks like a threat. */
-  { id: 'beam', from: 650, pieces: [{ kind: 'hang', at: 0, clear: 50, secs: 0.40 }] },
+  { id: 'beam', from: 650, pieces: [{ kind: 'hang', at: 0, clear: 58, secs: 0.40 }] },
   /** Clear the hole and land on the shelf on the far side of it. */
   {
     id: 'shelf',
@@ -441,31 +442,41 @@ export const FORMATIONS: Formation[] = [
    * The signature of the whole thing: hop the kerb, but hop it SHORT, because
    * the beam lands 0.26s later and the full arc is still 0.30s from the ground
    * at that point. Held all the way, this one is fatal however well timed.
+   *
+   * The clearance was 56 and that was the wrong number. She is 44 to the top of
+   * her head and the smallest jump in the game peaks at 20.8, so 56 left her
+   * over the beam for most of any arc at all — one press length survived and
+   * every other one died, which does not read as a decision, it reads as a
+   * broken obstacle. At 68 the short hop has real room and the full jump is
+   * still fatal, which was always the point.
    */
   {
     id: 'duck',
     from: 1200,
     pieces: [
       { kind: 'block', at: 0, h: 16, w: 18 },
-      { kind: 'hang', at: 0.26, clear: 56, secs: 0.22 },
+      { kind: 'hang', at: 0.26, clear: 68, secs: 0.22 },
     ],
   },
   /** A hole worth respecting: the short hop does not cross this one. */
   { id: 'chasm', from: 1450, pieces: [{ kind: 'pit', at: 0, secs: 0.40 }] },
   /**
    * Three beats in one breath: hop the kerb short, run the length of the beam
-   * with her feet down, then a real jump once she is out from under it. The
-   * last block sits a good stride past the beam and not right behind it —
-   * closer, the run-up for it starts while she is still underneath, and the
-   * only surviving answer is one exact hold rather than a decision.
+   * with her feet down, then a real jump once she is out from under it.
+   *
+   * The last block is held a long way past the beam — 1.05s rather than the
+   * 0.72 it started at. Nearer, the run-up for it begins while she is still
+   * underneath, so the small hop the beam demands and the big one the block
+   * demands are the same press, and only one length of it lives. Every step
+   * out bought room until about here, and nothing after.
    */
   {
     id: 'tunnel',
     from: 1600,
     pieces: [
       { kind: 'block', at: 0, h: 16, w: 18 },
-      { kind: 'hang', at: 0.26, clear: 56, secs: 0.24 },
-      { kind: 'block', at: 0.92, h: 26, w: 22, face: 1 },
+      { kind: 'hang', at: 0.26, clear: 68, secs: 0.24 },
+      { kind: 'block', at: 1.05, h: 26, w: 22, face: 1 },
     ],
   },
   /** A staircase. Three hops up, then the drop off the top. */
@@ -504,7 +515,7 @@ export const FORMATIONS: Formation[] = [
     from: 2400,
     pieces: [
       { kind: 'pit', at: 0, secs: 0.26 },
-      { kind: 'hang', at: 0.46, clear: 52, secs: 0.24 },
+      { kind: 'hang', at: 0.46, clear: 62, secs: 0.24 },
     ],
   },
 ];
