@@ -11,6 +11,25 @@
   @include container(62rem);
 }
 
+/* Opted into per game — see GameLayout's `bleed`.
+
+   For a game drawn inside a box of a fixed height, the gutter is not
+   whitespace: the canvas is as wide as it is allowed to be and no wider, so
+   every millimetre either side is a millimetre of the world nobody sees. On a
+   phone the page's own margin costs the runner about seven per cent of its
+   view of the road, which is worth more there than the tidy edge is.
+
+   Only on the small screens where it matters, and only ever as far out as a
+   hairline: the stage has a border and a corner radius, and a rounded box
+   flush against the edge of a phone reads as something that has come loose.
+   Above the breakpoint the page is wider than the container anyway and there
+   is nothing to reclaim. */
+.bleed {
+  @include mq-below(sm) {
+    margin-inline: calc(clamp(0.5rem, 2vw, 1rem) - #{$gutter});
+  }
+}
+
 /* ---------- The way back -------------------------------- */
 
 .back {

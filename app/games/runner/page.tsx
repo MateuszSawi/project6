@@ -20,6 +20,8 @@ export default function RunnerPage() {
     <GameLayout
       title="Iza on her way to Poland"
       lede={<p>Come to me. Jump over everything in your way.</p>}
+      /* The road is the only thing on this page that gets wider for it. */
+      bleed
     >
       <Runner />
     </GameLayout>

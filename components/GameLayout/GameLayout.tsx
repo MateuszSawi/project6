@@ -13,6 +13,13 @@ interface GameLayoutProps {
   kind?: string;
   /** A line or two under the title, before the game itself starts. */
   lede?: ReactNode;
+  /**
+   * Pulls the game itself out toward the edges of a small screen, leaving the
+   * words above it on the page's own margins. For games played inside a box of
+   * a fixed size, where the gutter is not whitespace but a piece of the game
+   * nobody gets to see.
+   */
+  bleed?: boolean;
   children: ReactNode;
 }
 
@@ -26,7 +33,7 @@ interface GameLayoutProps {
  * Nothing here knows what a game is. A new one is a folder under app/games
  * with its own content inside this wrapper.
  */
-export default function GameLayout({ kind, title, lede, children }: GameLayoutProps) {
+export default function GameLayout({ kind, title, lede, bleed, children }: GameLayoutProps) {
   return (
     <>
       <SvgFilters />
@@ -45,7 +52,7 @@ export default function GameLayout({ kind, title, lede, children }: GameLayoutPr
             {lede && <div className={styles.lede}>{lede}</div>}
           </header>
 
-          {children}
+          <div className={bleed ? styles.bleed : undefined}>{children}</div>
         </div>
       </main>
     </>
