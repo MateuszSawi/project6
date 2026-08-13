@@ -288,9 +288,7 @@ export interface Game {
 export const GAMES: Game[] = [
   {
     id: 'runner',
-    /* Built and deployed, reachable by typing the address — but not linked
-       from here yet. Put this line back to open the door. */
-    // href: '/games/runner/',
+    href: '/games/runner/',
     title: 'Iza on her way to Poland',
     /* Her, out of the game itself, standing still: one frame lifted from the
        sprite atlas by scripts/build-runner-sprites.py. */
