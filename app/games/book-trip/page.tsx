@@ -21,7 +21,6 @@ export default function BookTripPage() {
   return (
     <GameLayout
       count="book-trip"
-      kind="September"
       title="Book your trip"
       /* Facts, not a flourish. She is holding two dates in her head while she
          reads this, so it is set in the readable face rather than the serif
