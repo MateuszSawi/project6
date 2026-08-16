@@ -5,13 +5,13 @@ import { MessageCircle, Sparkles } from 'lucide-react';
 
 import Frame from '@/components/Frame/Frame';
 import { PLAYERS, type Side } from '@/lib/games/who-is-more-likely';
+import { whatsappLink } from '@/lib/whatsapp';
 
 import styles from './Report.module.scss';
 
 /**
  * Reading a verdict is not doing anything, so the report ends with the one
- * thing that is: a chat with the message already typed and unsent. She still
- * has to press send — the page never speaks for her.
+ * thing that is: a chat with the message already typed and unsent.
  *
  * Double quotes because the message carries a plain apostrophe of its own:
  * this is going into WhatsApp, not onto the page.
@@ -19,7 +19,7 @@ import styles from './Report.module.scss';
 const MESSAGE =
   "Cool game, but you'll have to try harder to prove you deserve a sexy goddess like me. Call me tonight.";
 
-const WHATSAPP = `https://wa.me/48690688835?text=${encodeURIComponent(MESSAGE)}`;
+const WHATSAPP = whatsappLink(MESSAGE);
 
 /**
  * The machine's rulings. The winner never changes — these are not findings,

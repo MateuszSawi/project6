@@ -3,18 +3,17 @@
 import { useState } from 'react';
 import { MessageCircle, MousePointerClick } from 'lucide-react';
 
+import { whatsappLink } from '@/lib/whatsapp';
+
 import styles from './Invitation.module.scss';
 
 /**
- * wa.me opens the chat with the message already typed but unsent — she still
- * has to press send, which is the point: the page never speaks for her.
- *
  * Double quotes because the message carries an apostrophe of its own, and a
  * plain one: this is going into WhatsApp, not onto the page.
  */
 const MESSAGE = "Yes, I will come. But I still don't give a fuck.";
 
-const WHATSAPP = `https://wa.me/48690688835?text=${encodeURIComponent(MESSAGE)}`;
+const WHATSAPP = whatsappLink(MESSAGE);
 
 /**
  * The close. One word to press, and no dates to pick — the whole point is that

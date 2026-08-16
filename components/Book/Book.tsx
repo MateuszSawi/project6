@@ -24,12 +24,12 @@ import {
   spanOf,
   tripById,
   weekOf,
-  whatsappLink,
   type Leg,
   type Trip,
 } from '@/lib/games/book-trip';
 import { complete } from '@/lib/games/upgrade-trip';
 import { connected, loadStored, pushAnswers, resetAnswers } from '@/lib/results';
+import { whatsappLink } from '@/lib/whatsapp';
 
 import styles from './Book.module.scss';
 
@@ -56,11 +56,15 @@ const BEFORE = 'upgrade-trip';
  * the week, and a locked tile on the front page is not enough on its own — the
  * address is guessable and she is the sort of person who would guess it.
  *
- * After that the page is done: the passes are gone, the one she took is stamped,
- * and there is no control anywhere on this screen that changes it. That is the
- * whole design. A date she can flip back and forth is a date I cannot buy a
- * ticket against, so the finality is the feature — and it is why the confirm is
- * two taps and why it only ever lands after the database says it landed.
+ * After that the page is done: the passes are gone and the one she took is
+ * stamped. A date she can flip back and forth is a date I cannot buy a ticket
+ * against, so the way back out is one quiet line at the very bottom, under the
+ * countdown and under the note — findable, never offered. It is also why the
+ * confirm is two taps and why it only ever lands after the database says it
+ * landed.
+ *
+ * Changing dates never leaves the row empty: a booking is replaced, not undone.
+ * See changeDates.
  *
  * The one exception is the third option. "Talk to me first" books nothing, so
  * it locks nothing: it leaves a note in the same row and hands the passes back
@@ -166,11 +170,27 @@ export default function Book() {
       .finally(() => setSaving(false));
   }
 
-  /* Only ever reachable from the note — a booked window has no way back. */
+  /* Nothing was booked, so there is nothing to keep: the note goes out of the
+     row entirely and the passes come back. */
   function undoTalk() {
     setAnswer(null);
     setPicked(null);
     if (connected) resetAnswers(GAME).catch(() => {});
+  }
+
+  /**
+   * Back to the two passes from a booked trip.
+   *
+   * Deliberately not a reset: the row keeps saying what she booked until she
+   * confirms something else, and confirm overwrites it. So walking away from
+   * this screen without picking again leaves the booking standing — a reload
+   * brings it back stamped. The only thing that ever replaces a date is
+   * another date.
+   */
+  function changeDates() {
+    setAnswer(null);
+    setPicked(null);
+    setFailed(false);
   }
 
   /* ---------- Waiting on the database --------------------- */
@@ -217,24 +237,32 @@ export default function Book() {
         <div className={styles.after}>
           <p className={styles.settled}>
             <Lock size={13} strokeWidth={2} aria-hidden="true" />
-            That is the trip. I am buying the tickets.
+            Done. Tickets are on me.
           </p>
 
           {left > 0 && (
             <p className={styles.countdown}>
-              {left} {left === 1 ? 'day' : 'days'} until you get on that plane.
+              Now I need to work out how to deserve you.
             </p>
           )}
 
-          {!connected && (
+          {/* {!connected && (
             <p className={styles.note}>
               Nothing is being kept — this copy of the page has no database behind it.
             </p>
           )}
 
           <p className={styles.note}>
-            You cannot change it here any more. If something happened, tell me and I will move it.
-          </p>
+            Something came up? Change it here, or tell me and I will move it.
+          </p> */}
+
+          {/* The way back, and the quietest thing on the screen on purpose —
+              this page is finished, and the button has to read as a repair
+              rather than as the next step. Nothing is undone by pressing it:
+              see changeDates. */}
+          <button className={styles.quiet} type="button" onClick={changeDates}>
+            Change dates
+          </button>
         </div>
       </div>
     );
@@ -248,10 +276,10 @@ export default function Book() {
         <div className={styles.talkBack}>
           <p className={styles.talkTitle}>
             <MessageCircle size={16} strokeWidth={1.8} aria-hidden="true" />
-            Neither week, then.
+            We'll pick something together on the call.
           </p>
           <p className={styles.talkLine}>
-            Nothing is booked. Tell me what does work and I will find the flights around it.
+            Apparently I still have to prove myself to you.
           </p>
 
           <button className={styles.quiet} type="button" onClick={undoTalk}>

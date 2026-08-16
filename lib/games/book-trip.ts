@@ -84,45 +84,30 @@ export const QUESTION = 'dates';
    I find out. Both happen on the same tap, and neither waits
    for the other — a row I have to go and look at is not how
    somebody learns their flights just got chosen.
-   -------------------------------------------------------- */
 
-/**
- * My number, digits only: country code first, no `+`, no spaces. That is the
- * one format wa.me takes.
- *
- * Left empty it still works — WhatsApp opens on its own chat list and she picks
- * me out of it — so the page is never broken by this being blank. It is just
- * one more thing for her to do at the exact moment she should have nothing left
- * to do, so fill it in.
- */
-export const PHONE = '';
+   Only the words live here. The number and the link are in
+   lib/whatsapp, with every other prefilled message on the
+   site, so none of them can drift onto the wrong chat.
+   -------------------------------------------------------- */
 
 /** What her tap says when it arrives on my phone. */
 export function messageFor(trip: Trip | undefined): string {
   if (!trip) {
-    return 'Neither of those two weeks works for me. I will call you to find other dates.';
+    return (
+      `Neither of those works, but I'm coming. ` +
+      `You still have a lot to prove that you deserve a sexy goddess like me, ` +
+      `but fine. Call me and we'll find other dates.`
+    );
   }
 
-  const out = dayOf(trip.out.date);
-  const time = trip.out.time ? ` at ${trip.out.time}` : '';
-  const lands = trip.out.time && trip.out.lands ? `, landing ${trip.out.lands}` : '';
-
+  /* The dates and nothing else. She picked one of two flights I chose, so the
+     route and the times are already mine to look up — repeating them back at
+     me only buried the one line that is hers. */
   return (
-    `I picked my dates: ${spanOf(trip)}. ` +
-    `${out.weekday} to ${dayOf(trip.back.date).weekday}, ` +
-    `${trip.out.from} to ${trip.out.to}${time}${lands}. ` +
-    `Call and book it together, i need to give you my data.`
+    `I picked ${spanOf(trip)}. ` +
+    `You still have a lot to prove that you deserve a sexy goddess like me, ` +
+    `but fine. Call me and let's book it.`
   );
-}
-
-/**
- * The link behind the confirm button. An anchor rather than something opened
- * from a callback on purpose: by the time a database round trip has come back,
- * the tap is no longer a tap as far as the browser is concerned, and the window
- * it tried to open would be a blocked popup.
- */
-export function whatsappLink(text: string): string {
-  return `https://wa.me/${PHONE}?text=${encodeURIComponent(text)}`;
 }
 
 /* ---------- Dates, spelled out ---------------------------
