@@ -14,14 +14,15 @@
 const URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-/** The six the database knows. Anything else is dropped, there and here. */
+/** The ones the database knows. Anything else is dropped, there and here. */
 export type VisitKey =
   | 'home'
   | 'runner'
   | 'guide'
   | 'likely'
   | 'upgrade-trip'
-  | 'book-trip';
+  | 'book-trip'
+  | 'last';
 
 /**
  * Records one arrival. Never throws and never blocks anything: a counter that

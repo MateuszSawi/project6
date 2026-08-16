@@ -100,6 +100,57 @@
   }
 }
 
+/* ---------- Compact ------------------------------------
+   Opted into per game — see GameLayout's `compact`.
+
+   For a game that has to fit inside one phone screen. The
+   heading here is generous by default, and on a small screen
+   it and its margins eat about half the fold on their own,
+   which is half the fold the game does not get. Nothing is
+   removed, only tightened: she still lands on the title and
+   the line under it, then the game, with no scroll in
+   between.
+   -------------------------------------------------------- */
+
+.page[data-compact] {
+  /* Exactly one screen tall, and no taller unless the game itself is.
+
+     The default page reserves $space-3xl plus another 50px under the content,
+     which on top of `min-height: 100dvh` guarantees a scrollbar even when
+     everything already fits — about 170px of nothing to scroll through. Here
+     that room is given back, so a question that fits the screen leaves the
+     page still. When the content genuinely is taller — the plan at the end —
+     it overflows and scrolls like anything else.
+
+     dvh rather than vh on purpose: on a phone `100vh` is the viewport with the
+     browser's own chrome pretended away, so it would hand back the scrollbar
+     this is here to remove. */
+  min-height: 100dvh;
+  padding-block: clamp(1.25rem, 4vw, 2.25rem) clamp(1.25rem, 4vw, 2.25rem);
+  margin-bottom: 0;
+
+  .head {
+    margin-block: clamp(1.5rem, 4.5vw, 3rem) clamp(1.25rem, 3vw, 2rem);
+  }
+
+  .title {
+    font-size: $text-xl;
+    max-width: 24ch;
+
+    &::after {
+      margin-top: clamp(0.75rem, 2vw, 1.25rem);
+    }
+  }
+
+  .lede {
+    margin-top: clamp(0.75rem, 2vw, 1.25rem);
+
+    p:last-child {
+      font-size: $text-sm;
+    }
+  }
+}
+
 .lede {
   @include body-copy;
   display: flex;
@@ -122,4 +173,29 @@
     font-style: normal;
     color: $bordo-bright;
   }
+}
+
+/* Opted into per game — see GameLayout's `plainLede`.
+
+   The serif italic above is for a line that is being said to her. Where the
+   lede is instead the facts she has to weigh — dates, times, what a tap is
+   going to cost — it has to be the most readable thing on the page instead of
+   the most expressive. Same size, same brightness, no flourish. */
+.lede[data-plain] p:last-child {
+  font-family: $font-body;
+  font-weight: $weight-light;
+  font-style: normal;
+  line-height: $leading-body;
+  /* Back to the colour the rest of a lede is set in. The last line is lifted
+     to $bone when it is the one being said to her; here it is not, so it
+     stops standing apart from the sentence above it. */
+  color: $ash;
+}
+
+/* A line break inside a plain lede is a new sentence, not a new paragraph —
+   given a little air so the two do not read as one run-on. */
+.lede[data-plain] br {
+  content: "";
+  display: block;
+  margin-top: $space-2xs;
 }

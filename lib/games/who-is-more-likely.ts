@@ -47,7 +47,6 @@ export interface Question {
   /** Shown under the answer. Rigged questions need it. */
   note?: string;
 }
-
 export const QUESTIONS: Question[] = [
   { id: 'arrested', icon: 'Siren', text: 'Who is more likely to get arrested?' },
   {
@@ -59,15 +58,15 @@ export const QUESTIONS: Question[] = [
   { id: 'drunk', icon: 'Wine', text: 'Who is more likely to get drunk first?' },
   { id: 'sing', icon: 'ShowerHead', text: 'Who is more likely to sing in the shower?' },
   {
-    id: 'argument',
-    icon: 'Swords',
-    text: 'Who is more likely to start an argument over nothing?',
+    id: 'stray-cats',
+    icon: 'Cat',
+    text: 'Who is more likely to be approached by every stray cat in the city?',
     rigged: 'iza',
   },
   {
-    id: 'apologize',
-    icon: 'HandHeart',
-    text: 'Who is more likely to make peace first after an argument?',
+    id: 'seagull',
+    icon: 'Bird',
+    text: 'Who is more likely to be attacked by a seagull?',
   },
   { id: 'jealous', icon: 'Eye', text: 'Who is more likely to get jealous?' },
   {

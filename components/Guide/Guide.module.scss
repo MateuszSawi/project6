@@ -1,0 +1,579 @@
+@use "variables" as *;
+
+/* ============================================================
+   A GUIDE TO KEEPING IZA HAPPY IN POLAND
+   A deck, not a page. One choice fills the screen.
+
+   The rule the whole file serves: nothing inside the deck
+   scrolls except the closing sheet. Every slide is laid out
+   into the height it is given — the options divide what is
+   left after the question, however many of them there are —
+   so a thumb never has to hunt for the option at the bottom.
+   ============================================================ */
+
+/* ---------- Before it starts ----------------------------
+   One button under the title. No panel around it: the words
+   above it are the page, and a box drawn here would only
+   fence them off from the thing they are introducing.
+   -------------------------------------------------------- */
+
+.opening {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-sm;
+  padding-block: $space-sm clamp(1rem, 5vw, 2rem);
+  text-align: center;
+}
+
+.state {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2xs;
+  max-width: 42ch;
+  font-size: $text-xs;
+  line-height: 1.6;
+  color: $dust;
+
+  svg {
+    flex-shrink: 0;
+    color: $flame;
+  }
+}
+
+.begin {
+  @include ember-button;
+  padding: 0.95rem 2rem;
+}
+
+.beginLabel {
+  @include ember-button-label;
+}
+
+.sparks {
+  @include ember-sparks;
+}
+
+/* ---------- The game ------------------------------------
+   No panel, no border, no card: the question is simply the
+   next thing on the page after the title.
+
+   The one height rule left is a floor, not a frame. It is
+   set to the tallest question — five options — so that going
+   from five to two does not shrink the page under her thumb
+   mid-game. Everything else is as short as it can be, so the
+   whole thing clears a phone screen without a scroll.
+   -------------------------------------------------------- */
+
+.deck {
+  display: flex;
+  flex-direction: column;
+  min-height: min(21rem, 52dvh);
+}
+
+/* ---------- The bar across the top ---------------------- */
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: $space-2xs;
+  flex-shrink: 0;
+  padding-bottom: $space-2xs;
+}
+
+.step {
+  @include focus-ring;
+  display: grid;
+  place-items: center;
+  width: 1.85rem;
+  height: 1.85rem;
+  flex-shrink: 0;
+  color: $ash;
+  border: 1px solid $line;
+  border-radius: $radius-pill;
+  transition:
+    color $duration-fast $ease-out,
+    border-color $duration-fast $ease-out,
+    opacity $duration-fast $ease-out;
+
+  @include hover {
+    color: $flame;
+    border-color: $line-bordo;
+  }
+
+  &:disabled {
+    opacity: 0.25;
+    cursor: default;
+  }
+}
+
+.track {
+  position: relative;
+  flex: 1;
+  height: 1px;
+  background-color: $line;
+}
+
+.fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: calc(var(--p, 0) * 100%);
+  background: linear-gradient(to right, $bordo-lit, $flame);
+  box-shadow: 0 0 12px rgba(247, 195, 119, 0.6);
+  transition: width $duration-base $ease-out;
+}
+
+.count {
+  font-family: $font-display;
+  font-size: $text-2xs;
+  letter-spacing: 0.14em;
+  color: $dust;
+  white-space: nowrap;
+}
+
+.sync {
+  display: grid;
+  place-items: center;
+  width: 1.1rem;
+  flex-shrink: 0;
+  color: $dust;
+}
+
+.sync[data-state="saved"] {
+  color: rgba(247, 195, 119, 0.75);
+}
+
+.sync[data-state="failed"] {
+  color: $bordo-bright;
+}
+
+.spin {
+  animation: turn 1.1s linear infinite;
+}
+
+/* ---------- The slide ----------------------------------- */
+
+.stage {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  padding-block: $space-xs;
+  animation: arrive $duration-base $ease-out both;
+}
+
+/* The way on from a question she has already answered. */
+.onward {
+  @include focus-ring;
+  display: inline-flex;
+  align-items: center;
+  gap: $space-3xs;
+  padding: 0.5rem 1.1rem;
+  font-family: $font-body;
+  font-size: $text-2xs;
+  font-weight: $weight-medium;
+  letter-spacing: $tracking-wide;
+  text-transform: uppercase;
+  color: $flame;
+  background-color: rgba(74, 18, 32, 0.55);
+  border: 1px solid rgba(247, 195, 119, 0.4);
+  border-radius: $radius-pill;
+  white-space: nowrap;
+  transition:
+    background-color $duration-fast $ease-out,
+    border-color $duration-fast $ease-out;
+
+  @include hover {
+    background-color: rgba(125, 26, 45, 0.7);
+    border-color: rgba(247, 195, 119, 0.75);
+  }
+}
+
+/* ---------- A question -----------------------------------
+   Three bands: which part she is in, the question, and the
+   options. The last band is the one that has to fit, so
+   everything above it is kept deliberately small — this is a
+   game played on a phone screen that also has to carry the
+   page's own title above it.
+   -------------------------------------------------------- */
+
+.ask {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  gap: $space-xs;
+}
+
+.askHead {
+  flex-shrink: 0;
+}
+
+.where {
+  @include eyebrow;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.15rem;
+  color: rgba(214, 81, 106, 0.9);
+}
+
+/* Smaller than a heading of this weight would normally be: it is asking a
+   short question, not announcing anything, and every line it does not take is
+   a line the options get instead. */
+.question {
+  @include display;
+  display: flex;
+  align-items: flex-start;
+  gap: $space-2xs;
+  font-size: clamp(1.15rem, calc(1rem + 1.2vw), 1.55rem);
+  line-height: 1.16;
+}
+
+.questionMark {
+  display: grid;
+  place-items: center;
+  width: 1.7rem;
+  height: 1.7rem;
+  flex-shrink: 0;
+  margin-top: 0.1em;
+  color: $flame;
+  background-color: rgba(74, 18, 32, 0.6);
+  border: 1px solid rgba(247, 195, 119, 0.3);
+  border-radius: $radius-pill;
+}
+
+/* Every option on the screen at once, whatever the count — but sized to what
+   an option actually is, not to the screen it happens to be on.
+
+   `1fr` rows inside a grid of indefinite height do not stretch: they settle at
+   the tallest row's own content and then all match it. So the options come out
+   the same height as each other, that height is the height of the longest
+   label, and `margin-block: auto` centres the whole block in whatever is left.
+   The old `flex: 1` did the opposite — two options meant two half-screens. */
+.options {
+  display: grid;
+  grid-auto-rows: 1fr;
+  gap: $space-2xs;
+  /* Centred in the space between the question and my line under it. */
+  margin-block: auto;
+  min-height: 0;
+  list-style: none;
+  padding: 0;
+
+  li {
+    display: flex;
+    min-height: 0;
+  }
+}
+
+/* Two or three options can afford to sit a little further apart than six. */
+.options[data-count="1"],
+.options[data-count="2"],
+.options[data-count="3"] {
+  gap: $space-xs;
+}
+
+/* The lone option is not one of a set — there is nothing beside it and nothing
+   under it, so at the height of an ordinary row it reads as a thin strip
+   floating in an empty screen. A little more room than a row, and its contents
+   sitting in the middle of it rather than lining up along an edge that no
+   other option shares. */
+.options[data-count="1"] .option {
+  min-height: clamp(5rem, 16vh, 6.5rem);
+  padding: $space-xs $space-sm;
+  justify-content: center;
+}
+
+.options[data-count="1"] .label {
+  font-size: clamp(1rem, calc(0.92rem + 0.5vw), 1.15rem);
+  line-height: 1.3;
+  text-align: center;
+}
+
+.option {
+  @include focus-ring;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: $space-2xs;
+  width: 100%;
+  /* The floor a one-word option sits at — a comfortable thumb target and not
+     one pixel more. Rows match each other above it, so this is the height of
+     an option unless a label genuinely needs two lines. */
+  min-height: 2.85rem;
+  padding: $space-3xs $space-sm $space-3xs $space-3xs;
+  text-align: start;
+  background: rgba(74, 18, 32, 0.34);
+  border: 1px solid $line;
+  border-radius: $radius-sm;
+  transition:
+    background-color $duration-fast $ease-out,
+    border-color $duration-fast $ease-out,
+    opacity $duration-base $ease-out,
+    transform $duration-fast $ease-out;
+
+  @include hover {
+    border-color: rgba(247, 195, 119, 0.55);
+    transform: translateX(3px);
+  }
+
+  &:active {
+    transform: none;
+    border-color: rgba(247, 195, 119, 0.7);
+  }
+}
+
+/* Hers. */
+.option[data-chosen] {
+  background: rgba(168, 40, 63, 0.55);
+  border-color: rgba(247, 195, 119, 0.75);
+  box-shadow: 0 0 22px rgba(247, 195, 119, 0.14);
+
+  .mark {
+    color: $ink-deep;
+    background-color: $flame;
+    border-color: rgba(247, 195, 119, 0.9);
+  }
+
+  .label {
+    color: $bone;
+  }
+}
+
+/* Everything she did not pick, for the beat before the deck moves on. */
+.option[data-dimmed] {
+  opacity: 0.32;
+}
+
+.mark {
+  display: grid;
+  place-items: center;
+  width: 1.7rem;
+  height: 1.7rem;
+  flex-shrink: 0;
+  font-family: $font-display;
+  font-size: $text-xs;
+  letter-spacing: 0.06em;
+  color: $flame;
+  background-color: rgba(23, 18, 22, 0.6);
+  border: 1px solid $line;
+  border-radius: $radius-pill;
+  transition:
+    color $duration-fast $ease-out,
+    background-color $duration-fast $ease-out,
+    border-color $duration-fast $ease-out;
+}
+
+.label {
+  font-family: $font-display;
+  font-size: clamp(0.938rem, calc(0.88rem + 0.4vw), 1.05rem);
+  line-height: 1.22;
+  color: $wax;
+  text-wrap: pretty;
+  transition: color $duration-fast $ease-out;
+}
+
+/* ---------- Under the options ----------------------------
+   Reserved on every question whether or not it is in use, so
+   that answering one never moves the page. `visibility`
+   rather than a mount — hidden also means out of the tab
+   order, which is what we want.
+   -------------------------------------------------------- */
+
+.after {
+  display: flex;
+  justify-content: flex-end;
+  flex-shrink: 0;
+  padding-top: $space-2xs;
+  visibility: hidden;
+}
+
+.after[data-shown] {
+  visibility: visible;
+}
+
+/* ---------- The plan ------------------------------------
+   The one slide that is a document rather than a choice, so
+   it is also the one allowed to make the deck taller than
+   its `min-height` and run on down the page.
+   -------------------------------------------------------- */
+
+.plan {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  gap: $space-sm;
+}
+
+.planHead {
+  flex-shrink: 0;
+  text-align: center;
+}
+
+.planTitle {
+  @include display($text-lg);
+}
+
+.planLine {
+  margin-top: $space-3xs;
+  font-family: $font-display;
+  font-size: $text-sm;
+  font-style: italic;
+  color: $ash;
+}
+
+/* No scroller of its own any more — a box that scrolls inside a page that also
+   scrolls is a trap on a phone, and there is no longer any reason for one. */
+.sheet {
+  flex: 1;
+}
+
+.group + .group {
+  margin-top: $space-md;
+}
+
+.groupTitle {
+  @include eyebrow;
+  padding-bottom: $space-3xs;
+  border-bottom: 1px solid $line-bordo;
+  color: rgba(214, 81, 106, 0.9);
+}
+
+.rows {
+  margin: 0;
+}
+
+.row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: $space-sm;
+  padding-block: 0.55rem;
+  border-bottom: 1px solid rgba(247, 242, 236, 0.07);
+}
+
+.rowAsk {
+  flex: 1;
+  font-size: $text-xs;
+  line-height: 1.4;
+  color: $dust;
+}
+
+.rowSaid {
+  flex: 1;
+  margin: 0;
+  font-family: $font-display;
+  font-size: $text-sm;
+  line-height: 1.3;
+  color: $flame;
+  text-align: end;
+  text-wrap: pretty;
+}
+
+.rowSaid[data-empty] {
+  font-style: italic;
+  color: rgba(158, 140, 134, 0.6);
+}
+
+.planTools {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-2xs;
+  flex-shrink: 0;
+}
+
+.planNote {
+  max-width: 40ch;
+  font-size: $text-2xs;
+  line-height: 1.6;
+  color: $dust;
+  text-align: center;
+}
+
+.retry {
+  @include focus-ring;
+  display: inline-flex;
+  align-items: center;
+  gap: $space-3xs;
+  padding: 0.4rem 0.9rem;
+  font-size: $text-2xs;
+  color: $bordo-bright;
+  border: 1px solid $line-bordo;
+  border-radius: $radius-pill;
+}
+
+.again {
+  @include focus-ring;
+  display: inline-flex;
+  align-items: center;
+  gap: $space-3xs;
+  padding: 0.3rem 0.7rem;
+  font-family: $font-body;
+  font-size: $text-2xs;
+  font-weight: $weight-medium;
+  letter-spacing: $tracking-wide;
+  text-transform: uppercase;
+  color: rgba(158, 140, 134, 0.7);
+  border: 1px solid transparent;
+  border-radius: $radius-pill;
+  transition:
+    color $duration-fast $ease-out,
+    background-color $duration-fast $ease-out,
+    border-color $duration-fast $ease-out;
+
+  @include hover {
+    color: $ash;
+  }
+}
+
+.again[data-arming] {
+  color: $bone;
+  background-color: rgba(168, 40, 63, 0.75);
+  border-color: rgba(214, 81, 106, 0.8);
+}
+
+/* ---------- Room on a bigger screen ----------------------
+   Built for a phone held in one hand. On a laptop it keeps
+   that shape, in the middle of the panel, rather than
+   stretching a two-word option across a metre of desk.
+   -------------------------------------------------------- */
+
+@include mq(sm) {
+  .stage {
+    width: min(100%, 40rem);
+    margin-inline: auto;
+  }
+}
+
+/* ---------- Keyframes ----------------------------------- */
+
+@include ember-keyframes;
+
+@keyframes turn {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes arrive {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@include reduced-motion {
+  .stage {
+    animation: none;
+  }
+
+  .sparks {
+    display: none;
+  }
+}

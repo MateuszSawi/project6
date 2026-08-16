@@ -3,7 +3,9 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react';
 import {
   Anchor,
+  Bird,
   CalendarHeart,
+  Cat,
   Check,
   Cherry,
   CloudOff,
@@ -16,7 +18,6 @@ import {
   Ghost,
   Gift,
   Globe,
-  HandHeart,
   Heart,
   HeartHandshake,
   HeartPulse,
@@ -28,7 +29,6 @@ import {
   RotateCcw,
   ShowerHead,
   Siren,
-  Swords,
   TriangleAlert,
   Wine,
   X,
@@ -57,7 +57,9 @@ const TEASE = 950;
    component pulls the icon set in. */
 const ICONS: Record<string, LucideIcon> = {
   Anchor,
+  Bird,
   CalendarHeart,
+  Cat,
   Cherry,
   Drama,
   Dumbbell,
@@ -68,7 +70,6 @@ const ICONS: Record<string, LucideIcon> = {
   Ghost,
   Gift,
   Globe,
-  HandHeart,
   Heart,
   HeartHandshake,
   HeartPulse,
@@ -76,7 +77,6 @@ const ICONS: Record<string, LucideIcon> = {
   Medal,
   ShowerHead,
   Siren,
-  Swords,
   TriangleAlert,
   Wine,
 };

@@ -174,7 +174,12 @@
   }
 }
 
-.art {
+/* `.card .art` rather than `.art`: the element also carries Frame's own class,
+   which sets `position: relative` at the same weight. Equal weight is settled
+   by stylesheet order, and that order differs between a click-through and a
+   reload — when Frame wins, the photograph leaves the background and the tile
+   grows to the height of a picture. One more class here settles it for good. */
+.card .art {
   position: absolute;
   inset: 0;
   z-index: -2;

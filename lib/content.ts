@@ -273,14 +273,24 @@ export interface Game {
   grade?: 'soft' | 'strong' | 'none';
   /** object-position, when the subject is not in the middle of the file. */
   focus?: string;
+  /**
+   * The id of the game that has to be finished before this one opens. A tile
+   * with this set and its condition unmet renders as a plate with its own
+   * reason on it, `href` or no `href` — the door is built, it is just held
+   * shut.
+   *
+   * Which games can be waited on is decided in Games.tsx, because knowing
+   * whether one is finished means knowing what finishing it means.
+   */
+  after?: string;
 }
 
 /**
  * The list at the foot of the page. Order is the order she sees.
  *
  * A sealed tile is named only once its shape is settled — a title is a promise
- * with edges, and the edges are the part most likely to move. The ones still
- * numbered are the ones that could turn out to be anything.
+ * with edges, and the edges are the part most likely to move. The last one is
+ * left unnamed on purpose: it could turn out to be anything.
  *
  * To open a sealed one: add `href` (and a `src`, if it deserves a photograph)
  * and build the matching route under app/games. Nothing else changes.
@@ -294,8 +304,35 @@ export const GAMES: Game[] = [
        sprite atlas by scripts/build-runner-sprites.py. */
     sprite: '/games/runner/iza-still.png',
   },
+  /* Taken off the page for now — the routes, the artwork and the gate between
+     these two are all still there, so putting the block back is the whole of
+     bringing them back. Order matters if they return: upgrade before book, or
+     book's `after` is naming a tile that is not above it. */
+  // {
+  //   id: 'upgrade',
+  //   href: '/games/upgrade-trip/',
+  //   title: 'Upgrade your trip',
+  //   src: '/games/upgrade-trip.webp',
+  //   /* Lit by one candle and dark on purpose; the camera grade would only lift
+  //      the velvet into noise. */
+  //   grade: 'none',
+  // },
+  // {
+  //   id: 'book',
+  //   href: '/games/book-trip/',
+  //   /* Held shut until the upgrade is finished. She should have taken
+  //      everything she is being given before she is asked to name the week —
+  //      and the two screens read in that order or not at all. */
+  //   after: 'upgrade',
+  //   title: 'Book your trip',
+  //   src: '/games/book-trip.webp',
+  //   grade: 'none',
+  // },
   {
     id: 'guide',
+    /* Built and deployed, but not linked — same as the one below it. Put this
+       line back when it opens and the tile turns into a door. */
+    // href: '/games/guide/',
     title: 'A guide to keeping Iza happy in Poland',
     src: '/games/guide.webp',
     /* A painting rather than a photograph — it arrived with its own colour and
@@ -313,14 +350,36 @@ export const GAMES: Game[] = [
     src: '/games/who-is-more-likely.webp',
     grade: 'none',
   },
+  /* Three of them, and none of them named. A title is a promise with edges,
+     and there is no reason yet to draw the edges on these — the question mark
+     says the same thing without committing to what arrives. The ids are only
+     React keys, so they can be anything as long as they never repeat. */
   {
     id: 'truth',
-    title: 'Surprise four',
+    title: '?',
   },
   {
-    id: 'know',
-    title: 'Surprise five',
+    id: 'sealed-2',
+    title: '?',
   },
+  {
+    id: 'sealed-3',
+    title: '?',
+  },
+  /* Off the page as well, artwork and all. */
+  // {
+  //   id: 'last',
+  //   /* Built and deployed, but not linked — same as the two above it. Put this
+  //      line back when it opens and the tile turns into a door. */
+  //   // href: '/games/last/',
+  //   title: 'Last game before the trip',
+  //   /* A painting, like the guide — burgundy and gold, and nothing in it that
+  //      has to land anywhere in particular, so the tile can crop it as it likes.
+  //      Same treatment as the rest: the png original stays in assets/games, out
+  //      of the deploy, and what ships is the webp — 308KB down to 9KB. */
+  //   src: '/games/last-game.webp',
+  //   grade: 'none',
+  // },
 ];
 
 /**

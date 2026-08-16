@@ -1,14 +1,30 @@
 'use client';
 
-import type { CSSProperties } from 'react';
+import { useEffect, useState, type CSSProperties } from 'react';
 import Link from 'next/link';
-import { ArrowRight, Frown, Lock } from 'lucide-react';
+import { ArrowRight, Frown, LockKeyhole } from 'lucide-react';
 
 import Frame from '@/components/Frame/Frame';
 import { GAMES } from '@/lib/content';
+import { complete } from '@/lib/games/upgrade-trip';
+import { connected, loadStored } from '@/lib/results';
 import { useInView } from '@/lib/useInView';
 
 import styles from './Games.module.scss';
+
+/**
+ * What a tile's `after` can name, and what finishing it means.
+ *
+ * One entry, and probably always one: this is the order two of the games have
+ * to be played in, not a dependency graph.
+ */
+const GATES: Record<string, { game: string; done: (hers: Record<string, string>) => boolean; wait: string }> = {
+  upgrade: {
+    game: 'upgrade-trip',
+    done: complete,
+    wait: 'Upgrade your trip first',
+  },
+};
 
 /**
  * The foot of the page, and the only part of it that is not finished on
@@ -24,6 +40,39 @@ import styles from './Games.module.scss';
  */
 export default function Games() {
   const [ref, inView] = useInView<HTMLElement>({ threshold: 0.05 });
+
+  /**
+   * Which gates have opened. Everything starts shut and is opened by the read,
+   * never the other way round — a tile that offers a door for half a second
+   * and then takes it away is worse than one that took a moment to appear.
+   *
+   * On a build with no database there is nothing to finish and nothing to
+   * remember, so every gate is simply open.
+   */
+  const [open, setOpen] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    let alive = true;
+
+    for (const [id, gate] of Object.entries(GATES)) {
+      if (!connected) {
+        setOpen((was) => ({ ...was, [id]: true }));
+        continue;
+      }
+
+      loadStored(gate.game)
+        .then(({ hers }) => {
+          if (alive) setOpen((was) => ({ ...was, [id]: gate.done(hers) }));
+        })
+        /* Unreachable is not the same as unfinished, but it has to be treated
+           as it: the tile behind this stays shut and a reload asks again. */
+        .catch(() => {});
+    }
+
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   return (
     <section
@@ -64,6 +113,12 @@ export default function Games() {
             const number = String(i + 1).padStart(2, '0');
 
             const art = game.src || game.sprite;
+
+            /* A gate the read has not opened holds the tile shut whatever its
+               href says, and puts the reason where "Play" would have been. */
+            const gate = game.after ? GATES[game.after] : undefined;
+            const held = Boolean(gate) && !(game.after && open[game.after]);
+            const href = held ? undefined : game.href;
 
             /* Everything inside the tile, so the linked and the sealed
                versions cannot drift apart — only the wrapper differs.
@@ -113,14 +168,36 @@ export default function Games() {
 
                 <h3 className={styles.name}>{game.title}</h3>
 
-                {game.href ? (
+                {href ? (
                   <span className={styles.go}>
                     <span className={styles.goLabel}>Play</span>
                     <ArrowRight size={15} strokeWidth={2} />
                   </span>
+                ) : held && gate ? (
+                  /* The same lit pill as "Play" — this one exists and is
+                     finished, and she is one game away from it, so it does not
+                     belong with the muted tiles that are only promises.
+
+                     A lock instead of the arrow, and leading rather than
+                     trailing: the arrow says "this way", and the whole point of
+                     this pill is that it is not yet a way anywhere. Reading the
+                     state before the instruction is also the right order — she
+                     learns it is shut before she reads what opens it.
+
+                     The keyhole one, not the plain padlock. At this size the
+                     plain one is a rounded box with a handle over it and reads
+                     as a handbag; the keyhole is the single mark that makes it
+                     unmistakably a lock. */
+                  <span className={styles.go}>
+                    <LockKeyhole size={14} strokeWidth={1.9} />
+                    <span className={styles.goLabel}>{gate.wait}</span>
+                  </span>
                 ) : (
                   <span className={styles.soon}>
-                    <Lock size={13} strokeWidth={1.6} />
+                    {/* Same glyph as the held tile above — two different
+                        padlocks in one list would read as two different
+                        meanings. */}
+                    <LockKeyhole size={13} strokeWidth={1.7} />
                     <span className={styles.soonLabel}>Coming soon</span>
                   </span>
                 )}
@@ -129,8 +206,8 @@ export default function Games() {
 
             return (
               <li className={styles.cell} key={game.id} style={{ '--i': i } as CSSProperties}>
-                {game.href ? (
-                  <Link className={styles.card} href={game.href} data-open="">
+                {href ? (
+                  <Link className={styles.card} href={href} data-open="">
                     {body}
                   </Link>
                 ) : (

@@ -4,7 +4,7 @@
 --  Dopisek do bazy, NIE kasuje niczego. Skopiuj calosc, wklej
 --  w Supabase -> SQL Editor -> Run. Mozna puszczac wielokrotnie.
 --
---  Szesc licznikow: strona glowna i piec podstron z grami,
+--  Siedem licznikow: strona glowna i szesc podstron z grami,
 --  kazdy dodatkowo w rozbiciu na kraje.
 --  Liczone sa WEJSCIA NA PODSTRONE, nie klikniecia w kafelke —
 --  kafelka moze byc jeszcze zapieczetowana, a adres i tak da sie
@@ -63,7 +63,8 @@ insert into public.visits (key) values
   ('guide'),
   ('likely'),
   ('upgrade-trip'),
-  ('book-trip')
+  ('book-trip'),
+  ('last')
 on conflict (key) do nothing;
 
 alter table public.visits enable row level security;
@@ -183,14 +184,15 @@ grant execute on function public.count_visit(text) to anon;
 --   select key, country, hits from public.visits_country
 --   order by key, hits desc;
 --
--- Podglad jako jeden wiersz z szescioma polami:
+-- Podglad jako jeden wiersz z siedmioma polami:
 --   select
 --     max(hits) filter (where key = 'home')         as home,
 --     max(hits) filter (where key = 'runner')       as runner,
 --     max(hits) filter (where key = 'guide')        as guide,
 --     max(hits) filter (where key = 'likely')       as likely,
 --     max(hits) filter (where key = 'upgrade-trip') as upgrade_trip,
---     max(hits) filter (where key = 'book-trip')    as book_trip
+--     max(hits) filter (where key = 'book-trip')    as book_trip,
+--     max(hits) filter (where key = 'last')         as last_game
 --   from public.visits;
 --
 -- Wyzerowanie przed wyslaniem strony:
