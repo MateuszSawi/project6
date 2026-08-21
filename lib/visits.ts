@@ -28,9 +28,11 @@ export type VisitKey =
  * Records one arrival. Never throws and never blocks anything: a counter that
  * can break a page is worse than a counter that occasionally misses.
  *
- * Which addresses are left out of the count is decided in the database rather
- * than here — see ignored_ip. Doing it in the browser would mean shipping the
- * list to everyone.
+ * Who is left out of the count is decided in the database rather than here —
+ * my own addresses by ignored_ip, and everyone outside Albania by only_country.
+ * The page fires this the same way for everybody; what happens to it is not the
+ * browser's business, and the alternative is shipping the rules to everyone who
+ * opens the site.
  */
 export function countVisit(key: VisitKey): void {
   if (!URL || !KEY) return;

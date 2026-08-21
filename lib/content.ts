@@ -304,30 +304,28 @@ export const GAMES: Game[] = [
        sprite atlas by scripts/build-runner-sprites.py. */
     sprite: '/games/runner/iza-still.png',
   },
-  /* Taken off the page for now — the routes, the artwork and the gate between
-     these two are all still there, so putting the block back is the whole of
-     bringing them back. Order matters if they return: upgrade before book, or
-     book's `after` is naming a tile that is not above it. */
-  // {
-  //   id: 'upgrade',
-  //   href: '/games/upgrade-trip/',
-  //   title: 'Upgrade your trip',
-  //   src: '/games/upgrade-trip.webp',
-  //   /* Lit by one candle and dark on purpose; the camera grade would only lift
-  //      the velvet into noise. */
-  //   grade: 'none',
-  // },
-  // {
-  //   id: 'book',
-  //   href: '/games/book-trip/',
-  //   /* Held shut until the upgrade is finished. She should have taken
-  //      everything she is being given before she is asked to name the week —
-  //      and the two screens read in that order or not at all. */
-  //   after: 'upgrade',
-  //   title: 'Book your trip',
-  //   src: '/games/book-trip.webp',
-  //   grade: 'none',
-  // },
+  /* These two in this order, always: book is held shut by `after: 'upgrade'`,
+     and a tile that names a gate above nothing is a tile that reads backwards. */
+  {
+    id: 'upgrade',
+    href: '/games/upgrade-trip/',
+    title: 'Upgrade your trip',
+    src: '/games/upgrade-trip.webp',
+    /* Lit by one candle and dark on purpose; the camera grade would only lift
+       the velvet into noise. */
+    grade: 'none',
+  },
+  {
+    id: 'book',
+    href: '/games/book-trip/',
+    /* Held shut until the upgrade is finished. She should have taken
+       everything she is being given before she is asked to name the week —
+       and the two screens read in that order or not at all. */
+    after: 'upgrade',
+    title: 'Book your trip',
+    src: '/games/book-trip.webp',
+    grade: 'none',
+  },
   {
     id: 'guide',
     /* Built and deployed, but not linked — same as the one below it. Put this
@@ -350,20 +348,12 @@ export const GAMES: Game[] = [
     src: '/games/who-is-more-likely.webp',
     grade: 'none',
   },
-  /* Three of them, and none of them named. A title is a promise with edges,
-     and there is no reason yet to draw the edges on these — the question mark
-     says the same thing without committing to what arrives. The ids are only
-     React keys, so they can be anything as long as they never repeat. */
+  /* One, and unnamed. A title is a promise with edges, and there is no reason
+     yet to draw the edges on this one — the question mark says the same thing
+     without committing to what arrives. More of them can be added by copying
+     it; the id is only a React key, so anything unrepeated will do. */
   {
     id: 'truth',
-    title: '?',
-  },
-  {
-    id: 'sealed-2',
-    title: '?',
-  },
-  {
-    id: 'sealed-3',
     title: '?',
   },
   /* Off the page as well, artwork and all. */

@@ -120,12 +120,24 @@ export default function Games() {
             const held = Boolean(gate) && !(game.after && open[game.after]);
             const href = held ? undefined : game.href;
 
+            /* A tile that does not open keeps its name to itself, whether it
+               is held shut by the game above it or simply not built yet. What
+               a game is called is part of what she gets for arriving at it, so
+               until then every shut tile wears the same question mark and the
+               pill underneath carries the only difference that matters: what
+               opens it, or that it is not here yet.
+
+               The titles stay in content.ts. They are what the tile turns into
+               the moment it has a door, not something waiting to be typed. */
+            const name = href ? game.title : '?';
+
             /* Everything inside the tile, so the linked and the sealed
                versions cannot drift apart — only the wrapper differs.
 
                The picture and the link are independent: a game can be
                announced with its artwork days before there is anything to
-               open, which is exactly what the third one is doing. */
+               open. The artwork is all it is announced with, though — the name
+               arrives with the door. See `name` above. */
             const body = (
               <>
                 {game.src ? (
@@ -166,7 +178,7 @@ export default function Games() {
                   {number}
                 </span>
 
-                <h3 className={styles.name}>{game.title}</h3>
+                <h3 className={styles.name}>{name}</h3>
 
                 {href ? (
                   <span className={styles.go}>

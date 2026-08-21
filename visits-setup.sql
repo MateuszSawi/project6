@@ -9,6 +9,10 @@
 --  Liczone sa WEJSCIA NA PODSTRONE, nie klikniecia w kafelke —
 --  kafelka moze byc jeszcze zapieczetowana, a adres i tak da sie
 --  wpisac recznie, i to nadal jest wejscie.
+--
+--  I TYLKO Z ALBANII. Wszystko inne — Polska, boty, kazdy komu
+--  wysles link — nie trafia ani do visits, ani do visits_country.
+--  Patrz ONLY_COUNTRY nizej.
 -- ════════════════════════════════════════════════════════════
 
 
@@ -89,8 +93,13 @@ alter table public.visits enable row level security;
 --  Cloudflare, wiec przychodzi za darmo, bez pytania kogokolwiek
 --  o cokolwiek i bez opozniania strony. Dwie litery ISO, 'XX' gdy
 --  Cloudflare nie wie, 'T1' dla Tora, '??' gdy naglowka nie ma
---  wcale. Jesli w tabeli beda same '??', to znaczy ze naglowek nie
---  dochodzi i trzeba innej drogi.
+--  wcale.
+--
+--  Od filtra ONLY_COUNTRY w tabeli moze stac juz tylko 'AL' —
+--  rozbicie na kraje zostaje mimo to, bo to ono dowodzi, ze
+--  naglowek dochodzi. Pusta tabela znaczy albo "nie bylo jej",
+--  albo "naglowek przestal chodzic", i te dwie rzeczy trzeba
+--  umiec rozroznic. Patrz moje_ip() na dole pliku.
 -- ────────────────────────────────────────────────────────────
 
 create table if not exists public.visits_country (
@@ -119,6 +128,26 @@ as $$
   );
 $$;
 
+-- Jedyny kraj, ktory sie liczy. Zmiana tutaj i nigdzie indziej —
+-- czytaja to obie tabele, bo obie pisze wylacznie count_visit.
+--
+-- 'AL', bo licznik ma odpowiadac na jedno pytanie: czy ONA tam
+-- byla. Wejscie z Polski to prawie zawsze ja albo Ty sprawdzajacy
+-- czy dziala, i jedno i drugie tylko zaklamuje odpowiedz.
+--
+-- UWAGA: to sie opiera na naglowku cf-ipcountry. Gdyby przestal
+-- dochodzic, request_country() zwroci '??' dla wszystkich i licznik
+-- zamilknie calkowicie — puste tabele beda wygladac jak awaria,
+-- a beda tylko tym filtrem. Sprawdzenie: funkcja moje_ip() na dole
+-- pliku.
+create or replace function public.only_country()
+returns text
+language sql
+immutable
+as $$
+  select 'AL';
+$$;
+
 create or replace function public.count_visit(p_key text)
 returns void
 language plpgsql
@@ -128,7 +157,18 @@ as $$
 declare
   v_headers json;
   v_ip      text;
+  v_country text;
 begin
+  -- Najpierw kraj: jesli to nie ona, nie ma czego liczyc i nie ma
+  -- po co siegac dalej. Zaden wiersz nie powstaje, zaden licznik
+  -- sie nie rusza — funkcja po cichu nic nie robi, dokladnie tak
+  -- jak przy nieznanym kluczu.
+  v_country := public.request_country();
+
+  if v_country is distinct from public.only_country() then
+    return;
+  end if;
+
   -- Adres klienta tak, jak zobaczyl go gateway. inet_client_addr()
   -- zwrocilby adres samego Supabase, bo polaczenie do bazy idzie
   -- stamtad, a nie z przegladarki — PostgREST podstawia oryginalne
@@ -161,7 +201,7 @@ begin
   end if;
 
   insert into public.visits_country (key, country, hits, last_at)
-  values (p_key, public.request_country(), 1, now())
+  values (p_key, v_country, 1, now())
   on conflict (key, country) do update
     set hits    = visits_country.hits + 1,
         last_at = now();
@@ -198,6 +238,31 @@ grant execute on function public.count_visit(text) to anon;
 -- Wyzerowanie przed wyslaniem strony:
 --   update public.visits set hits = 0, last_at = null;
 --   delete from public.visits_country;
+--
+-- Sprzatniecie tego, co weszlo ZANIM pojawil sie filtr — nowe
+-- wejscia sa juz tylko z AL, ale stare wiersze zostaly:
+--
+--   -- najpierw zobacz, co poleci:
+--   select country, sum(hits) from public.visits_country
+--   where country <> public.only_country() group by country;
+--
+--   -- rozbicie: kasujemy wszystko poza AL
+--   delete from public.visits_country
+--   where country <> public.only_country();
+--
+--   -- sumy: visits nie pamieta krajow, wiec jedyne co mozna
+--   -- zrobic, to przepisac je z tego, co zostalo w rozbiciu.
+--   -- Dziala tylko jesli rozbicie chodzi od poczatku; jesli nie,
+--   -- to sumy sa nie do rozdzielenia i lepiej je wyzerowac.
+--   -- Podzapytanie, nie join: klucz bez ani jednego wejscia z AL
+--   -- ma wtedy wyjsc na zero, a nie zostac z tym, co mial.
+--   update public.visits v set
+--     hits = coalesce((select c.hits from public.visits_country c
+--                      where c.key = v.key
+--                        and c.country = public.only_country()), 0),
+--     last_at =       (select c.last_at from public.visits_country c
+--                      where c.key = v.key
+--                        and c.country = public.only_country());
 --
 -- Dolozenie szostej gry:
 --   insert into public.visits (key) values ('cos-nowego')
