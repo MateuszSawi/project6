@@ -107,7 +107,7 @@ function resume(answers: Answers): number {
 }
 
 /**
- * A guide to keeping Iza happy in Poland.
+ * A guide to keeping Iza happy.
  *
  * One question at a time, in place on the page: below the title there is a
  * start button and nothing else, and once it is pressed the button is replaced

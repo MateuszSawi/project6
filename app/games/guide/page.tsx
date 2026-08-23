@@ -4,7 +4,7 @@ import GameLayout from '@/components/GameLayout/GameLayout';
 import Guide from '@/components/Guide/Guide';
 
 export const metadata: Metadata = {
-  title: 'A guide to keeping Iza happy in Poland',
+  title: 'A guide to keeping Iza happy',
   robots: { index: false, follow: false },
 };
 
@@ -20,7 +20,7 @@ export default function GuidePage() {
   return (
     <GameLayout
       count="guide"
-      title="A guide to keeping Iza happy in Poland"
+      title="A guide to keeping Iza happy"
       /* One question at a time, and each one has to clear a phone screen
          without a scroll — so the title above it gives up some of its room. */
       compact

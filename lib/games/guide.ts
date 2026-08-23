@@ -1,5 +1,5 @@
 /**
- * Game two — A guide to keeping Iza happy in Poland.
+ * Game two — A guide to keeping Iza happy.
  *
  * Not a quiz. She is not guessing at anything and there is nothing to get
  * right: every tap is an instruction, and the trip is what comes out of the

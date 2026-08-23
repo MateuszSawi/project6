@@ -322,7 +322,7 @@ export const GAMES: Game[] = [
   {
     id: 'guide',
     href: '/games/guide/',
-    title: 'A guide to keeping Iza happy in Poland',
+    title: 'A guide to keeping Iza happy',
     src: '/games/guide.webp',
     /* A painting rather than a photograph — it arrived with its own colour and
        contrast, and the camera grade would only be pushing an image that was
