@@ -283,6 +283,18 @@ export interface Game {
    * whether one is finished means knowing what finishing it means.
    */
   after?: string;
+  /**
+   * Was open, and is not any more. The other shut tiles are promises that have
+   * not arrived yet; this one is the opposite, and it says so — the pill under
+   * it reads "Offer expired" rather than "Coming soon", and it keeps its name
+   * where an unbuilt tile hides one. There is nothing to guess about a door
+   * that used to be there.
+   *
+   * Set it beside a commented-out `href`, never instead of one: the route is
+   * what actually decides whether the tile is a link, and a tile that says the
+   * offer is over while still opening the game is a lie in two directions.
+   */
+  expired?: boolean;
 }
 
 /**
@@ -304,11 +316,15 @@ export const GAMES: Game[] = [
        sprite atlas by scripts/build-runner-sprites.py. */
     sprite: '/games/runner/iza-still.png',
   },
-  /* These two in this order, always: book is held shut by `after: 'upgrade'`,
-     and a tile that names a gate above nothing is a tile that reads backwards. */
+  /* The trip pair, closed. Both routes are still built and still deployed —
+     only the doors off this page are gone, so the links still work for anyone
+     who has one. Putting them back is two commented lines, and they go back in
+     this order: book is held shut by `after: 'upgrade'`, and a tile that names
+     a gate above nothing is a tile that reads backwards. */
   {
     id: 'upgrade',
-    href: '/games/upgrade-trip/',
+    // href: '/games/upgrade-trip/',
+    expired: true,
     title: 'Upgrade your trip',
     src: '/games/upgrade-trip.webp',
     /* Lit by one candle and dark on purpose; the camera grade would only lift
@@ -317,11 +333,14 @@ export const GAMES: Game[] = [
   },
   {
     id: 'book',
-    href: '/games/book-trip/',
-    /* Held shut until the upgrade is finished. She should have taken
-       everything she is being given before she is asked to name the week —
-       and the two screens read in that order or not at all. */
-    after: 'upgrade',
+    // href: '/games/book-trip/',
+    /* Out with the href, not merely unused: a gate under an expired tile would
+       promise that finishing the upgrade opens this, and nothing opens it now.
+       Held shut until the upgrade is finished — she should have taken
+       everything she is being given before she is asked to name the week, and
+       the two screens read in that order or not at all. */
+    // after: 'upgrade',
+    expired: true,
     title: 'Book your trip',
     src: '/games/book-trip.webp',
     grade: 'none',

@@ -101,9 +101,9 @@ export default function Games() {
               From time to time something new appears down here — a game, a quiz, a test, some
               excuse to keep you thinking about me. Play them while you miss me (I know you do).
             </p>
-            <p>
+            {/* <p>
               And don't worry about August not working out. You've got my full attention anyway, and you're keeping it until you get here.
-            </p>
+            </p> */}
             <p className={styles.ledeNote}></p>
           </div>
         </header>
@@ -120,16 +120,16 @@ export default function Games() {
             const held = Boolean(gate) && !(game.after && open[game.after]);
             const href = held ? undefined : game.href;
 
-            /* A tile that does not open keeps its name to itself, whether it
-               is held shut by the game above it or simply not built yet. What
-               a game is called is part of what she gets for arriving at it, so
-               until then every shut tile wears the same question mark and the
-               pill underneath carries the only difference that matters: what
-               opens it, or that it is not here yet.
+            /* Only a held tile hides its name. What it is called is part of
+               what she gets for finishing the one above it, so until then it
+               wears a question mark and the pill underneath says what opens
+               it.
 
-               The titles stay in content.ts. They are what the tile turns into
-               the moment it has a door, not something waiting to be typed. */
-            const name = href ? game.title : '?';
+               Every other tile is called what content.ts calls it, door or no
+               door — including the ones named '?' there, which are unnamed
+               because there is nothing to name yet, not because the page is
+               keeping it back. */
+            const name = held ? '?' : game.title;
 
             /* Everything inside the tile, so the linked and the sealed
                versions cannot drift apart — only the wrapper differs.
@@ -210,7 +210,12 @@ export default function Games() {
                         padlocks in one list would read as two different
                         meanings. */}
                     <LockKeyhole size={13} strokeWidth={1.7} />
-                    <span className={styles.soonLabel}>Coming soon</span>
+                    <span className={styles.soonLabel}>
+                      {/* Two different things wear the same plate: one has not
+                          arrived, the other is over. Nothing else about the
+                          tile separates them, so the words have to. */}
+                      {game.expired ? 'Offer expired' : 'Coming soon'}
+                    </span>
                   </span>
                 )}
               </>
