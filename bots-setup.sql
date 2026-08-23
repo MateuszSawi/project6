@@ -152,7 +152,26 @@ alter table public.bot_seen enable row level security;
 
 -- ────────────────────────────────────────────────────────────
 --  Podmiana funkcji — te same co wczesniej, plus odsiew
+--
+--  UWAGA NA KOLEJNOSC. Ten plik PODMIENIA count_visit, wiec ta
+--  wersja musi miec WSZYSTKO, co ma wersja w visits-setup.sql —
+--  lacznie z filtrem kraju. Raz juz tak nie bylo: bots-setup
+--  puszczony po visits-setup skasowal filtr i do tabel zaczely
+--  wpadac wejscia z US.
+--
+--  Jesli dopiszesz warunek w jednej wersji, dopisz go w obu.
 -- ────────────────────────────────────────────────────────────
+
+-- To samo co w visits-setup.sql, oba razy jako "create or replace",
+-- zeby kolejnosc puszczania plikow nie miala znaczenia — dokladnie
+-- tak jak request_country() wyzej.
+create or replace function public.only_country()
+returns text
+language sql
+immutable
+as $$
+  select 'AL';
+$$;
 
 create or replace function public.count_visit(p_key text)
 returns void
@@ -163,13 +182,24 @@ as $$
 declare
   v_headers json;
   v_ip      text;
+  v_country text;
 begin
   -- Bot: zapisujemy sam fakt i wychodzimy. Zadnego licznika.
+  -- Przed krajem, bo bot_seen ma pokazywac KAZDEGO bota, nie tylko
+  -- albanskiego — to jedyny dowod, ze odsiew w ogole dziala.
   if public.is_bot() then
     insert into public.bot_seen (agent, hits, last_at)
     values (left(coalesce(public.request_agent(), '(brak)'), 200), 1, now())
     on conflict (agent) do update
       set hits = bot_seen.hits + 1, last_at = now();
+    return;
+  end if;
+
+  -- Nie ona — nie liczymy. Wyjscie przed jakimkolwiek zapisem, wiec
+  -- ani visits, ani visits_country nie dostaje wiersza.
+  v_country := public.request_country();
+
+  if v_country is distinct from public.only_country() then
     return;
   end if;
 
@@ -195,7 +225,7 @@ begin
   end if;
 
   insert into public.visits_country (key, country, hits, last_at)
-  values (p_key, public.request_country(), 1, now())
+  values (p_key, v_country, 1, now())
   on conflict (key, country) do update
     set hits = visits_country.hits + 1, last_at = now();
 end;

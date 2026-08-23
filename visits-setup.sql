@@ -128,8 +128,12 @@ as $$
   );
 $$;
 
--- Jedyny kraj, ktory sie liczy. Zmiana tutaj i nigdzie indziej —
--- czytaja to obie tabele, bo obie pisze wylacznie count_visit.
+-- Jedyny kraj, ktory sie liczy. Czytaja to obie tabele, bo obie
+-- pisze wylacznie count_visit.
+--
+-- UWAGA: count_visit jest zdefiniowana TAKZE w bots-setup.sql, i ten
+-- plik ja podmienia. Tamta wersja ma ten sam filtr — musi miec, bo
+-- wygrywa ta puszczona pozniej. Zmiana kraju to zmiana w obu plikach.
 --
 -- 'AL', bo licznik ma odpowiadac na jedno pytanie: czy ONA tam
 -- byla. Wejscie z Polski to prawie zawsze ja albo Ty sprawdzajacy

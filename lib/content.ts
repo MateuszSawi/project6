@@ -374,6 +374,18 @@ export const GAMES: Game[] = [
   {
     id: 'truth',
     title: '?',
+    /* Named nothing, but not blank: the painting says a game is coming
+       without saying which. A question mark on a bare plate reads as a slot
+       nobody has filled in yet; the same mark over artwork reads as something
+       deliberately not being told.
+
+       Burgundy and gold, and nothing in it that has to land anywhere in
+       particular, so the tile can crop it as it likes. Same treatment as the
+       rest: the png original stays in assets/games, out of the deploy, and
+       what ships is the webp — 308KB down to 9KB. A painting, so no camera
+       grade; there was never a camera. */
+    src: '/games/last-game.webp',
+    grade: 'none',
   },
   /* Off the page as well, artwork and all. */
   // {
