@@ -1024,7 +1024,10 @@ export default function Runner() {
 
           {phase === 'arrived' && (
             <div className={styles.veil}>
-              <p className={styles.eyebrow}>{ARRIVAL.city}</p>
+              {/* The city goes out with `city` in runner.ts — the line under
+                  it names where she is going now, and Gdańsk over "See you in
+                  Tirana" reads as the wrong arrival. */}
+              {/* <p className={styles.eyebrow}>{ARRIVAL.city}</p> */}
               <p className={styles.arrival}>{ARRIVAL.line}</p>
               {/* Second beat. The delay is set here rather than in the
                   stylesheet so it cannot drift from ARRIVAL_DEAF_MS, which is

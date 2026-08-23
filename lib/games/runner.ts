@@ -113,7 +113,7 @@ export const MILESTONE_MS = 3400;
  * moment after the first so they read in order rather than all at once.
  */
 export const ARRIVAL = {
-  city: 'Gdańsk',
+  // city: 'Gdańsk',
   line: 'You made it. See you in Tirana.',
   next: 'You can keep playing in endless mode.',
   cta: 'Keep going',
