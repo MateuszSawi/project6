@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 
 import GameLayout from '@/components/GameLayout/GameLayout';
+import Progress from '@/components/Runner/Progress';
 import Runner from '@/components/Runner/Runner';
 
 export const metadata: Metadata = {
@@ -20,7 +21,17 @@ export default function RunnerPage() {
     <GameLayout
       count="runner"
       title="Iza on her way to Poland"
-      lede={<p>Come to me. Jump over everything in your way.</p>}
+      /* The second half of the line is a client component and arrives a moment
+         after the first — it is reading the record out of Supabase. Until it
+         does, and forever on a build with no database, the sentence is simply
+         the sentence. */
+      lede={
+        <p>
+          Come to me. Jump over everything in your way.
+          <br/>
+          <Progress />
+        </p>
+      }
       /* The road is the only thing on this page that gets wider for it. */
       bleed
     >

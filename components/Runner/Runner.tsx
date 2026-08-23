@@ -26,6 +26,8 @@ import {
   VOID_FLOOR,
   WORLD_H,
   barPosition,
+  completion,
+  formatKm,
   connected,
   loadBest,
   pickFormation,
@@ -164,14 +166,6 @@ function noise(n: number): number {
   const s = Math.sin(n * 127.1) * 43758.5453;
   return s - Math.floor(s);
 }
-
-/* Grouped by hand rather than by toLocaleString, which separates digits
-   differently depending on the locale the runtime happens to pick — and
-   would then differ between the prerendered HTML and the browser. */
-const formatKm = (km: number) =>
-  Math.floor(km)
-    .toString()
-    .replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 
 /**
  * Endless runner on a canvas. One button, no menus, playable with a thumb.
@@ -1066,7 +1060,7 @@ export default function Runner() {
               </p>
               {!result.endless && (
                 <p className={styles.record}>
-                  {formatKm(JOURNEY_KM - result.km)} km to go
+                  {completion(result.km)}% of the way — {formatKm(JOURNEY_KM - result.km)} km to go
                 </p>
               )}
               {result.endless && best > result.km && (

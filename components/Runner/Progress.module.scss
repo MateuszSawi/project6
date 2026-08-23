@@ -1,0 +1,10 @@
+@use "variables" as *;
+
+/* Inside the lede's own paragraph, so it inherits the line it sits on and
+   costs the page no height of its own. Lit, because it is the one part of
+   that sentence that is about her rather than about the game. */
+.done {
+  color: $bordo-bright;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}

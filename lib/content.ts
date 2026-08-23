@@ -316,11 +316,33 @@ export const GAMES: Game[] = [
        sprite atlas by scripts/build-runner-sprites.py. */
     sprite: '/games/runner/iza-still.png',
   },
-  /* The trip pair, closed. Both routes are still built and still deployed —
-     only the doors off this page are gone, so the links still work for anyone
-     who has one. Putting them back is two commented lines, and they go back in
-     this order: book is held shut by `after: 'upgrade'`, and a tile that names
-     a gate above nothing is a tile that reads backwards. */
+  /* The two that are open. They come before the closed pair on purpose: the
+     order down the page is what she can play first, and a live tile under two
+     dead ones reads as an afterthought. */
+  {
+    id: 'guide',
+    href: '/games/guide/',
+    title: 'A guide to keeping Iza happy in Poland',
+    src: '/games/guide.webp',
+    /* A painting rather than a photograph — it arrived with its own colour and
+       contrast, and the camera grade would only be pushing an image that was
+       never shot. The full-size original lives in assets/games, out of the
+       deploy: at 1.2MB it was fifty times the weight of the tile it fills. */
+    grade: 'none',
+  },
+  {
+    id: 'likely',
+    href: '/games/who-is-more-likely/',
+    title: 'Who is more likely to?',
+    src: '/games/who-is-more-likely.webp',
+    grade: 'none',
+  },
+  /* The trip pair, closed, and last of the named ones. Both routes are still
+     built and still deployed — only the doors off this page are gone, so the
+     links still work for anyone who has one. Putting them back is two
+     commented lines, and they go back in this order: book is held shut by
+     `after: 'upgrade'`, and a tile that names a gate above nothing is a tile
+     that reads backwards. */
   {
     id: 'upgrade',
     // href: '/games/upgrade-trip/',
@@ -343,28 +365,6 @@ export const GAMES: Game[] = [
     expired: true,
     title: 'Book your trip',
     src: '/games/book-trip.webp',
-    grade: 'none',
-  },
-  {
-    id: 'guide',
-    /* Built and deployed, but not linked — same as the one below it. Put this
-       line back when it opens and the tile turns into a door. */
-    // href: '/games/guide/',
-    title: 'A guide to keeping Iza happy in Poland',
-    src: '/games/guide.webp',
-    /* A painting rather than a photograph — it arrived with its own colour and
-       contrast, and the camera grade would only be pushing an image that was
-       never shot. The full-size original lives in assets/games, out of the
-       deploy: at 1.2MB it was fifty times the weight of the tile it fills. */
-    grade: 'none',
-  },
-  {
-    id: 'likely',
-    /* Built and deployed, but not linked yet — put this line back when it
-       opens and the tile turns into a door. */
-    // href: '/games/who-is-more-likely/',
-    title: 'Who is more likely to?',
-    src: '/games/who-is-more-likely.webp',
     grade: 'none',
   },
   /* One, and unnamed. A title is a promise with edges, and there is no reason

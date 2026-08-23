@@ -240,7 +240,7 @@ export const SECTIONS: Section[] = [
           {
             id: 'your-job',
             label:
-              'I don’t give a fuck, it’s your job to plan a date. Prove that you deserve such a sexy goddess like me.',
+              'I don’t give a fuck, it’s your job to plan a date. Prove yourself to me.',
           },
         ],
       },

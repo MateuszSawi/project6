@@ -17,7 +17,7 @@ import styles from './Report.module.scss';
  * this is going into WhatsApp, not onto the page.
  */
 const MESSAGE =
-  "Cool game, but you'll have to try harder to prove you deserve a sexy goddess like me. Call me tonight.";
+  "Cool game, but you'll have to try harder. I will call you.";
 
 const WHATSAPP = whatsappLink(MESSAGE);
 

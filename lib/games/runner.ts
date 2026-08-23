@@ -130,6 +130,35 @@ export const ARRIVAL_BEAT_MS = 1200;
 export const ARRIVAL_DEAF_MS = ARRIVAL_BEAT_MS + 500;
 
 /**
+ * Kilometres with a space every three digits.
+ *
+ * Grouped by hand rather than by toLocaleString, which separates digits
+ * differently depending on the locale the runtime happens to pick — and would
+ * then differ between the prerendered HTML and the browser.
+ */
+export function formatKm(km: number): string {
+  return Math.floor(km)
+    .toString()
+    .replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+}
+
+/**
+ * How far along the road she is, 0..100, as a whole number.
+ *
+ * The same proportion the bar draws, said out loud — a dot two thirds of the
+ * way along a hairline is a feeling, and this is the number under it. Capped
+ * at 100 for the same reason the dot stops at Gdansk: the endless road keeps
+ * counting kilometres, but there is no more journey left to be a percentage of.
+ *
+ * Rounded down, not to nearest, so it only ever says 100% on a road that is
+ * actually finished. 1999 km rounding up to a finished trip would be the one
+ * lie this readout could tell.
+ */
+export function completion(km: number): number {
+  return Math.floor(barPosition(km) * 100);
+}
+
+/**
  * Where the dot sits on the bar, 0..1.
  *
  * Straight proportion, with Gdańsk on the end of the bar. The run itself does

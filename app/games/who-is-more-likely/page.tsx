@@ -30,8 +30,8 @@ export default function WhoIsMoreLikelyPage() {
             us thinks is going to happen.
           </p>
           <p>
-            Let us find out how much we can predict, and which of us turns out to be right. At
-            the end AI reads the answers and works out how well we match.
+            {/* Let us find out how much we can predict, and which of us turns out to be right.  */}
+            At the end AI reads the answers and works out how well we match.
           </p>
         </>
       }
